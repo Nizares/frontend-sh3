@@ -1,5 +1,5 @@
-import Container from "@/components/Container"
-import { FireIcon } from "@heroicons/react/24/outline"
+import Container from "@/components/Container";
+import { FireIcon } from "@heroicons/react/24/outline";
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 import { RocketLaunchIcon } from "@heroicons/react/24/outline";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
@@ -35,33 +35,33 @@ export default function About() {
             </div>
 
         </div>
-        <div className="flex items-center gap-x-8 text-white bg-[#E29208]">
+        <div className="flex flex-col items-center gap-x-8 text-white bg-[#E29208] md:flex-row">
             <div className="flex flex-row items-center">
-                <FireIcon className="w-48 h-48" />
+                <FireIcon className="w-24 h-24 md:w-48 md:h-48" />
                 <div className="flex flex-col gap-2">
-                    <p className="font-semibold text-4xl">2381</p>
-                    <p className="font-semibold text-2xl">Total Runs</p>
+                    <p className="font-semibold text-2xl md:text-4xl">2381</p>
+                    <p className="font-semibold text-xl md:text-2xl">Total Runs</p>
                 </div>
             </div>
             <div className="flex flex-row items-center ">
-                <UserGroupIcon className="w-48 h-48" />
+                <UserGroupIcon className="w-24 h-24 md:w-48 md:h-48" />
                 <div className="flex flex-col gap-2">
-                    <p className="font-semibold text-4xl">4.200+</p>
-                    <p className="font-semibold text-2xl">Total Member Terdaftar</p>
+                    <p className="font-semibold text-2xl md:text-4xl">4.200+</p>
+                    <p className="font-semibold text-xl md:text-2xl">Total Member Terdaftar</p>
                 </div>
             </div>
             <div className="flex flex-row items-center">
-                <RocketLaunchIcon className="w-48 h-48" />
+                <RocketLaunchIcon className="w-24 h-24 md:w-48 md:h-48" />
                 <div className="flex flex-col gap-2">
-                    <p className="font-semibold text-4xl">2381</p>
-                    <p className="font-semibold text-2xl">Active Runner Per Week</p>
+                    <p className="font-semibold text-2xl md:text-4xl">2381</p>
+                    <p className="font-semibold text-xl md:text-2xl">Active Runner Per Week</p>
                 </div>
             </div>
             <div className="flex flex-row items-center">
-                <CalendarDaysIcon className="w-48 h-48" />
+                <CalendarDaysIcon className="w-24 h-24 md:w-48 md:h-48" />
                 <div className="flex flex-col gap-2">
-                    <p className="font-semibold text-4xl">ON ON</p>
-                    <p className="font-semibold text-2xl">Per Week</p>
+                    <p className="font-semibold text-2xl md:text-4xl">ON ON</p>
+                    <p className="font-semibold text-xl md:text-2xl">Per Week</p>
                 </div>
             </div>
         </div>

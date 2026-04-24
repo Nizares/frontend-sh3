@@ -1,12 +1,14 @@
 import Image from "next/image"
 import Link from "next/link"
 import "./globals.css";
-
+import Container from "@/components/Container";
+import Carousel from "@/components/Carousel";
 
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans">
+    <Container className="flex flex-col gap-y-16">
+    <div className="flex flex-col flex-1 items-center justify-center ">
       <h1 className="text-[#1D242D] text-3xl font-semibold">Samarinda Hash House Harriers</h1>
       <h2 className="text-[#1D242D] text-3xl font-semibold">On On!</h2>
       <p className="p-5">
@@ -32,5 +34,9 @@ export default function Home() {
         Tentang Kami
       </Link>
     </div>
+
+    <Carousel />
+    </Container>
+
   );
 }

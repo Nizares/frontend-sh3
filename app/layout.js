@@ -4,7 +4,8 @@ import "./globals.css";
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"], // pilih weight yang kamu butuhkan
+  weight: ["400", "500", "600", "700"],
+  variable: '--font-poppins',
 })
 
 export const metadata = {
@@ -18,8 +19,11 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${poppins.variable}  h-full antialiased`}
     >
-      <Navbar />
-      <body className="min-h-full flex flex-col bg-[#FCF4E6]">{children}</body>
+
+      <body className="min-h-full flex flex-col bg-[#FCF4E6]">
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }

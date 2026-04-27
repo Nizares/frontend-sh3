@@ -6,7 +6,6 @@ export default function EventCard({
   category, 
   img, 
   status
-
 }){
 
   const isOngoing = status == "ongoing"
@@ -36,9 +35,9 @@ export default function EventCard({
                 {category}
               </div>
               <Link
-                href={isOngoing ? "/daftar-event" : "/detail-event"}
-                className={` text-white px-6 py-2.5 rounded-full font-medium transition-colors 
-                  ${isOngoing ? "bg-red-700 hover:bg-red-500" : "hover:bg-[#245a42] bg-[#2D6A4F]"} `}
+                href={isOngoing ? "/events/upcoming" : "/events/past"}
+                className={` text-white px-6 py-2.5 rounded-full font-medium transition-colors
+                  ${isOngoing ? "bg-red-700 hover:bg-red-500 active:bg-red-500" : "hover:bg-[#245a42] bg-[#2D6A4F] active:bg-[#2D6A4F]"} `}
               >
                 {isOngoing ? "Daftar" : "Detail"}
               </Link>

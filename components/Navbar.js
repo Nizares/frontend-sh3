@@ -50,7 +50,7 @@ export default function Navbar() {
 
         {/* Tombol Login */}
         <Link
-          href="/login"
+          href="/members"
           className="hidden md:block bg-[#2D6A4F] text-white px-6 py-2.5 rounded-full font-medium hover:bg-[#245a42] transition-colors"
         >
           Registrasi Member
@@ -93,7 +93,7 @@ export default function Navbar() {
           ))}
           <li>
             <Link
-              href="/login"
+              href="/members"
               className="block bg-[#2D6A4F] text-white text-center px-6 py-2.5 rounded-full font-medium hover:bg-[#245a42] transition-colors"
             >
               Registrasi Member

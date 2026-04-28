@@ -3,7 +3,7 @@ import EventCard from "@/components/EventCard";
 
 const dummyEvents = [
   {
-    id: "1",
+    id: 1,
     title: "Borneo Nash Hash 2027",
     date: "2027-10-23",
     category: "Long Run",
@@ -11,7 +11,7 @@ const dummyEvents = [
     status: "ongoing"
   },
   {
-    id: "2",
+    id: 2,
     title: "Borneo Nash Hash 2027",
     date: "2027-10-23",
     category: "Long Run",
@@ -19,7 +19,7 @@ const dummyEvents = [
     status: "ongoing"
   },
   {
-    id: "3",
+    id: 3,
     title: "Ketupat Cap Go Meh Run 2026",
     date: "2026-03-29",
     category: "Long Run",
@@ -27,7 +27,7 @@ const dummyEvents = [
     status: "ended"
   },
   {
-    id: "4",
+    id: 4,
     title: "Ketupat Cap Go Meh Run 2026",
     date: "2026-03-29",
     category: "Long Run",
@@ -35,7 +35,7 @@ const dummyEvents = [
     status: "ended"
   },
   {
-    id: "5",
+    id: 5,
     title: "Ketupat Cap Go Meh Run 2026",
     date: "2026-03-29",
     category: "Long Run",
@@ -43,7 +43,7 @@ const dummyEvents = [
     status: "ended"
   },
   {
-    id: "6",
+    id: 6,
     title: "Ketupat Cap Go Meh Run 2026",
     date: "2026-03-29",
     category: "Long Run",
@@ -66,8 +66,8 @@ export default function Events() {
         {dummyEvents
           .filter((item) => new Date(item.date) > now)
           .map((item) => (
-
             <EventCard
+              key={item.id}
               title={item.title}
               date={item.date}
               category={item.category}
@@ -86,8 +86,8 @@ export default function Events() {
           {dummyEvents
             .filter((item) => new Date(item.date) < now)
             .map((item) => (
-
               <EventCard
+                key={item.id}
                 title={item.title}
                 date={item.date}
                 category={item.category}

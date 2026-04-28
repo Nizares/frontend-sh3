@@ -4,16 +4,32 @@ import Link from "next/link";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon } from "@heroicons/react/24/solid";
 
+const dummyEvents = [
+  {
+    id: "1",
+    title: "Borneo Nash Hash 2027",
+    date: "2027-10-23",
+    category: "Long Run",
+    img: "/assets/images/poster2027.jpg",
+    status: "ongoing",
+    eventog: "Samarinda Hash House Harriers",
 
+    price: 900000,
+    slot: 300
+
+  },
+]
 export default function UpcomingEvents() {
+    const event = dummyEvents[0];
     return (
         <Container className="flex flex-col gap-y-4 w-full">
+
             <Link href="/events" className="static md:absolute">
                 <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
             </Link>
             <div className="flex items-center justify-center w-full">
                 <h1 className="text-4xl font-bold ">
-                    Borneo Nash Hash 2027
+                    {event.title}
                 </h1>
             </div>
 
@@ -22,7 +38,7 @@ export default function UpcomingEvents() {
                 <div className="text-lg font-bold">Samarinda, Kalimantan Timur</div>
             </div>
             <Image
-                src="/assets/images/poster2027.jpg"
+                src={event.img}
                 alt="Logo"
                 width={600}
                 height={450}
@@ -41,7 +57,7 @@ export default function UpcomingEvents() {
                     <div className="text-sm">
                         Deep in the heart of Borneo's ancient rainforest, the Samarinda Hash House Harriers invite Hashers from across the globe for the most epic Nash Hash yet. Two days of trails, beer, camaraderie, and pure Hash spirit in the wildest island on earth. Whether you're a seasoned Hasher or a virgin runner — Borneo Nash Hash 2027 promises unforgettable trails through lush jungle, traditional Dayak culture, and legendary On-On celebrations.
                     </div>
-                    <Link href="/regismember">
+                    <Link href="/events/register">
                         <div className="flex justify-center items-center rounded-2xl bg-[#00973D] h-32 font-bold text-2xl text-white hover:bg-green-400 m-10 md:text-5xl active:bg-green-400">
                             Daftar Sekarang
                         </div>
@@ -56,7 +72,7 @@ export default function UpcomingEvents() {
                             Rp. 1.400.000
                         </div>
                         <div className="text-lg font-bold">
-                            Rp. 900.000/person
+                            Rp. {event.price}/person
                         </div>
                     </div>
                     <div className="flex flex-col">
@@ -72,7 +88,7 @@ export default function UpcomingEvents() {
                             Event Organizer
                         </div>
                         <div className="text-lg font-semibold">
-                            Samarinda Hash House Harriers
+                            {event.eventog}
                         </div>
                     </div>
                 </div>

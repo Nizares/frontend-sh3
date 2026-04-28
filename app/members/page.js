@@ -83,6 +83,7 @@ export default function UpcomingEvents() {
                         label="Gender"
                         options={genderOptions}
                         value={gender}
+                        placehold="Pilih Gender..."
                         onChange={(e) => setGender(e.target.value)}
                     />
                     <button className="flex justify-center items-center rounded-2xl bg-btn-green-normal hover:to-btn-green-hover active:bg-green-400 h-16 font-bold text-xl text-white m-10 md:text-3xl"
@@ -121,7 +122,7 @@ export default function UpcomingEvents() {
             <Form action="" className="flex flex-col justify-center items-center">
                 <InputType
                     label="Masukkan ID Hash Kamu"
-                    id="name"
+                    id="hashid"
                     type="text"
                     name="cariid"
                     placeholder="HASH000001"

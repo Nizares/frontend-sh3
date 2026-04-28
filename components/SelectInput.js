@@ -1,5 +1,5 @@
 // components/SelectInput.jsx
-export default function SelectInput({ id, name, label, required = false, options = [], ...props }) {
+export default function SelectInput({ id, name, label, placehold, required = false, options = [], ...props }) {
   return (
     <div className="flex flex-col gap-1.5">
         <label>
@@ -12,10 +12,10 @@ export default function SelectInput({ id, name, label, required = false, options
         <select
           id={id}
           name={name}
-          className="w-full outline-2 rounded-xl px-3 pr-9 h-9 text-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 hover:border-gray-400 transition"
+          className="w-full bg-white outline-2 rounded-xl px-3 pr-9 h-9 text-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 hover:border-gray-400 transition"
           {...props}
         >
-          <option value="">Pilih gender...</option>
+          <option value="">{placehold}</option>
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}

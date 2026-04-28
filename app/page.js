@@ -97,6 +97,7 @@ export default function Home() {
           .map((item) => (
 
             <EventCard
+              key={item.id}
               title={item.title}
               date={item.date}
               category={item.category}
@@ -117,6 +118,7 @@ export default function Home() {
             .map((item) => (
 
               <EventCard
+                key={item.id}
                 title={item.title}
                 date={item.date}
                 category={item.category}

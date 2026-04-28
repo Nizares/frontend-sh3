@@ -58,7 +58,7 @@ export default function ImageUpload({ id = "cover_photo", label = "Cover photo",
         </div>
       ) : (
         <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-3 border border-gray-200">
-          <img src={preview.url} alt="preview" className="w-11 h-11 rounded-md object-cover border border-gray-200 flex-shrink-0" />
+          <img src={preview.url} alt="preview" className="w-11 h-11 rounded-md object-cover border border-gray-200 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-800 truncate">{preview.name}</p>
             <p className="text-xs text-gray-400">{formatSize(preview.size)}</p>

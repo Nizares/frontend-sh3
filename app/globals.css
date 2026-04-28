@@ -2,4 +2,15 @@
 
 @theme {
   --font-sans: var(--font-poppins), sans-serif;
+
+  --color-bg-colors: #FCF4E6;
+  --color-text-colors: #1D242D;
+
+  --color-btn-green-normal: #2D6A4F;
+  --color-btn-green-hover: #245a42;
+  --color-btn-green-active: #245a42;
+
+  --color-card-bg: #F6DDB2;
+
+
 }

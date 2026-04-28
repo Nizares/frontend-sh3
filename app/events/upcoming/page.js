@@ -47,7 +47,7 @@ export default function UpcomingEvents() {
                         </div>
                     </Link>
                 </div>
-                <div className="bg-[#F6DDB2] rounded-lg gap-x-4 p-4">
+                <div className="bg-card-bg rounded-lg gap-x-4 p-4">
                     <div className="flex flex-col">
                         <h3 className="text-2xl font-bold">
                             Early Bid

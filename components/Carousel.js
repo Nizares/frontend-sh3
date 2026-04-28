@@ -53,7 +53,7 @@ export default function Carousel() {
   }, [emblaApi, onSelect])
 
   return (
-    <div className="bg-[#FCF4E6] py-16">
+    <div className="bg-bg-colors py-16">
 
       {/* Carousel */}
       <div className="overflow-hidden" ref={emblaRef}>

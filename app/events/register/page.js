@@ -51,6 +51,10 @@ export default function RegisterEvent() {
 
     const selectedBank = paymentOptions.find((payment) => payment.value === payOptions);
 
+    const formatRupiah = (angka) => {
+        return new Intl.NumberFormat("id-ID").format(angka)
+    }
+
     // const [gender, setGender] = useState("");
     return (
         <Container className="flex flex-col gap-y-4 w-full">
@@ -91,7 +95,7 @@ export default function RegisterEvent() {
                             Rp. 1.400.000
                         </div>
                         <div className="text-lg font-bold">
-                            Rp. {event.price}/person
+                            Rp. {formatRupiah(event.price)}/person
                         </div>
                     </div>
                     <div className="flex flex-col">
@@ -189,7 +193,7 @@ export default function RegisterEvent() {
                             Event Price
                         </div>
                         <div className="text-xl font-medium">
-                            Rp. {event.price}
+                            Rp. {formatRupiah(event.price)}
                         </div>
                     </div>
                     <div className="flex justify-between">
@@ -197,7 +201,7 @@ export default function RegisterEvent() {
                             Total
                         </div>
                         <div className="text-2xl font-bold text-orange-400">
-                            Rp. {event.price}
+                            Rp. {formatRupiah(event.price)}
                         </div>
                     </div>
                 </div>

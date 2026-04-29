@@ -5,22 +5,26 @@ import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon } from "@heroicons/react/24/solid";
 
 const dummyEvents = [
-  {
-    id: "1",
-    title: "Borneo Nash Hash 2027",
-    date: "2027-10-23",
-    category: "Long Run",
-    img: "/assets/images/poster2027.jpg",
-    status: "ongoing",
-    eventog: "Samarinda Hash House Harriers",
+    {
+        id: "1",
+        title: "Borneo Nash Hash 2027",
+        date: "2027-10-23",
+        category: "Long Run",
+        img: "/assets/images/poster2027.jpg",
+        status: "ongoing",
+        eventog: "Samarinda Hash House Harriers",
 
-    price: 900000,
-    slot: 300
+        price: 900000,
+        slot: 300
 
-  },
+    },
 ]
 export default function UpcomingEvents() {
     const event = dummyEvents[0];
+
+    const formatRupiah = (angka) => {
+        return new Intl.NumberFormat("id-ID").format(angka)
+    }
     return (
         <Container className="flex flex-col gap-y-4 w-full">
 
@@ -72,7 +76,7 @@ export default function UpcomingEvents() {
                             Rp. 1.400.000
                         </div>
                         <div className="text-lg font-bold">
-                            Rp. {event.price}/person
+                            Rp. {formatRupiah(event.price)}/person
                         </div>
                     </div>
                     <div className="flex flex-col">

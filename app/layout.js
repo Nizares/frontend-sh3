@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col bg-bg-colors text-text-colors">
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

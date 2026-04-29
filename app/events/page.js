@@ -57,7 +57,7 @@ export default function Events() {
   return (
     <Container className="flex flex-col gap-y-8">
       <div className="flex flex-col flex-1 items-center justify-center p-8">
-        <h1 className="text-text-colors text-5xl font-bold">Samarinda Hash House Harriers</h1>
+        <h1 className="text-text-colors text-5xl font-bold">Events</h1>
       </div>
 
       <h2 className="text-3xl font-bold flex justify-center">Event yang Akan Datang</h2>

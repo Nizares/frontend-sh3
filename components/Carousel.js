@@ -1,4 +1,3 @@
-// components/Carousel.js
 "use client"
 
 import useEmblaCarousel from "embla-carousel-react"
@@ -32,6 +31,8 @@ const events = [
   },
 ]
 
+const AUTOPLAY_DELAY = 3000 // ganti angka ini untuk ubah kecepatan (ms)
+
 export default function Carousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "center",
@@ -41,7 +42,6 @@ export default function Carousel() {
 
   const [selectedIndex, setSelectedIndex] = useState(0)
 
-  // update index saat slide berubah
   const onSelect = useCallback(() => {
     if (!emblaApi) return
     setSelectedIndex(emblaApi.selectedScrollSnap())
@@ -51,6 +51,28 @@ export default function Carousel() {
     if (!emblaApi) return
     emblaApi.on("select", onSelect)
   }, [emblaApi, onSelect])
+
+  // ✅ Autoplay
+  useEffect(() => {
+    if (!emblaApi) return
+    const interval = setInterval(() => {
+      emblaApi.scrollNext()
+    }, AUTOPLAY_DELAY)
+
+    return () => clearInterval(interval) // cleanup saat unmount
+  }, [emblaApi])
+
+  // ✅ Handle click kiri/kanan pada card
+  const handleCardClick = useCallback((index) => {
+    if (!emblaApi) return
+    if (index === selectedIndex) return // card aktif, tidak perlu pindah
+
+    if (index > selectedIndex || (selectedIndex === events.length - 1 && index === 0)) {
+      emblaApi.scrollNext()
+    } else {
+      emblaApi.scrollPrev()
+    }
+  }, [emblaApi, selectedIndex])
 
   return (
     <div className="bg-bg-colors py-16">
@@ -63,10 +85,12 @@ export default function Carousel() {
             return (
               <div
                 key={event.id}
+                onClick={() => handleCardClick(index)}  // ✅ click pindah slide
                 className={`relative flex-none mx-3 transition-all duration-500 rounded-2xl overflow-hidden
+                  ${!isActive ? "cursor-pointer" : ""}  // ✅ kursor pointer di card non-aktif
                   ${isActive
-                    ? "w-[55%] md:w-[45%] scale-100 shadow-2xl z-10"   // card aktif — besar
-                    : "w-[35%] md:w-[28%] scale-90 opacity-60"          // card lain — kecil & redup
+                    ? "w-[55%] md:w-[45%] scale-100 shadow-2xl z-10"
+                    : "w-[35%] md:w-[28%] scale-90 opacity-60"
                   }
                 `}
               >
@@ -80,9 +104,9 @@ export default function Carousel() {
                   />
 
                   {/* Overlay gelap */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
 
-                  {/* Teks di atas gambar — hanya muncul di card aktif */}
+                  {/* Teks — hanya muncul di card aktif */}
                   {isActive && (
                     <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
                       <h3 className="text-xl font-bold mb-1">{event.title}</h3>
@@ -110,8 +134,8 @@ export default function Carousel() {
             onClick={() => emblaApi && emblaApi.scrollTo(index)}
             className={`w-2 h-2 rounded-full transition-all duration-300 ${
               index === selectedIndex
-                ? "bg-[#2D6A4F] w-6"   // dot aktif — lebih panjang
-                : "bg-gray-400"         // dot tidak aktif
+                ? "bg-btn-green-normal w-6"
+                : "bg-gray-400"
             }`}
           />
         ))}

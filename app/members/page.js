@@ -34,10 +34,8 @@ export default function UpcomingEvents() {
     };
     return (
         <Container className="flex flex-col gap-y-8 w-full">
-            <div className="flex items-center justify-center w-full">
-                <h1 className="text-4xl font-bold m-2">
-                    Ayo! Jadi bagian kami!
-                </h1>
+            <div className="flex flex-col flex-1 items-center justify-center p-8">
+                <h1 className="text-text-colors text-5xl font-bold">Ayo jadi bagian Kami!</h1>
             </div>
             <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3">
                 <Form action="" className="col-span-1 flex flex-col md:col-span-2 gap-4">
@@ -119,7 +117,7 @@ export default function UpcomingEvents() {
                     Kamu sudah jadi Member?
                 </h1>
             </div>
-            <Form action="" className="flex flex-col justify-center items-center">
+            <Form action="" formMethod="get" className="flex flex-col justify-center items-center">
                 <InputType
                     label="Masukkan ID Hash Kamu"
                     id="hashid"
@@ -131,30 +129,28 @@ export default function UpcomingEvents() {
                     onChange={(e) => setSearchId(e.target.value)}
                 />
                 <button className="flex justify-center items-center rounded-2xl p-8 bg-btn-green-normal hover:to-btn-green-hover active:bg-green-400 h-16 font-bold text-xl text-white m-10 md:text-3xl"
-                    type="submit"
+                    type="button"
                     onClick={handleSearch}
                 >Cek Member</button>
             </Form>
             <div className="flex items-center justify-center rounded-2xl text-3xl font-bold">
                 {submittedId && (
-                <div className="flex flex-col gap-2 items-center justify-center rounded-3xl ">
-                    
-                    {filtered.length > 0 ? (
+                    <div className="flex flex-col gap-2 items-center justify-center rounded-3xl ">
 
-                    filtered.map((item) => (
-                        
-                        <div key={item.id} className="text-center">
-                        <div className="text-4xl font-bold">
-                            Data ditemukan!
-                        </div>
-                        <p>ID Kamu : {item.id}</p>
-                        <p>Nama Kamu : {item.name}</p>
-                        </div>
-                    ))
-                    ) : (
-                    <p className="text-red-800">Data tidak ditemukan</p>
-                    )}
-                </div>
+                        {filtered.length > 0 ? (
+                            filtered.map((item) => (
+                                <div key={item.id} className="text-center">
+                                    <div className="text-4xl font-bold">
+                                        Data ditemukan!
+                                    </div>
+                                    <p>ID Kamu : {item.id}</p>
+                                    <p>Nama Kamu : {item.name}</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-red-800">Data tidak ditemukan</p>
+                        )}
+                    </div>
                 )}
             </div>
 

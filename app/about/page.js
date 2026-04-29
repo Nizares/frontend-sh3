@@ -7,7 +7,9 @@ import Image from "next/image"
 export default function About() {
     return (
     <Container className="flex flex-col gap-y-16">
-        <h1 className="font-semibold text-5xl relative text-center">About</h1>
+        <div className="flex flex-col flex-1 items-center justify-center p-8">
+            <h1 className="text-text-colors text-5xl font-bold">About</h1>
+        </div>
         <div className="flex flex-col align-middle md:flex-row">
             <div className="w-full flex items-center justify-center">
             <Image

@@ -299,7 +299,7 @@ export default function RegisterEvent() {
 
                             )
                         }
-                        <div className="text-2xl font-bold">
+                        <div className="text-2xl font-bold m-8">
                             atau
                         </div>
                         <Image

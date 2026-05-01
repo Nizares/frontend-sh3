@@ -6,9 +6,9 @@ import SelectInput from "@/components/SelectInput";
 import { useState } from "react"
 
 const dummyUsers = [
-    { id: "HASH000001", name: "Sukoshi Dake" },
-    { id: "HASH000002", name: "Afureru Antze" },
-    { id: "HASH000003", name: "Ryo Yamada" },
+    { id: "SH3ID000001", name: "Sukoshi Dake", telp_number: "081245121313", email: "sukouko12@gmail.com" },
+    { id: "SH3ID000002", name: "Afureru Antze", telp_number: "081245121445", email: "afureru32@gmail.com" },
+    { id: "SH3ID000003", name: "Ryo Yamada", telp_number: "081245121071", email: "ryobassist67@gmail.com"  },
 ]
 
 const genderOptions = [
@@ -32,6 +32,12 @@ export default function UpcomingEvents() {
     const handleSearch = () => {
         setSubmittedId(searchId);
     };
+
+    function hidePhone(number, shownNumber = 4) {
+        // return number.slice(0, shownNumber) + '*'.repeat(number.length - shownNumber); // 4 nomor diawal
+        return '*'.repeat(number.length - shownNumber) + number.slice(-shownNumber); // 4 nomor diakhir
+    }
+
     return (
         <Container className="flex flex-col gap-y-8 w-full">
             <div className="flex flex-col flex-1 items-center justify-center p-8">
@@ -145,6 +151,7 @@ export default function UpcomingEvents() {
                                     </div>
                                     <p>ID Kamu : {item.id}</p>
                                     <p>Nama Kamu : {item.name}</p>
+                                    <p>Nomor Telpon kamu : {hidePhone(item.telp_number, 4)}</p>
                                 </div>
                             ))
                         ) : (

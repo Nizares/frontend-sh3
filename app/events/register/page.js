@@ -14,6 +14,12 @@ import { MapPinIcon } from "@heroicons/react/24/solid";
 import { ChevronUpIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 
+const dummyUsers = [
+    { id: "SH3ID000001", name: "Sukoshi Dake", telp_number: "081245121313", email: "sukouko12@gmail.com" },
+    { id: "SH3ID000002", name: "Afureru Antze", telp_number: "081245121445", email: "afureru32@gmail.com" },
+    { id: "SH3ID000003", name: "Ryo Yamada", telp_number: "081245121071", email: "ryobassist67@gmail.com" },
+]
+
 const dummyEvents = [
     {
         id: "1",
@@ -54,6 +60,26 @@ export default function RegisterEvent() {
     const formatRupiah = (angka) => {
         return new Intl.NumberFormat("id-ID").format(angka)
     }
+
+    const [id, setId] = useState("");
+    const [userData, setUserData] = useState(null);
+    const [error, setError] = useState("");
+
+    function checkTheID() {
+        const foundId = dummyUsers.find(user => user.id === id);
+
+        if (foundId) {
+            setUserData(foundId);
+        } else {
+            setUserData(null);
+        }
+    }
+
+    function submitPembayaran(e) {
+        e.preventDefault();
+        console.log("Submit pembayaran:", { id, ...userData });
+    }
+
 
     // const [gender, setGender] = useState("");
     return (
@@ -125,7 +151,7 @@ export default function RegisterEvent() {
                 </div>
             </div>
 
-            <Form action="" className="flex flex-col gap-8">
+            <Form onSubmit={submitPembayaran} className="flex flex-col gap-8">
                 <div className="flex flex-col bg-card-bg rounded-lg p-4 gap-4">
                     <div className="flex justify-between">
                         <div className="text-2xl font-bold">
@@ -134,42 +160,65 @@ export default function RegisterEvent() {
                         <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
                     </div>
                     <hr className="border-t-2 border-text-colors" />
-                    <InputType
-                        label="Full Name"
-                        id="name"
-                        required
-                        type="text"
-                        name="fullname"
-                        placeholder="John Doe"
-                        className="flex flex-col gap-2"
-                    />
-                    <InputType
-                        label="Email"
-                        id="email"
-                        required
-                        type="email"
-                        name="email"
-                        placeholder="you@example.com"
-                        className="flex flex-col gap-2"
-                    />
-                    <InputType
-                        label="Nomor Telepon/WA"
-                        type="text"
-                        id="telpnumber"
-                        required
-                        name="telpnumber"
-                        placeholder="08123456789"
-                        className="flex flex-col gap-2"
-                    />
-                    <InputType
-                        label="ID Hash"
-                        id="hashid"
-                        type="text"
-                        name="idhash"
-                        required
-                        placeholder="HASH000001"
-                        className="flex flex-col gap-2"
-                    />
+                    <div className="grid grid-cols-2 w-full items-center md:grid-cols-3 gap-8">
+                        <InputType
+                            label="ID Hash"
+                            id="hashid"
+                            type="text"
+                            name="idhash"
+                            required
+                            placeholder="HASH000001"
+                            className="flex flex-col gap-2 col-span-1 md:col-span-2"
+                            onChange={e => setId(e.target.value)}
+                            value={id}
+                        />
+                        <button className="flex justify-center items-center rounded-2xl bg-btn-green-normal hover:to-btn-green-hover active:bg-green-400 font-bold text-xl text-white md:text-2xl w-full h-full"
+                            type="button"
+                            onClick={checkTheID}
+                        >Check ID</button>
+                    </div>
+                    {error && <p>{error}</p>}
+
+                    {userData && (
+                        <>
+                            <InputType
+                                label="Full Name"
+                                id="name"
+                                required
+                                type="text"
+                                name="fullname"
+                                placeholder="John Doe"
+                                className="flex flex-col gap-2"
+                                value={userData.name}
+                                readOnly
+                            />
+                            <InputType
+                                label="Email"
+                                id="email"
+                                required
+                                type="email"
+                                name="email"
+                                placeholder="you@example.com"
+                                className="flex flex-col gap-2"
+                                value={userData.email}
+                                readOnly
+                            />
+                            <InputType
+                                label="Nomor Telepon/WA"
+                                type="text"
+                                id="telpnumber"
+                                required
+                                name="telpnumber"
+                                placeholder="08123456789"
+                                className="flex flex-col gap-2"
+                                value={userData.telp_number}
+                                readOnly
+                            />
+                        </>
+
+                    )}
+
+
 
                 </div>
                 <div className="flex flex-col bg-card-bg rounded-lg p-4 gap-4">

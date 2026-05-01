@@ -1,6 +1,7 @@
 import Container from "@/components/Container";
 import Image from "next/image";
 import Link from "next/link";
+import Form from "next/form";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon } from "@heroicons/react/24/solid";
 

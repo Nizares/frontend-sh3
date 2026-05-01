@@ -7,54 +7,61 @@ import EventCard from "@/components/EventCard";
 
 const dummyEvents = [
   {
-    id: "1",
+    id: 1,
     title: "Borneo Nash Hash 2027",
-    date: "2027-10-23",
+    start_date: "2027-10-23",
+    end_date: "2027-10-24",
     category: "Long Run",
     img: "/assets/images/poster2027.jpg",
     status: "ongoing"
   },
   {
-    id: "2",
+    id: 2,
     title: "Borneo Nash Hash 2027",
-    date: "2027-10-23",
+    start_date: "2027-10-23",
+    end_date: "2027-10-24",
     category: "Long Run",
     img: "/assets/images/poster2027.jpg",
     status: "ongoing"
   },
   {
-    id: "3",
+    id: 3,
     title: "Ketupat Cap Go Meh Run 2026",
-    date: "2026-03-29",
+    start_date: "2026-03-29",
+    end_date: "2026-03-30",
     category: "Long Run",
     img: "/assets/images/ketupat_banner.jpg",
     status: "ended"
   },
   {
-    id: "4",
+    id: 4,
     title: "Ketupat Cap Go Meh Run 2026",
-    date: "2026-03-29",
+    start_date: "2026-03-29",
+    end_date: "2026-03-30",
     category: "Long Run",
     img: "/assets/images/ketupat_banner.jpg",
     status: "ended"
   },
   {
-    id: "5",
+    id: 5,
     title: "Ketupat Cap Go Meh Run 2026",
-    date: "2026-03-29",
+    start_date: "2026-03-29",
+    end_date: "2026-03-30",
     category: "Long Run",
     img: "/assets/images/ketupat_banner.jpg",
     status: "ended"
   },
   {
-    id: "6",
+    id: 6,
     title: "Ketupat Cap Go Meh Run 2026",
-    date: "2026-03-29",
+    start_date: "2026-03-29",
+    end_date: "2026-03-30",
     category: "Long Run",
     img: "/assets/images/ketupat_banner.jpg",
     status: "ended"
   },
 ]
+
 export default function Home() {
   const now = new Date();
   return (
@@ -93,13 +100,14 @@ export default function Home() {
       <div className="flex md:flex-row justify-center gap-8 flex-col items-center">
 
         {dummyEvents
-          .filter((item) => new Date(item.date) > now)
+          .filter((item) => new Date(item.start_date) > now)
           .map((item) => (
 
             <EventCard
               key={item.id}
               title={item.title}
-              date={item.date}
+              start_date={item.start_date}
+              end_date={item.end_date}
               category={item.category}
               img={item.img}
               status={item.status}
@@ -114,16 +122,17 @@ export default function Home() {
       <div className="flex justify-center">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-center">
           {dummyEvents
-            .filter((item) => new Date(item.date) < now)
+            .filter((item) => new Date(item.start_date) < now)
             .map((item) => (
 
               <EventCard
-                key={item.id}
-                title={item.title}
-                date={item.date}
-                category={item.category}
-                img={item.img}
-                status={item.status}
+              key={item.id}
+              title={item.title}
+              start_date={item.start_date}
+              end_date={item.end_date}
+              category={item.category}
+              img={item.img}
+              status={item.status}
               />
             ))
           }

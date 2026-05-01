@@ -12,7 +12,7 @@ export default function Navbar() {
   const isActive = (href) => pathname === href
 
   return (
-    <nav className="bg-[#F5F0E8] px-8 py-4 shadow-sm">
+    <nav className="bg-[#F5F0E8] px-8 py-4 shadow-sm sticky top-0">
       <div className="flex items-center justify-between">
 
         {/* Logo */}
@@ -30,7 +30,6 @@ export default function Navbar() {
             { href: "/", label: "Home" },
             { href: "/about", label: "About" },
             { href: "/events", label: "Events" },
-            { href: "/members", label: "Members" },
             { href: "/gallery", label: "Gallery" },
           ].map((item) => (
             <li key={item.href}>

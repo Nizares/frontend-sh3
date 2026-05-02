@@ -4,6 +4,7 @@ import Form from 'next/form'
 import InputType from "@/components/Inputs";
 import SelectInput from "@/components/SelectInput";
 import { useState } from "react"
+import Swal from "sweetalert2";
 
 const dummyUsers = [
     { id: "SH3ID000001", name: "Sukoshi Dake", telp_number: "081245121313", email: "sukouko12@gmail.com" },
@@ -29,8 +30,32 @@ export default function UpcomingEvents() {
         item.id.toUpperCase() === submittedId.toUpperCase()
     );
 
+    // const handleSearch = () => {
+    //     setSubmittedId(searchId);
+    // };
+
     const handleSearch = () => {
-        setSubmittedId(searchId);
+        const result = dummyUsers.find(
+            (item) => item.id.toUpperCase() === searchId.toUpperCase()
+        );
+
+        if (result) {
+            Swal.fire({
+                icon: "success",
+                title: "Data ditemukan!",
+                html: `
+                    <p>ID: ${result.id}</p>
+                    <p>Nama: ${result.name}</p>
+                    <p>Telp: ${hidePhone(result.telp_number, 4)}</p>
+                `,
+            });
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Data tidak ditemukan",
+                text: "Pastikan ID yang kamu masukkan sudah benar.",
+            });
+        }
     };
 
     function hidePhone(number, shownNumber = 4) {
@@ -139,13 +164,13 @@ export default function UpcomingEvents() {
                     onClick={handleSearch}
                 >Cek Member</button>
             </Form>
-            <div className="flex items-center justify-center rounded-2xl text-3xl font-bold">
+            {/* <div className="flex items-center justify-center rounded-2xl text-3xl font-bold">
                 {submittedId && (
                     <div className="flex flex-col gap-2 items-center justify-center rounded-3xl ">
 
                         {filtered.length > 0 ? (
                             filtered.map((item) => (
-                                <div key={item.id} className="text-center">
+                                <div key={item.id} className="text-center bg-card-bg p-8 rounded-lg">
                                     <div className="text-4xl font-bold">
                                         Data ditemukan!
                                     </div>
@@ -159,7 +184,7 @@ export default function UpcomingEvents() {
                         )}
                     </div>
                 )}
-            </div>
+            </div> */}
 
 
         </Container>

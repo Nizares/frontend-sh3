@@ -4,10 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import Form from "next/form";
 
-import Container from "@/components/Container";
-import SelectInput from "@/components/SelectInput";
-import InputType from "@/components/Inputs";
-import ImageUpload from "@/components/ImageUpload";
+import Container from "@/src/components/Container";
+import SelectInput from "@/src/components/SelectInput";
+import InputType from "@/src/components/Inputs";
+import ImageUpload from "@/src/components/ImageUpload";
 
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon } from "@heroicons/react/24/solid";

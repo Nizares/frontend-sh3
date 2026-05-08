@@ -1,5 +1,5 @@
-import Container from "@/components/Container";
-import EventCard from "@/components/EventCard";
+import Container from "@/src/components/Container";
+import EventCard from "@/src/components/EventCard";
 
 const dummyEvents = [
   {

@@ -1,4 +1,4 @@
-import Container from "@/components/Container";
+import Container from "@/src/components/Container";
 import { FireIcon } from "@heroicons/react/24/outline";
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 import { RocketLaunchIcon } from "@heroicons/react/24/outline";

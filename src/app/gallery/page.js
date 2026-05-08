@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import Container from "@/components/Container";
-import MasonryGallery from "@/components/MasonryGallery";
+import Container from "@/src/components/Container";
+import MasonryGallery from "@/src/components/MasonryGallery";
 
 const images = [
   // Section 1 (layout A — besar kiri)

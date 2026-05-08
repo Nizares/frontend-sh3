@@ -1,9 +1,9 @@
-import Image from "next/image"
-import Link from "next/link"
+import Image from "next/image";
+import Link from "next/link";
 import "./globals.css";
-import Container from "@/components/Container";
-import Carousel from "@/components/Carousel";
-import EventCard from "@/components/EventCard";
+import Container from "@/src/components/Container";
+import Carousel from "@/src/components/Carousel";
+import EventCard from "@/src/components/EventCard";
 
 const dummyEvents = [
   {

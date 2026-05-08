@@ -1,16 +1,10 @@
 "use client"
-import Container from "@/components/Container";
-import Form from 'next/form'
-import InputType from "@/components/Inputs";
-import SelectInput from "@/components/SelectInput";
-import { useState } from "react"
-import Swal from "sweetalert2";
-
-const dummyUsers = [
-    { id: "SH3ID000001", name: "Sukoshi Dake", telp_number: "081245121313", email: "sukouko12@gmail.com" },
-    { id: "SH3ID000002", name: "Afureru Antze", telp_number: "081245121445", email: "afureru32@gmail.com" },
-    { id: "SH3ID000003", name: "Ryo Yamada", telp_number: "081245121071", email: "ryobassist67@gmail.com"  },
-]
+import Container from "@/src/components/Container";
+import Form from 'next/form';
+import InputType from "@/src/components/Inputs";
+import SelectInput from "@/src/components/SelectInput";
+import { useState } from "react";
+import useMembers from "@/src/hooks/useMembers";
 
 const genderOptions = [
     { value: "male", label: "Laki-laki" },
@@ -21,47 +15,12 @@ export default function UpcomingEvents() {
     const [isOpen, setIsOpen] = useState(false)
     const [gender, setGender] = useState("")
 
-    const [searchId, setSearchId] = useState("");
-    const [submittedId, setSubmittedId] = useState("");
+    const {loading, searchId, setSearchId, handleSearch, handleChange} = useMembers()
+
 
     const resultid = "HASH06767"
 
-    const filtered = dummyUsers.filter((item) =>
-        item.id.toUpperCase() === submittedId.toUpperCase()
-    );
 
-    // const handleSearch = () => {
-    //     setSubmittedId(searchId);
-    // };
-
-    const handleSearch = () => {
-        const result = dummyUsers.find(
-            (item) => item.id.toUpperCase() === searchId.toUpperCase()
-        );
-
-        if (result) {
-            Swal.fire({
-                icon: "success",
-                title: "Data ditemukan!",
-                html: `
-                    <p>ID: ${result.id}</p>
-                    <p>Nama: ${result.name}</p>
-                    <p>Telp: ${hidePhone(result.telp_number, 4)}</p>
-                `,
-            });
-        } else {
-            Swal.fire({
-                icon: "error",
-                title: "Data tidak ditemukan",
-                text: "Pastikan ID yang kamu masukkan sudah benar.",
-            });
-        }
-    };
-
-    function hidePhone(number, shownNumber = 4) {
-        // return number.slice(0, shownNumber) + '*'.repeat(number.length - shownNumber); // 4 nomor diawal
-        return '*'.repeat(number.length - shownNumber) + number.slice(-shownNumber); // 4 nomor diakhir
-    }
 
     return (
         <Container className="flex flex-col gap-y-8 w-full">
@@ -148,7 +107,7 @@ export default function UpcomingEvents() {
                     Kamu sudah jadi Member?
                 </h1>
             </div>
-            <Form action="" formMethod="get" className="flex flex-col justify-center items-center">
+            <Form action="" className="flex flex-col justify-center items-center">
                 <InputType
                     label="Masukkan ID Hash Kamu"
                     id="hashid"
@@ -157,11 +116,13 @@ export default function UpcomingEvents() {
                     placeholder="HASH000001"
                     className="flex flex-col gap-2"
                     value={searchId}
-                    onChange={(e) => setSearchId(e.target.value)}
+                    onChange={handleChange}
                 />
-                <button className="flex justify-center items-center rounded-2xl p-8 bg-btn-green-normal hover:to-btn-green-hover active:bg-green-400 h-16 font-bold text-xl text-white m-10 md:text-3xl"
+                <button className={`flex justify-center items-center rounded-2xl p-8 ${loading? "bg-gray-500 ":"bg-btn-green-normal" } hover:to-btn-green-hover active:bg-green-400 h-16 font-bold text-xl text-white m-10 md:text-3xl `} 
                     type="button"
+                    disabled={loading}
                     onClick={handleSearch}
+
                 >Cek Member</button>
             </Form>
             {/* <div className="flex items-center justify-center rounded-2xl text-3xl font-bold">

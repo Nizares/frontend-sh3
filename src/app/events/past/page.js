@@ -1,4 +1,4 @@
-import Container from "@/components/Container";
+import Container from "@/src/components/Container";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";

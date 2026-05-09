@@ -13,6 +13,7 @@ const dummyEvents = [
     end_date: "2027-10-24",
     category: "Long Run",
     img: "/assets/images/poster2027.jpg",
+    eventog: "Samarinda Hash House Harriers",
     status: "ongoing"
   },
   {
@@ -22,6 +23,7 @@ const dummyEvents = [
     end_date: "2027-10-24",
     category: "Long Run",
     img: "/assets/images/poster2027.jpg",
+    eventog: "Samarinda Hash House Harriers",
     status: "ongoing"
   },
   {
@@ -31,6 +33,7 @@ const dummyEvents = [
     end_date: "2026-03-30",
     category: "Long Run",
     img: "/assets/images/ketupat_banner.jpg",
+    eventog: "Samarinda Hash House Harriers",
     status: "ended"
   },
   {
@@ -40,6 +43,7 @@ const dummyEvents = [
     end_date: "2026-03-30",
     category: "Long Run",
     img: "/assets/images/ketupat_banner.jpg",
+    eventog: "Samarinda Hash House Harriers",
     status: "ended"
   },
   {
@@ -49,6 +53,7 @@ const dummyEvents = [
     end_date: "2026-03-30",
     category: "Long Run",
     img: "/assets/images/ketupat_banner.jpg",
+    eventog: "Samarinda Hash House Harriers",
     status: "ended"
   },
   {
@@ -58,6 +63,7 @@ const dummyEvents = [
     end_date: "2026-03-30",
     category: "Long Run",
     img: "/assets/images/ketupat_banner.jpg",
+    eventog: "Samarinda Hash House Harriers",
     status: "ended"
   },
 ]

@@ -1,5 +1,8 @@
 import Image from "next/image"
 import Link from "next/link"
+
+import { concateDate } from "@/src/lib/utils";
+
 export default function EventCard({
   title,
   start_date,
@@ -11,25 +14,6 @@ export default function EventCard({
 
   const isOngoing = status == "ongoing"
 
-  const now = new Date();
-  function dateConverted(date) {
-    const formattedDate = new Date(date).toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-    return formattedDate;
-  }
-
-  function concateDate(start, end) {
-    const startDate = new Date(start);
-
-    if (startDate > now) {
-      return `${dateConverted(start)} - ${dateConverted(end)}`
-    } else {
-      return dateConverted(start);
-    }
-  }
   return (
     <div className="flex flex-col items-center rounded-2xl bg-white w-full max-w-sm">
       <Image

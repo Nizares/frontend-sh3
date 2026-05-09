@@ -4,7 +4,7 @@ import Form from 'next/form';
 import InputType from "@/src/components/Inputs";
 import SelectInput from "@/src/components/SelectInput";
 import { useState } from "react";
-import useMembers from "@/src/hooks/useMembers";
+import useSearchMembers from "@/src/hooks/useSearchMembers";
 
 const genderOptions = [
     { value: "male", label: "Laki-laki" },
@@ -15,7 +15,7 @@ export default function UpcomingEvents() {
     const [isOpen, setIsOpen] = useState(false)
     const [gender, setGender] = useState("")
 
-    const {loading, searchId, setSearchId, handleSearch, handleChange} = useMembers()
+    const {loading, searchId, setSearchId, handleSearch, handleChange} = useSearchMembers()
 
 
     const resultid = "HASH06767"

@@ -8,7 +8,7 @@ const dummyUsers = [
 ]
 
 
-export default function useMembers() {
+export default function useSearchMembers() {
     const [loading, setLoading] = useState(false);
     const [searchId, setSearchId] = useState("");
 

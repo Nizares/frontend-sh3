@@ -14,17 +14,18 @@ import { MapPinIcon } from "@heroicons/react/24/solid";
 import { ChevronUpIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 
-const dummyUsers = [
-    { id: "SH3ID000001", name: "Sukoshi Dake", telp_number: "081245121313", email: "sukouko12@gmail.com" },
-    { id: "SH3ID000002", name: "Afureru Antze", telp_number: "081245121445", email: "afureru32@gmail.com" },
-    { id: "SH3ID000003", name: "Ryo Yamada", telp_number: "081245121071", email: "ryobassist67@gmail.com" },
-]
+import useSearchDataMembers from "@/src/hooks/useSearchDataMembers";
+
+import { concateDate } from "@/src/lib/utils";
+import { formatRupiah } from "@/src/lib/utils";
+
 
 const dummyEvents = [
     {
         id: "1",
         title: "Borneo Nash Hash 2027",
-        date: "2027-10-23",
+        start_date: "2027-10-23",
+        end_date: "2027-10-24",
         category: "Long Run",
         img: "/assets/images/poster2027.jpg",
         status: "ongoing",
@@ -57,29 +58,12 @@ export default function RegisterEvent() {
 
     const selectedBank = paymentOptions.find((payment) => payment.value === payOptions);
 
-    const formatRupiah = (angka) => {
-        return new Intl.NumberFormat("id-ID").format(angka)
-    }
-
-    const [id, setId] = useState("");
-    const [userData, setUserData] = useState(null);
-    const [error, setError] = useState("");
-
-    function checkTheID() {
-        const foundId = dummyUsers.find(user => user.id === id);
-
-        if (foundId) {
-            setUserData(foundId);
-        } else {
-            setUserData(null);
-        }
-    }
+    const {loading, id, setId, userData, error, checkTheID } = useSearchDataMembers()
 
     function submitPembayaran(e) {
         e.preventDefault();
         console.log("Submit pembayaran:", { id, ...userData });
     }
-
 
     // const [gender, setGender] = useState("");
     return (
@@ -93,9 +77,14 @@ export default function RegisterEvent() {
                 </h1>
             </div>
 
-            <div className="flex flex-row justify-center gap-x-2">
-                <MapPinIcon className="w-8 h-8" />
-                <div className="text-lg font-bold">Samarinda, Kalimantan Timur</div>
+            <div className="flex flex-row justify-between gap-x-2">
+                <div className="flex flex-row justify-center gap-x-2">
+                    <MapPinIcon className="w-8 h-8" />
+                    <div className="text-lg font-bold">Samarinda, Kalimantan Timur</div>
+                </div>
+                <div className="flex flex-row gap-x-2">
+                    <div className="text-lg font-bold"> {concateDate(event.start_date, event.end_date)}</div>
+                </div>
             </div>
             <Image
                 src={event.img}
@@ -172,12 +161,13 @@ export default function RegisterEvent() {
                             onChange={e => setId(e.target.value)}
                             value={id}
                         />
-                        <button className="flex justify-center items-center rounded-2xl bg-btn-green-normal hover:to-btn-green-hover active:bg-green-400 font-bold text-xl text-white md:text-2xl w-full h-full"
+                        <button className={`flex justify-center items-center rounded-2xl ${loading ? "bg-gray-500" : "bg-btn-green-normal hover:to-btn-green-hover"}  active:bg-green-400 font-bold text-xl text-white md:text-2xl w-full h-full`}
                             type="button"
+                            disabled={loading}
                             onClick={checkTheID}
                         >Check ID</button>
                     </div>
-                    {error && <p>{error}</p>}
+                    {error && <p className="text-red-500 font-medium text-3xl">{error}</p>}
 
                     {userData && (
                         <>

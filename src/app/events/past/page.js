@@ -6,8 +6,26 @@ import { MapPinIcon } from "@heroicons/react/24/solid";
 import { UserGroupIcon } from "@heroicons/react/24/solid";
 import { TagIcon } from "@heroicons/react/24/solid";
 
+import { concateDate } from "@/src/lib/utils";
+
+const dummyEvents = [
+    {
+        id: 5,
+        title: "Ketupat Cap Go Meh Run 2026",
+        start_date: "2026-03-29",
+        end_date: "2026-03-30",
+        category: "Long Run",
+        img: "/assets/images/ketupat_banner.jpg",
+        eventog: "Samarinda Hash House Harriers",
+        status: "ended",
+
+        price: 900000,
+        slot: 300
+    },
+]
 
 export default function PastEvents() {
+    const event = dummyEvents[0];
     return (
         <Container className="flex flex-col gap-y-4 w-full">
             <Link href="/events" className="static md:absolute">
@@ -15,16 +33,21 @@ export default function PastEvents() {
             </Link>
             <div className="flex items-center justify-center w-full">
                 <h1 className="text-4xl font-bold ">
-                    Borneo Nash Hash 2027
+                    {event.title}
                 </h1>
             </div>
 
-            <div className="flex flex-row justify-center gap-x-2">
-                <MapPinIcon className="w-8 h-8" />
-                <div className="text-lg font-bold">Samarinda, Kalimantan Timur</div>
+            <div className="flex flex-row justify-between gap-x-2">
+                <div className="flex flex-row justify-center gap-x-2">
+                    <MapPinIcon className="w-8 h-8" />
+                    <div className="text-lg font-bold">Samarinda, Kalimantan Timur</div>
+                </div>
+                <div className="flex flex-row gap-x-2">
+                    <div className="text-lg font-bold"> {concateDate(event.start_date, event.end_date)}</div>
+                </div>
             </div>
             <Image
-                src="/assets/images/poster2027.jpg"
+                src={event.img}
                 alt="Logo"
                 width={600}
                 height={450}
@@ -65,7 +88,7 @@ export default function PastEvents() {
                             Category
                         </div>
                         <div className="font-semibold text-3xl">
-                            Long Run
+                            {event.category}
                         </div>
                     </div>
                 </div>

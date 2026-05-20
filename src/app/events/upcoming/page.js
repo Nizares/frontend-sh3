@@ -4,12 +4,14 @@ import Link from "next/link";
 import Form from "next/form";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon } from "@heroicons/react/24/solid";
+import { concateDate } from "@/src/lib/utils";
 
 const dummyEvents = [
     {
         id: "1",
         title: "Borneo Nash Hash 2027",
-        date: "2027-10-23",
+        start_date: "2027-10-23",
+        end_date: "2027-10-24",
         category: "Long Run",
         img: "/assets/images/poster2027.jpg",
         status: "ongoing",
@@ -17,7 +19,6 @@ const dummyEvents = [
 
         price: 900000,
         slot: 300
-
     },
 ]
 export default function UpcomingEvents() {
@@ -38,9 +39,14 @@ export default function UpcomingEvents() {
                 </h1>
             </div>
 
-            <div className="flex flex-row justify-center gap-x-2">
-                <MapPinIcon className="w-8 h-8" />
-                <div className="text-lg font-bold">Samarinda, Kalimantan Timur</div>
+            <div className="flex flex-row justify-between gap-x-2">
+                <div className="flex flex-row justify-center gap-x-2">
+                    <MapPinIcon className="w-8 h-8" />
+                    <div className="text-lg font-bold">Samarinda, Kalimantan Timur</div>
+                </div>
+                <div className="flex flex-row gap-x-2">
+                    <div className="text-lg font-bold"> {concateDate(event.start_date, event.end_date)}</div>
+                </div>
             </div>
             <Image
                 src={event.img}

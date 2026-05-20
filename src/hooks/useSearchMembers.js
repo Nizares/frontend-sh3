@@ -1,57 +1,43 @@
 import Swal from "sweetalert2";
 import { useState } from "react";
-
-const dummyUsers = [
-    { id: "SH3ID000001", name: "Sukoshi Dake", telp_number: "081245121313", email: "sukouko12@gmail.com" },
-    { id: "SH3ID000002", name: "Afureru Antze", telp_number: "081245121445", email: "afureru32@gmail.com" },
-    { id: "SH3ID000003", name: "Ryo Yamada", telp_number: "081245121071", email: "ryobassist67@gmail.com" },
-]
-
+import useAuth from "./useAuth";
 
 export default function useSearchMembers() {
-    const [loading, setLoading] = useState(false);
     const [searchId, setSearchId] = useState("");
+    const { loading, error, login } = useAuth();
 
     function handleChange(e) {
-        setSearchId(e.target.value)
+        setSearchId(e.target.value);
     }
 
     function hidePhone(number, shownNumber = 4) {
-        // return number.slice(0, shownNumber) + '*'.repeat(number.length - shownNumber); // 4 nomor diawal
-        return '*'.repeat(number.length - shownNumber) + number.slice(-shownNumber); // 4 nomor diakhir
+        return '*'.repeat(number.length - shownNumber) + number.slice(-shownNumber);
     }
 
     async function handleSearch(e) {
         e.preventDefault();
-        setLoading(true);
+        if (!searchId) return;
 
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        try {
+        const user = await login(searchId);
 
-            const result = dummyUsers.find((item) => {
-                return item.id.toUpperCase() === searchId.toUpperCase()
-            })
+        if (user) {
             Swal.fire({
                 icon: "success",
                 title: "Data ditemukan!",
                 html: `
-                        <p>ID: ${result.id}</p>
-                        <p>Nama: ${result.name}</p>
-                        <p>Telp: ${hidePhone(result.telp_number, 4)}</p>
-                    `,
+                    <p>ID: ${user.hash_id}</p>
+                    <p>Nama: ${user.name}</p>
+                    <p>Telp: ${hidePhone(user.phone, 4)}</p>
+                `,
             });
-        } catch (err) {
-            console.error(err);
+        } else {
             Swal.fire({
                 icon: "error",
                 title: "Data tidak ditemukan",
                 text: "Pastikan ID yang kamu masukkan sudah benar.",
             });
-        } finally {
-            setLoading(false);
         }
     }
-    return {
-        loading, searchId, setSearchId, handleSearch, handleChange
-    }
+
+    return { loading, searchId, setSearchId, handleSearch, handleChange };
 }

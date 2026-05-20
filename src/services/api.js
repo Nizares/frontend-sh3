@@ -2,8 +2,15 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.API_URL, // ✅ dari .env
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: { "Content-Type": "application/json" },
+});
+
+// Otomatis sisipkan token kalau ada
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
 });
 
 export default api;

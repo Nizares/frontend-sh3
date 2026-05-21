@@ -68,7 +68,10 @@ export default function Events() {
 
   useEffect(() => {
     eventService.getAll()
-      .then(res => setEvents(res.data.data))
+      .then(res => {
+        const data = res.data.data ?? res.data ?? [];
+        setEvents(Array.isArray(data) ? data : []);
+      })
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
   }, []);
@@ -88,6 +91,7 @@ export default function Events() {
           .map(item => (
             <EventCard
               key={item.id}
+              id={item.id}
               title={item.title}
               start_date={item.start_date}
               end_date={item.end_date}
@@ -109,6 +113,7 @@ export default function Events() {
             .map(item => (
               <EventCard
                 key={item.id}
+                id={item.id}
                 title={item.title}
                 start_date={item.start_date}
                 end_date={item.end_date}

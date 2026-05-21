@@ -1,9 +1,8 @@
-// components/ImageUpload.jsx
 "use client"
 import { useState, useRef } from "react"
 import { PhotoIcon } from "@heroicons/react/24/outline"
 
-export default function ImageUpload({ id = "cover_photo", label = "Cover photo", required = false }) {
+export default function ImageUpload({ id = "cover_photo", label = "Cover photo", required = false, onChange }) {
   const [preview, setPreview] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef(null)
@@ -15,6 +14,13 @@ export default function ImageUpload({ id = "cover_photo", label = "Cover photo",
     const reader = new FileReader()
     reader.onload = (e) => setPreview({ url: e.target.result, name: file.name, size: file.size })
     reader.readAsDataURL(file)
+
+    if (onChange) onChange(file) // ← kirim file ke parent
+  }
+
+  const handleRemove = () => {
+    setPreview(null)
+    if (onChange) onChange(null) // ← kasih tau parent file dihapus
   }
 
   const formatSize = (bytes) => {
@@ -48,9 +54,7 @@ export default function ImageUpload({ id = "cover_photo", label = "Cover photo",
           className={`border-2 border-dashed rounded-xl p-10 flex flex-col items-center gap-2 cursor-pointer transition
             ${isDragging ? "border-text-colors bg-indigo-50" : "border-text-colors hover:border-text-colors hover:bg-gray-50"}`}
         >
-          {/* Icon */}
           <PhotoIcon className="w-9 h-9"/>
-
           <p className="text-sm text-text-colors">
             <span className="text-orange-400 font-medium">Upload a file</span> or drag and drop
           </p>
@@ -65,7 +69,7 @@ export default function ImageUpload({ id = "cover_photo", label = "Cover photo",
           </div>
           <button
             type="button"
-            onClick={() => setPreview(null)}
+            onClick={handleRemove} // ← pakai handleRemove
             className="text-text-colors hover:text-red-500 p-1 rounded transition"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">

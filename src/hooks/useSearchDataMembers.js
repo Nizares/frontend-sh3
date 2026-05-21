@@ -18,6 +18,7 @@ export default function useSearchDataMembers() {
 
         if (user) {
             setUserData({
+                id: user.hash_id,
                 name: user.name,
                 email: user.email,
                 telp_number: user.phone,

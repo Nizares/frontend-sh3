@@ -88,6 +88,7 @@ export default function Events() {
 
         {events
           .filter(item => new Date(item.start_date) > now)
+          .slice(0, 3)
           .map(item => (
             <EventCard
               key={item.id}
@@ -110,6 +111,7 @@ export default function Events() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-center">
           {events
             .filter(item => new Date(item.start_date) < now)
+            .slice(0, 4)
             .map(item => (
               <EventCard
                 key={item.id}

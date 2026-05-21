@@ -50,6 +50,11 @@ export default function RegisterEvent() {
 
     async function submitPembayaran(e) {
         e.preventDefault();
+        
+        console.log("Token:", localStorage.getItem("token"));
+        console.log("userData:", userData);
+        console.log("userData.id:", userData?.id);
+        console.log("event.id:", event?.id);
         if (!userData) {
             Swal.fire({ icon: "warning", title: "Cek ID Hash dulu!", text: "Kamu harus cek ID Hash sebelum melanjutkan." });
             return;
@@ -61,9 +66,12 @@ export default function RegisterEvent() {
 
         setSubmitLoading(true);
         try {
+
             // Step 1: Buat order
-            const orderRes = await orderService.create(event.id);
+            console.log("participant_id dikirim:", userData.id);
+            const orderRes = await orderService.create(event.id, userData.id);
             const orderId = orderRes.data.data.id;
+            
 
             // Step 2: Upload bukti bayar
             const formData = new FormData();
@@ -71,15 +79,19 @@ export default function RegisterEvent() {
             formData.append("payment_method", payOptions || "transfer");
             formData.append("amount", event.price);
             formData.append("paid_at", new Date().toISOString().slice(0, 19).replace("T", " "));
+            
+            console.log(formData);
 
+            
             await orderService.uploadPayment(orderId, formData);
-
+            
             Swal.fire({
                 icon: "success",
                 title: "Pendaftaran Berhasil!",
                 text: "Bukti pembayaran kamu sedang diverifikasi.",
             });
         } catch (err) {
+            console.log("Error detail:", err.response?.data?.errors);
             Swal.fire({
                 icon: "error",
                 title: "Gagal!",
@@ -214,7 +226,7 @@ export default function RegisterEvent() {
                     </div>
                     <hr className="border-t-2 border-text-colors" />
                     <SelectInput
-                        id="payoption" name="payoption" label="Payment Options"
+                        id="payoptions" name="payOptions" label="Payment Options"
                         options={paymentOptions} value={payOptions}
                         placehold="Pilih Pembayaran..."
                         onChange={e => setPayOptions(e.target.value)}

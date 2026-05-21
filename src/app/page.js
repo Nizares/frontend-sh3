@@ -57,6 +57,7 @@ export default function Home() {
         ) : (
           events
             .filter(item => new Date(item.start_date) > now)
+            .slice(0, 3)
             .map(item => (
               <EventCard
                 key={item.id}
@@ -80,6 +81,7 @@ export default function Home() {
           ) : (
             events
               .filter(item => new Date(item.start_date) < now)
+              .slice(0, 4)
               .map(item => (
                 <EventCard
                   key={item.id}

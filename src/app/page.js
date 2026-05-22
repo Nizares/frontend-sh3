@@ -8,6 +8,8 @@ import Carousel from "@/src/components/Carousel";
 import EventCard from "@/src/components/EventCard";
 import { eventService } from "@/src/services/eventService";
 
+import { RevealSection } from "../components/RevealSection";
+
 export default function Home() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,13 +26,10 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
-  console.log("1. total events:", events.length)
-  console.log("2. now:", now)
-  console.log("3. setelah filter:", events.filter(item => new Date(item.start_date) > now))
-
   return (
     <Container className="flex flex-col gap-y-16">
-      <div className="flex flex-col flex-1 items-center justify-center p-8">
+      <RevealSection direction="up">
+      <div className="flex flex-col flex-1 items-center justify-center p-8 mt-24">
         <div className="flex flex-col md:flex-row">
           <div className="flex flex-col w-1/2">
             <h1 className="text-5xl font-bold">
@@ -67,6 +66,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+      </RevealSection>
 
       <Carousel />
 
@@ -81,7 +81,8 @@ export default function Home() {
             .filter((item) => new Date(item.start_date) > now)
             .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
             .slice(0, 3)
-            .map((item) => (
+            .map((item, i) => (
+              <RevealSection key={i} direction="up" delay={i * 100}>
               <EventCard
                 key={item.id}
                 id={item.id}
@@ -92,6 +93,7 @@ export default function Home() {
                 img={item.image_url}
                 status={item.status}
               />
+              </RevealSection>
             ))
         )}
       </div>
@@ -106,8 +108,10 @@ export default function Home() {
           ) : (
             events
               .filter((item) => new Date(item.start_date) < now)
+              .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
               .slice(0, 4)
-              .map((item) => (
+              .map((item, i) => (
+                <RevealSection key={i} direction="up" delay={i * 100}>
                 <EventCard
                   key={item.id}
                   id={item.id}
@@ -118,6 +122,7 @@ export default function Home() {
                   img={item.image_url}
                   status={item.status}
                 />
+                </RevealSection>
               ))
           )}
         </div>

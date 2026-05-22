@@ -7,6 +7,7 @@ import useSearchMembers from "@/src/hooks/useSearchMembers";
 import { memberService } from "@/src/services/memberService";
 import ImageUpload from "@/src/components/ImageUpload";
 import Swal from "sweetalert2";
+import { RevealSection } from "@/src/components/RevealSection";
 
 const genderOptions = [
   { value: "male", label: "Laki-laki" },
@@ -93,123 +94,127 @@ export default function Members() {
 
   return (
     <Container className="flex flex-col gap-y-8 w-full">
-      <div className="flex flex-col flex-1 items-center justify-center p-8">
-        <h1 className="text-text-colors text-5xl font-bold">
-          Ayo jadi bagian Kami!
-        </h1>
-      </div>
+      <RevealSection direction="up">
+        <div className="flex flex-col flex-1 items-center justify-center p-8">
+          <h1 className="text-text-colors text-5xl font-bold">
+            Ayo jadi bagian Kami!
+          </h1>
+        </div>
 
-      <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3">
-        <form
-          onSubmit={handleRegister}
-          className="col-span-1 flex flex-col md:col-span-2 gap-4"
-        >
-          <InputType
-            label="Full Name"
-            id="name"
-            required
-            type="text"
-            name="name"
-            placeholder="John Doe"
-            className="flex flex-col gap-2"
-            value={formData.name}
-            onChange={handleFormChange}
-          />
-          <InputType
-            label="Email"
-            id="email"
-            required
-            type="email"
-            name="email"
-            placeholder="you@example.com"
-            className="flex flex-col gap-2"
-            value={formData.email}
-            onChange={handleFormChange}
-          />
-          <InputType
-            label="Nomor Telepon/WA"
-            type="text"
-            id="phone"
-            required
-            name="phone"
-            placeholder="08123456789"
-            className="flex flex-col gap-2"
-            value={formData.phone}
-            onChange={handleFormChange}
-          />
-          <InputType
-            label="Tanggal Lahir"
-            type="date"
-            id="birthdate"
-            required
-            name="birthdate"
-            className="flex flex-col gap-2"
-            value={formData.birthdate}
-            onChange={handleFormChange}
-          />
-          <SelectInput
-            id="gender"
-            name="gender"
-            label="Gender"
-            options={genderOptions}
-            value={gender}
-            placehold="Pilih Gender..."
-            onChange={(e) => setGender(e.target.value)}
-          />
-          <ImageUpload
-            id="photo"
-            label="Foto Profil"
-            onChange={(file) => setPhoto(file)}
-          />
-          <button
-            className={`flex justify-center items-center rounded-2xl ${submitLoading ? "bg-gray-500" : "bg-btn-green-normal hover:bg-btn-green-hover"} active:bg-green-400 h-16 font-bold text-xl text-white m-10 md:text-3xl`}
-            type="submit"
-            disabled={submitLoading}
+        <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3">
+          <form
+            onSubmit={handleRegister}
+            className="col-span-1 flex flex-col md:col-span-2 gap-4"
           >
-            {submitLoading ? "Memproses..." : "Registrasi Member"}
-          </button>
-        </form>
+            <InputType
+              label="Full Name"
+              id="name"
+              required
+              type="text"
+              name="name"
+              placeholder="John Doe"
+              className="flex flex-col gap-2"
+              value={formData.name}
+              onChange={handleFormChange}
+            />
+            <InputType
+              label="Email"
+              id="email"
+              required
+              type="email"
+              name="email"
+              placeholder="you@example.com"
+              className="flex flex-col gap-2"
+              value={formData.email}
+              onChange={handleFormChange}
+            />
+            <InputType
+              label="Nomor Telepon/WA"
+              type="text"
+              id="phone"
+              required
+              name="phone"
+              placeholder="08123456789"
+              className="flex flex-col gap-2"
+              value={formData.phone}
+              onChange={handleFormChange}
+            />
+            <InputType
+              label="Tanggal Lahir"
+              type="date"
+              id="birthdate"
+              required
+              name="birthdate"
+              className="flex flex-col gap-2"
+              value={formData.birthdate}
+              onChange={handleFormChange}
+            />
+            <SelectInput
+              id="gender"
+              name="gender"
+              label="Gender"
+              options={genderOptions}
+              value={gender}
+              placehold="Pilih Gender..."
+              onChange={(e) => setGender(e.target.value)}
+            />
+            <ImageUpload
+              id="photo"
+              label="Foto Profil"
+              onChange={(file) => setPhoto(file)}
+            />
+            <button
+              className={`flex justify-center items-center rounded-2xl ${submitLoading ? "bg-gray-500" : "bg-btn-green-normal hover:bg-btn-green-hover"} active:bg-green-400 h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+              type="submit"
+              disabled={submitLoading}
+            >
+              {submitLoading ? "Memproses..." : "Registrasi Member"}
+            </button>
+          </form>
 
-        <div className="bg-card-bg rounded-lg gap-x-4 p-4 h-96">
-          <div className="flex flex-col">
-            <h3 className="text-2xl font-bold">Benefits Member</h3>
-          </div>
-          <div className="flex flex-col">
-            <ol className="list-decimal list-inside p-2 text-2xl">
-              <li>Mendapatkan Informasi yang Up-to-Date</li>
-              <li>Mendapatkan teman yang banyak</li>
-              <li>Sesi Down-Down setiap event.</li>
-              <li>Lorem Ipsu dolor sir amet.</li>
-              <li>Lorem Ipsu dolor sir amet.</li>
-            </ol>
+          <div className="bg-card-bg rounded-lg gap-x-4 p-4 h-96">
+            <div className="flex flex-col">
+              <h3 className="text-2xl font-bold">Benefits Member</h3>
+            </div>
+            <div className="flex flex-col">
+              <ol className="list-decimal list-inside p-2 text-2xl">
+                <li>Mendapatkan Informasi yang Up-to-Date</li>
+                <li>Mendapatkan teman yang banyak</li>
+                <li>Sesi Down-Down setiap event.</li>
+                <li>Lorem Ipsu dolor sir amet.</li>
+                <li>Lorem Ipsu dolor sir amet.</li>
+              </ol>
+            </div>
           </div>
         </div>
-      </div>
+      </RevealSection>
 
-      {/* Cek Member */}
-      <div className="flex items-center justify-center w-full">
-        <h1 className="text-4xl font-bold m-2">Kamu sudah jadi Member?</h1>
-      </div>
-      <div className="flex flex-col justify-center items-center gap-4">
-        <InputType
-          label="Masukkan ID Hash Kamu"
-          id="hashid"
-          type="text"
-          name="cariid"
-          placeholder="SH3ID000001"
-          className="flex flex-col gap-2"
-          value={searchId}
-          onChange={handleChange}
-        />
-        <button
-          className={`flex justify-center items-center rounded-2xl p-8 ${loading ? "bg-gray-500" : "bg-btn-green-normal"} hover:bg-btn-green-hover active:bg-green-400 h-16 font-bold text-xl text-white m-10 md:text-3xl`}
-          type="button"
-          disabled={loading}
-          onClick={handleSearch}
-        >
-          {loading ? "Mencari..." : "Cek Member"}
-        </button>
-      </div>
+      <RevealSection direction="up">
+        {/* Cek Member */}
+        <div className="flex items-center justify-center w-full">
+          <h1 className="text-4xl font-bold m-2">Kamu sudah jadi Member?</h1>
+        </div>
+        <div className="flex flex-col justify-center items-center gap-4">
+          <InputType
+            label="Masukkan ID Hash Kamu"
+            id="hashid"
+            type="text"
+            name="cariid"
+            placeholder="SH3ID000001"
+            className="flex flex-col gap-2"
+            value={searchId}
+            onChange={handleChange}
+          />
+          <button
+            className={`flex justify-center items-center rounded-2xl p-8 ${loading ? "bg-gray-500" : "bg-btn-green-normal"} hover:bg-btn-green-hover active:bg-green-400 h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+            type="button"
+            disabled={loading}
+            onClick={handleSearch}
+          >
+            {loading ? "Mencari..." : "Cek Member"}
+          </button>
+        </div>
+      </RevealSection>
     </Container>
   );
 }

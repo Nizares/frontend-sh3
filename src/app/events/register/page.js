@@ -42,10 +42,9 @@ export default function RegisterEvent() {
     const selectedBank = paymentOptions.find(p => p.value === payOptions);
     const { loading, id, setId, userData, error, checkTheID } = useSearchDataMembers();
 
-    // Ambil event ID dari URL, contoh: /events/register?id=1
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        const eventId = params.get("id") || 1; // fallback ke 1 sementara
+        const eventId = params.get("id") || 1;
         eventService.getById(eventId)
             .then(res => setEvent(res.data.data))
             .catch(err => console.error(err));
@@ -69,15 +68,11 @@ export default function RegisterEvent() {
 
         setSubmitLoading(true);
         try {
-
-            // Step 1: Buat order
             console.log("participant_id dikirim:", userData.id);
             const orderRes = await orderService.create(event.id, userData.id);
             const orderId = orderRes.data.data.id;
             const { order_id, invoice_number, ticket_code } = orderRes.data.data;
 
-
-            // Step 2: Upload bukti bayar
             const formData = new FormData();
             formData.append("payment_proof", paymentFile);
             formData.append("payment_method", payOptions || "transfer");
@@ -85,7 +80,6 @@ export default function RegisterEvent() {
             formData.append("paid_at", new Date().toISOString().slice(0, 19).replace("T", " "));
 
             console.log(formData);
-
 
             await orderService.uploadPayment(orderId, formData);
 
@@ -113,7 +107,7 @@ export default function RegisterEvent() {
     if (!event) return <div className="flex justify-center p-16 text-2xl">Loading...</div>;
 
     return (
-        <Container className="flex flex-col gap-y-4 w-full">
+        <Container className="flex flex-col gap-y-4 w-full px-4 md:px-0">
             <RevealSection direction="up">
                 <div className="flex flex-col gap-y-4 mt-8">
                     <Link href="/events" className="static md:absolute">
@@ -205,15 +199,18 @@ export default function RegisterEvent() {
                         {userData && (
                             <RevealSection direction="up">
                                 <>
-                                    <InputType label="Full Name" id="name" required type="text" name="fullname"
-                                        placeholder="John Doe" className="flex flex-col gap-2"
-                                        value={userData.name} readOnly />
-                                    <InputType label="Email" id="email" required type="email" name="email"
-                                        placeholder="you@example.com" className="flex flex-col gap-2"
-                                        value={userData.email} readOnly />
-                                    <InputType label="Nomor Telepon/WA" type="text" id="telpnumber" required
-                                        name="telpnumber" placeholder="08123456789" className="flex flex-col gap-2"
-                                        value={userData.telp_number} readOnly />
+                                    <div className="flex flex-col gap-2">
+                                        <InputType label="Full Name" id="name" required type="text" name="fullname"
+                                            placeholder="John Doe" className="flex flex-col gap-2"
+                                            value={userData.name} readOnly />
+                                        <InputType label="Email" id="email" required type="email" name="email"
+                                            placeholder="you@example.com" className="flex flex-col gap-2"
+                                            value={userData.email} readOnly />
+                                        <InputType label="Nomor Telepon/WA" type="text" id="telpnumber" required
+                                            name="telpnumber" placeholder="08123456789" className="flex flex-col gap-2"
+                                            value={userData.telp_number} readOnly />
+                                    </div>
+
                                 </>
                             </RevealSection>
                         )}
@@ -268,7 +265,7 @@ export default function RegisterEvent() {
                                     </div>
                                 )}
                                 <div className="text-2xl font-bold m-8">atau</div>
-                                <Image src="/assets/images/qris.jpeg" alt="QRIS" width={450} height={600} className="flex object-cover rounded-lg items-center justify-center" />
+                                <Image src="/assets/images/qris.jpeg" alt="QRIS" width={450} height={600} className="w-full max-w-sm flex object-cover rounded-lg items-center justify-center" />
                             </div>
                         </div>
 
@@ -281,7 +278,7 @@ export default function RegisterEvent() {
                                 id="paymentproof"
                                 label="Payment Proof"
                                 required
-                                onChange={file => setPaymentFile(file)} // ← pastikan ImageUpload support ini
+                                onChange={file => setPaymentFile(file)}
                             />
                         </div>
 
@@ -318,8 +315,6 @@ export default function RegisterEvent() {
                 )
             }
 
-
-
-        </Container >
+        </Container>
     );
 }

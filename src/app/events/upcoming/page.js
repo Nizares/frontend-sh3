@@ -17,14 +17,27 @@ export default function UpcomingEvents({ }) {
 
     useEffect(() => {
         const eventId = searchParams.get("id") ?? 1;
-        eventService.getById(eventId)
-            .then(res => setEvent(res.data.data))
-            .catch(err => console.error(err));
+
+        Promise.all([
+            eventService.getById(eventId),
+            eventService.getMyEvents()
+        ]).then(([eventRes, myEventsRes]) => {
+            const eventData = eventRes.data.data;
+            const myEvents = myEventsRes.data.data;
+
+            const myOrder = myEvents.find(e => e.id == eventId);
+            eventData.order = myOrder?.order ?? null;
+
+            setEvent(eventData);
+        }).catch(err => console.error(err));
     }, []);
 
     const formatRupiah = (angka) => new Intl.NumberFormat("id-ID").format(angka);
 
+
+
     if (!event) return <div className="flex justify-center p-16 text-2xl">Loading...</div>;
+    console.log(event);
 
     return (
         <Container className="flex flex-col gap-y-4 w-full">
@@ -37,7 +50,7 @@ export default function UpcomingEvents({ }) {
                         <h1 className="text-4xl font-bold">{event.title}</h1>
                     </div>
 
-                    <div className="flex flex-row justify-between gap-x-2">
+                    <div className="flex flex-col justify-between gap-2 md:flex-row">
                         <div className="flex flex-row justify-center gap-x-2">
                             <MapPinIcon className="w-8 h-8" />
                             <div className="text-lg font-bold">{event.location}</div>
@@ -58,7 +71,7 @@ export default function UpcomingEvents({ }) {
             </RevealSection>
 
             <RevealSection direction="up" delay="100">
-                <div className="grid grid-rows-2 gap-x-16 md:grid-cols-3 mt-8">
+                <div className="flex flex-col gap-x-16 md:grid md:grid-cols-3 mt-8">
                     <div className="col-span-1 flex flex-col md:col-span-2">
                         <h2 className="text-2xl font-bold">Tentang Event</h2>
                         <div className="text-sm">{event.description}</div>
@@ -67,8 +80,17 @@ export default function UpcomingEvents({ }) {
                                 Daftar Sekarang
                             </div>
                         </Link>
+
+                        {event.order?.status === 'paid' || event.order?.status === 'free' ? (
+                            <Link href={`/events/members?id=${event.id}`}>
+                                <div className="flex justify-center items-center rounded-2xl bg-gray-200 font-bold text-2xl text-text-colors hover:bg-gray-400 m-10 md:text-5xl active:bg-gray-400 p-8">
+                                    Lihat Peserta
+                                </div>
+                            </Link>
+                        ) : null}
+
                     </div>
-                    <div className="bg-card-bg rounded-lg gap-x-4 p-4">
+                    <div className="bg-card-bg rounded-lg gap-x-4 p-4 h-fit">
                         <div className="flex flex-col">
                             <h3 className="text-2xl font-bold">Early Bid</h3>
                             <div className="text-sm line-through">Rp. 1.400.000</div>

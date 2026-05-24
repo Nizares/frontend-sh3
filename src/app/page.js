@@ -31,7 +31,7 @@ export default function Home() {
       <RevealSection direction="up">
       <div className="flex flex-col flex-1 items-center justify-center p-8 mt-24">
         <div className="flex flex-col md:flex-row">
-          <div className="flex flex-col w-1/2">
+          <div className="flex flex-col w-full md:w-1/2">
             <h1 className="text-5xl font-bold">
               Samarinda <span className="text-text-oranges">Hash </span>House Harriers
             </h1>
@@ -40,7 +40,7 @@ export default function Home() {
               A Drinking Club With a Running Problem,
               Kami mengadakan lari mingguan di berbagai sudut kota dan alam Kalimantan, dilanjutkan dengan sesi down-down yang penuh keceriaan.
               </p>
-            <div className="flex flex-row">
+            <div className="flex flex-row flex-wrap">
               <Link
                 href="/about"
                 className="bg-btn-green-normal text-white px-6 py-2.5 m-5 rounded-full font-medium hover:bg-btn-green-hover active:bg-btn-green-active transition-colors"
@@ -55,7 +55,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="flex flex-col p-8 w-1/2 items-center">
+          <div className="flex flex-col p-8 w-full md:w-1/2 items-center">
             <Image
               src="/assets/images/sh3logo.png"
               alt="Logo"

@@ -4,7 +4,7 @@ export default function Footer() {
     return (
         <div className="flex items-center justify-center w-full bg-card-bg h-auto p-8 mt-8">
             <div className="flex flex-col md:flex-row max-w-306 gap-8">
-                <div className="flex flex-col justify-center w-lg gap-4">
+                <div className="flex flex-col justify-center w-full md:w-lg gap-4">
                     <div className="flex items-center gap-2">
                         <span className="text-4xl font-bold text-[#B57506]">#</span>
                         <div>

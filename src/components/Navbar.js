@@ -35,11 +35,10 @@ export default function Navbar() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className={`transition-colors hover:text-[#C9A84C] ${
-                  isActive(item.href)
+                className={`transition-colors hover:text-[#C9A84C] ${isActive(item.href)
                     ? "text-[#C9A84C] border-b-2 border-[#C9A84C] pb-0.5" // ← aktif
                     : "text-gray-700" // ← tidak aktif
-                }`}
+                  }`}
               >
                 {item.label}
               </Link>
@@ -48,12 +47,22 @@ export default function Navbar() {
         </ul>
 
         {/* Tombol Login */}
-        <Link
-          href="/members"
-          className="hidden md:block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white px-6 py-2.5 rounded-full font-medium transition-colors"
-        >
-          Registrasi Member
-        </Link>
+        <div className="flex gap-4">
+          <Link
+            href="/members/register"
+            className="hidden md:block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white px-6 py-2.5 rounded-full font-medium transition-colors"
+          >
+            Registrasi Member
+          </Link>
+
+          <Link
+            href="/members/detail"
+            className="hidden md:block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white px-6 py-2.5 rounded-full font-medium transition-colors"
+          >
+            Sudah jadi Member?
+          </Link>
+        </div>
+
 
         {/* Burger Button */}
         <button
@@ -74,28 +83,32 @@ export default function Navbar() {
             { href: "/", label: "Home" },
             { href: "/about", label: "About" },
             { href: "/events", label: "Events" },
-            { href: "/members", label: "Members" },
             { href: "/gallery", label: "Gallery" },
           ].map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
-                className={`block transition-colors hover:text-[#C9A84C] ${
-                  isActive(item.href)
+                className={`block transition-colors hover:text-[#C9A84C] ${isActive(item.href)
                     ? "text-[#C9A84C] font-medium"
                     : "text-gray-700"
-                }`}
+                  }`}
               >
                 {item.label}
               </Link>
             </li>
           ))}
-          <li>
+          <li className="flex flex-col gap-4">
             <Link
-              href="/members"
+              href="/members/register"
               className="block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white text-center px-6 py-2.5 rounded-full font-medium transition-colors"
             >
               Registrasi Member
+            </Link>
+            <Link
+              href="/members/detail"
+              className="block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white text-center px-6 py-2.5 rounded-full font-medium transition-colors"
+            >
+              Sudah jadi Member?
             </Link>
           </li>
         </ul>

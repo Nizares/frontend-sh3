@@ -3,7 +3,6 @@ import Container from "@/src/components/Container";
 import InputType from "@/src/components/Inputs";
 import SelectInput from "@/src/components/SelectInput";
 import { useState } from "react";
-import useSearchMembers from "@/src/hooks/useSearchMembers";
 import { memberService } from "@/src/services/memberService";
 import ImageUpload from "@/src/components/ImageUpload";
 import Swal from "sweetalert2";
@@ -25,8 +24,6 @@ export default function Members() {
     birthdate: "",
   });
 
-  const { loading, searchId, setSearchId, handleSearch, handleChange } =
-    useSearchMembers();
 
   function handleFormChange(e) {
     setFormData((prev) => ({
@@ -38,14 +35,8 @@ export default function Members() {
   async function handleRegister(e) {
     e.preventDefault();
 
-    if (!gender) {
-      Swal.fire({ icon: "warning", title: "Pilih gender dulu!" });
-      return;
-    }
-
     setSubmitLoading(true);
     try {
-      // Pakai FormData karena ada kemungkinan upload photo
       const form = new FormData();
       form.append("name", formData.name);
       form.append("email", formData.email);
@@ -57,27 +48,71 @@ export default function Members() {
       }
 
       const res = await memberService.register(form);
-      const { participant } = res.data.data; // ← sesuai response backend
+      const { participant } = res.data.data;
 
       Swal.fire({
         icon: "success",
         title: "Registrasi Berhasil!",
         html: `
-                <p>Selamat datang, <strong>${participant.name}</strong>!</p>
-                <p>Hash ID kamu:</p>
-                <h2 style="font-size:2rem;font-weight:bold;color:#00973D">${participant.hash_id}</h2>
-                <p style="font-size:0.8rem">Simpan Hash ID ini untuk login dan daftar event.</p>
-            `,
+        <p>Selamat datang, <strong>${participant.name}</strong>!</p>
+        <p>Hash ID kamu:</p>
+        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:8px 0">
+            <h2 id="hash-id-text" style="font-size:2rem;font-weight:bold;color:#00973D;margin:0">
+                ${participant.hash_id}
+            </h2>
+            <button 
+                id="copy-btn"
+                style="
+                    background:none;
+                    border:1px solid #00973D;
+                    border-radius:8px;
+                    padding:4px 8px;
+                    cursor:pointer;
+                    color:#00973D;
+                    font-size:0.8rem;
+                    transition:all 0.2s;
+                "
+            >
+                📋 Copy
+            </button>
+        </div>
+        <p style="font-size:0.8rem;color:gray">Simpan Hash ID ini untuk login dan daftar event.</p>
+    `,
+        didOpen: () => {
+          const copyBtn = document.getElementById("copy-btn");
+          const hashIdText = document.getElementById("hash-id-text");
+
+          copyBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(hashIdText.innerText).then(() => {
+              copyBtn.innerText = "✅ Copied!";
+              copyBtn.style.borderColor = "gray";
+              copyBtn.style.color = "gray";
+
+              setTimeout(() => {
+                copyBtn.innerText = "📋 Copy";
+                copyBtn.style.borderColor = "#00973D";
+                copyBtn.style.color = "#00973D";
+              }, 2000);
+            });
+          });
+        }
       });
 
-      // Simpan token langsung supaya user tidak perlu login lagi
       localStorage.setItem("token", res.data.data.token);
       localStorage.setItem("user", JSON.stringify(participant));
 
-      // Reset form
       setFormData({ name: "", email: "", phone: "", birthdate: "" });
       setGender("");
     } catch (err) {
+
+      if (!formData.name || !formData.email || !formData.birthdate) {
+        Swal.fire({ icon: "warning", title: "Pastikan Datanya terisi semua!" });
+        return;
+      }
+      if (!gender) {
+        Swal.fire({ icon: "warning", title: "Pilih gender dulu!" });
+        return;
+      }
       const message =
         err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
       const errors = err.response?.data?.errors;
@@ -93,7 +128,7 @@ export default function Members() {
   }
 
   return (
-    <Container className="flex flex-col gap-y-8 w-full">
+    <Container className="flex flex-col gap-y-8 w-full px-4 md:px-0">
       <RevealSection direction="up">
         <div className="flex flex-col flex-1 items-center justify-center p-8">
           <h1 className="text-text-colors text-5xl font-bold">
@@ -101,7 +136,7 @@ export default function Members() {
           </h1>
         </div>
 
-        <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3">
+        <div className="flex flex-col gap-x-16 md:grid md:grid-cols-3">
           <form
             onSubmit={handleRegister}
             className="col-span-1 flex flex-col md:col-span-2 gap-4"
@@ -172,7 +207,7 @@ export default function Members() {
             </button>
           </form>
 
-          <div className="bg-card-bg rounded-lg gap-x-4 p-4 h-96">
+          <div className="bg-card-bg rounded-lg gap-x-4 p-4 h-fit">
             <div className="flex flex-col">
               <h3 className="text-2xl font-bold">Benefits Member</h3>
             </div>
@@ -186,33 +221,6 @@ export default function Members() {
               </ol>
             </div>
           </div>
-        </div>
-      </RevealSection>
-
-      <RevealSection direction="up">
-        {/* Cek Member */}
-        <div className="flex items-center justify-center w-full">
-          <h1 className="text-4xl font-bold m-2">Kamu sudah jadi Member?</h1>
-        </div>
-        <div className="flex flex-col justify-center items-center gap-4">
-          <InputType
-            label="Masukkan ID Hash Kamu"
-            id="hashid"
-            type="text"
-            name="cariid"
-            placeholder="SH3ID000001"
-            className="flex flex-col gap-2"
-            value={searchId}
-            onChange={handleChange}
-          />
-          <button
-            className={`flex justify-center items-center rounded-2xl p-8 ${loading ? "bg-gray-500" : "bg-btn-green-normal"} hover:bg-btn-green-hover active:bg-green-400 h-16 font-bold text-xl text-white m-10 md:text-3xl`}
-            type="button"
-            disabled={loading}
-            onClick={handleSearch}
-          >
-            {loading ? "Mencari..." : "Cek Member"}
-          </button>
         </div>
       </RevealSection>
     </Container>

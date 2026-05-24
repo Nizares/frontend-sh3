@@ -34,7 +34,7 @@ export default function About() {
                             Samarinda Hash House Harriers (SH3) adalah komunitas lari sosial yang berdiri di Samarinda, Kalimantan Timur. Kami mengadakan lari mingguan di berbagai sudut kota dan alam Kalimantan, dilanjutkan dengan sesi down-down yang penuh keceriaan.
                         </p>
                         <p className="text-gray-800 leading-relaxed font-medium">
-                            Dengan 4.200+ member terdaftar dan rata-rata 250 pelari aktif setiap minggunya, SH3 adalah salah satu Hash chapter terbesar di Kalimantan. Terbuka untuk semua kalangan — On On!
+                            Dengan 4.200+ member terdaftar dan rata-rata 250 pelari aktif setiap minggunya, SH3 adalah salah satu Hash chapter terbesar di Kalimantan. Terbuka untuk semua kalangan — On On!
                         </p>
 
                     </div>
@@ -42,7 +42,7 @@ export default function About() {
             </RevealSection>
 
             <RevealSection direction="up">
-                <div className="flex flex-col items-center gap-x-8 text-white bg-[#E29208] md:flex-row">
+                <div className="flex flex-col items-center gap-x-8 p-6 text-white bg-[#E29208] md:flex-row md:justify-around">
                     <div className="flex flex-row items-center">
                         <FireIcon className="w-24 h-24 md:w-48 md:h-48" />
                         <div className="flex flex-col gap-2">

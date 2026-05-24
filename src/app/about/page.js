@@ -42,7 +42,7 @@ export default function About() {
             </RevealSection>
 
             <RevealSection direction="up">
-                <div className="flex flex-col items-center gap-x-8 p-6 text-white bg-[#E29208] md:flex-row md:justify-around">
+                <div className="flex flex-col items-center gap-x-8 p-6 text-white bg-text-oranges md:flex-row md:justify-around">
                     <div className="flex flex-row items-center">
                         <FireIcon className="w-24 h-24 md:w-48 md:h-48" />
                         <div className="flex flex-col gap-2">

@@ -99,10 +99,10 @@ export default function EventMembers() {
                                     alt={member.name}
                                     width={40}
                                     height={40}
-                                    className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                                    className="w-10 h-10 rounded-full object-cover shrink-0"
                                 />
                             ) : (
-                                <div className="w-10 h-10 rounded-full bg-[#00973D]/10 flex items-center justify-center flex-shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-[#00973D]/10 flex items-center justify-center shrink-0">
                                     <span className="text-[#00973D] font-bold text-base">
                                         {member.name.charAt(0).toUpperCase()}
                                     </span>

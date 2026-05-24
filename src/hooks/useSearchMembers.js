@@ -10,7 +10,7 @@ export default function useSearchMembers() {
         setSearchId(e.target.value);
     }
 
-    function hidePhone(number, shownNumber = 4) {
+    function hidePhone(number, shownNumber = 2) {
         return '*'.repeat(number.length - shownNumber) + number.slice(-shownNumber);
     }
 
@@ -27,7 +27,7 @@ export default function useSearchMembers() {
                 html: `
                     <p>ID: ${user.hash_id}</p>
                     <p>Nama: ${user.name}</p>
-                    <p>Telp: ${hidePhone(user.phone, 4)}</p>
+                    <p>Telp: ${hidePhone(user.phone, 2)}</p>
                 `,
             });
         } else {

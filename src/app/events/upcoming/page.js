@@ -58,7 +58,7 @@ export default function UpcomingEvents({ }) {
             </RevealSection>
 
             <RevealSection direction="up" delay="100">
-                <div className="grid grid-rows-2 gap-x-16 md:grid-cols-3">
+                <div className="grid grid-rows-2 gap-x-16 md:grid-cols-3 mt-8">
                     <div className="col-span-1 flex flex-col md:col-span-2">
                         <h2 className="text-2xl font-bold">Tentang Event</h2>
                         <div className="text-sm">{event.description}</div>

@@ -36,8 +36,8 @@ export default function Navbar() {
               <Link
                 href={item.href}
                 className={`transition-colors hover:text-[#C9A84C] ${isActive(item.href)
-                    ? "text-[#C9A84C] border-b-2 border-[#C9A84C] pb-0.5" // ← aktif
-                    : "text-gray-700" // ← tidak aktif
+                  ? "text-[#C9A84C] border-b-2 border-[#C9A84C] pb-0.5" // ← aktif
+                  : "text-gray-700" // ← tidak aktif
                   }`}
               >
                 {item.label}
@@ -48,6 +48,7 @@ export default function Navbar() {
 
         {/* Tombol Login */}
         <div className="flex gap-4">
+
           <Link
             href="/members/register"
             className="hidden md:block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white px-6 py-2.5 rounded-full font-medium transition-colors"
@@ -60,6 +61,12 @@ export default function Navbar() {
             className="hidden md:block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white px-6 py-2.5 rounded-full font-medium transition-colors"
           >
             Sudah jadi Member?
+          </Link>
+          <Link
+            href="https://samarindahashhouseharriers.com/bnh2027/"
+            className="block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white text-center px-6 py-2.5 rounded-full font-medium transition-colors"
+          >
+            BNH 2027
           </Link>
         </div>
 
@@ -89,8 +96,8 @@ export default function Navbar() {
               <Link
                 href={item.href}
                 className={`block transition-colors hover:text-[#C9A84C] ${isActive(item.href)
-                    ? "text-[#C9A84C] font-medium"
-                    : "text-gray-700"
+                  ? "text-[#C9A84C] font-medium"
+                  : "text-gray-700"
                   }`}
               >
                 {item.label}
@@ -109,6 +116,12 @@ export default function Navbar() {
               className="block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white text-center px-6 py-2.5 rounded-full font-medium transition-colors"
             >
               Sudah jadi Member?
+            </Link>
+            <Link
+              href="https://samarindahashhouseharriers.com/bnh2027/"
+              className="block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white text-center px-6 py-2.5 rounded-full font-medium transition-colors"
+            >
+              BNH2027
             </Link>
           </li>
         </ul>

@@ -1,9 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-poppins), sans-serif;
+  /* --font-sans: var(--font-poppins), sans-serif; */
+  --font-sans: 'Lora', Georgia, serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-italic: 'DM Serif Display', Georgia, serif;
 
-  --color-bg-colors: #FCF4E6;
+  --color-bg-colors: #F5EDD8;
   --color-text-colors: #1D242D;
   --color-text-oranges: #E29208;
 

@@ -6,6 +6,7 @@ import "./globals.css";
 import Container from "@/src/components/Container";
 import Carousel from "@/src/components/Carousel";
 import EventCard from "@/src/components/EventCard";
+import TotalStatistic from "../components/TotalStatistics";
 import { eventService } from "@/src/services/eventService";
 
 import { RevealSection } from "../components/RevealSection";
@@ -66,6 +67,10 @@ export default function Home() {
           </div>
         </div>
       </div>
+      </RevealSection>
+
+      <RevealSection direction="up">
+          <TotalStatistic />
       </RevealSection>
 
       <Carousel />

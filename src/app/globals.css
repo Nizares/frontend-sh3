@@ -1,16 +1,20 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap'); */
 @import "tailwindcss";
+
 
 @theme {
   /* --font-sans: var(--font-poppins), sans-serif; */
-  --font-sans: 'Lora', Georgia, serif;
+  /* --font-sans: 'Lora', Georgia, serif;
   --font-display: 'Playfair Display', Georgia, serif;
-  --font-italic: 'DM Serif Display', Georgia, serif;
+  --font-italic: 'DM Serif Display', Georgia, serif; */
+  /* --font-sans: 'Crimson Text', monospace; */
 
-  --color-bg-colors: #F5EDD8;
+  --color-bg-colors: #f6efe4;
+  --color-bg-bright-color: #fcfaf6;
   --color-text-colors: #1D242D;
-  --color-text-oranges: #E29208;
+  --color-text-oranges: #5F5242;
 
-  --color-btn-green-normal: #2D6A4F;
+  --color-btn-green-normal: #A1402A;
   --color-btn-green-hover: #245a42;
   --color-btn-green-active: #245a42;
 

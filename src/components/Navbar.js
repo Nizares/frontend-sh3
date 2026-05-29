@@ -12,7 +12,7 @@ export default function Navbar() {
   const isActive = (href) => pathname === href
 
   return (
-    <nav className="bg-[#F5F0E8] px-8 py-4 shadow-sm sticky top-0 left-0 w-full z-50 ">
+    <nav className="bg-bg-bright-color px-8 py-4 shadow-sm sticky top-0 left-0 w-full z-50 ">
       <div className="flex items-center justify-between">
 
         {/* Logo */}

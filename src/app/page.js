@@ -30,7 +30,7 @@ export default function Home() {
   return (
     <Container className="flex flex-col gap-y-16">
       <RevealSection direction="up">
-      <div className="flex flex-col flex-1 items-center justify-center p-8 mt-24">
+      <div className="flex flex-col flex-1 items-center justify-center mt-24 p-8">
         <div className="flex flex-col md:flex-row">
           <div className="flex flex-col w-full md:w-1/2">
             <h1 className="text-5xl font-bold">
@@ -62,7 +62,7 @@ export default function Home() {
               alt="Logo"
               width={250}
               height={250}
-              className="w-40 h-40 md:w-64 md:h-64 lg:w-64 lg:h-64 object-cover rounded-lg"
+              className="object-cover rounded-lg"
             />
           </div>
         </div>

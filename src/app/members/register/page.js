@@ -128,7 +128,7 @@ export default function Members() {
   }
 
   return (
-    <Container className="flex flex-col gap-y-8 w-full px-4 md:px-0">
+    <Container className="flex flex-col gap-y-8 w-full px-4 md:px-0 max-w-306 mx-auto">
       <RevealSection direction="up">
         <div className="flex flex-col flex-1 items-center justify-center p-8">
           <h1 className="text-text-colors text-5xl font-bold">

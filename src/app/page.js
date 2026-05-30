@@ -7,6 +7,7 @@ import Container from "@/src/components/Container";
 import Carousel from "@/src/components/Carousel";
 import EventCard from "@/src/components/EventCard";
 import TotalStatistic from "../components/TotalStatistics";
+import LinkButton from "../components/LinkButton";
 import { eventService } from "@/src/services/eventService";
 
 import { RevealSection } from "../components/RevealSection";
@@ -30,30 +31,28 @@ export default function Home() {
   return (
     <Container className="flex flex-col gap-y-16">
       <RevealSection direction="up">
-      <div className="flex flex-col flex-1 items-center justify-center mt-24 p-8">
+      <div className="flex flex-col flex-1 items-center justify-center mt-24 p-8 max-w-306 mx-auto">
         <div className="flex flex-col md:flex-row">
           <div className="flex flex-col w-full md:w-1/2">
-            <h1 className="text-5xl font-bold">
-              Samarinda <span className="text-text-oranges">Hash </span>House Harriers
+            <h1 className="text-5xl font-bold font-young text-neutral-normal">
+              Samarinda <span className="text-secondary-text">Hash </span> <br className="hidden sm:inline"/>
+              House Harriers
             </h1>
-            <h2 className="text-3xl font-semibold">On On!</h2>
+            <h2 className="text-3xl font-semibold font-young text-neutral-light-active">On On!</h2>
             <p className="py-5">
               A Drinking Club With a Running Problem,
               Kami mengadakan lari mingguan di berbagai sudut kota dan alam Kalimantan, dilanjutkan dengan sesi down-down yang penuh keceriaan.
               </p>
             <div className="flex flex-row flex-wrap">
-              <Link
-                href="/about"
-                className="bg-btn-green-normal text-white px-6 py-2.5 m-5 rounded-full font-medium hover:bg-btn-green-hover active:bg-btn-green-active transition-colors"
-              >
-                Tentang Kami
-              </Link>
-              <Link
-                href="/events"
-                className="bg-btn-green-normal text-white px-6 py-2.5 m-5 rounded-full font-medium hover:bg-btn-green-hover active:bg-btn-green-active transition-colors"
-              >
-                Events
-              </Link>
+              <LinkButton
+              destination="/about"
+              text="About"
+              />
+              <LinkButton
+              destination="/events"
+              text="Events"
+              />
+              
             </div>
           </div>
           <div className="flex flex-col p-8 w-full md:w-1/2 items-center">
@@ -75,10 +74,10 @@ export default function Home() {
 
       <Carousel />
 
-      <h2 className="text-5xl font-bold flex justify-center">
+      <h2 className="text-4xl font-bold flex justify-center font-young">
         Event yang Akan Datang
       </h2>
-      <div className="flex md:flex-row justify-center gap-8 flex-col items-center">
+      <div className="flex md:flex-row justify-center gap-8 flex-col items-center max-w-306 mx-auto">
         {loading ? (
           <p className="text-xl">Loading...</p>
         ) : (
@@ -103,11 +102,11 @@ export default function Home() {
         )}
       </div>
 
-      <h2 className="text-5xl font-bold flex justify-center">
+      <h2 className="text-4xl font-bold flex justify-center font-young">
         Event yang Sudah Selesai
       </h2>
       <div className="flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-center max-w-306 mx-auto">
           {loading ? (
             <p className="text-xl">Loading...</p>
           ) : (

@@ -2,22 +2,21 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { usePathname } from "next/navigation" // ← tambah ini
+import { usePathname } from "next/navigation"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const pathname = usePathname() // ← berisi path halaman aktif, misal "/about"
+  const pathname = usePathname()
 
-  // fungsi untuk cek apakah link aktif
   const isActive = (href) => pathname === href
 
   return (
-    <nav className="bg-bg-bright-color px-8 py-4 shadow-sm sticky top-0 left-0 w-full z-50 ">
+    <nav className="bg-primary-light px-8 py-4 shadow-sm sticky top-0 left-0 w-full z-50">
       <div className="flex items-center justify-between">
 
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <span className="text-4xl font-bold text-[#B57506]">#</span>
+          <span className="text-4xl font-bold text-secondary-text">#</span>
           <div>
             <p className="font-bold text-gray-800 leading-tight">Samarinda Hash</p>
             <p className="text-xs text-gray-500">House Harriers</p>
@@ -35,10 +34,11 @@ export default function Navbar() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className={`transition-colors hover:text-[#C9A84C] ${isActive(item.href)
-                  ? "text-[#C9A84C] border-b-2 border-[#C9A84C] pb-0.5" // ← aktif
-                  : "text-gray-700" // ← tidak aktif
-                  }`}
+                className={`transition-colors hover:text-secondary-text ${
+                  isActive(item.href)
+                    ? "text-secondary-text border-b-2 border-secondary-text pb-0.5"
+                    : "text-neutral-text"
+                }`}
               >
                 {item.label}
               </Link>
@@ -46,30 +46,27 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Tombol Login */}
-        <div className="flex gap-4">
-
+        {/* Tombol Login - HANYA desktop */}
+        <div className="hidden md:flex gap-4">
           <Link
             href="/members/register"
-            className="hidden md:block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white px-6 py-2.5 rounded-full font-medium transition-colors"
+            className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young"
           >
             Registrasi Member
           </Link>
-
           <Link
             href="/members/detail"
-            className="hidden md:block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white px-6 py-2.5 rounded-full font-medium transition-colors"
+            className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young"
           >
             Sudah jadi Member?
           </Link>
           <Link
             href="https://samarindahashhouseharriers.com/bnh2027/"
-            className="block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white text-center px-6 py-2.5 rounded-full font-medium transition-colors"
+            className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young"
           >
             BNH 2027
           </Link>
         </div>
-
 
         {/* Burger Button */}
         <button
@@ -95,33 +92,36 @@ export default function Navbar() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className={`block transition-colors hover:text-[#C9A84C] ${isActive(item.href)
-                  ? "text-[#C9A84C] font-medium"
-                  : "text-gray-700"
-                  }`}
+                className={`block transition-colors hover:text-secondary-text ${
+                  isActive(item.href)
+                    ? "text-secondary-text font-medium"
+                    : "text-neutral-text"
+                }`}
               >
                 {item.label}
               </Link>
             </li>
           ))}
-          <li className="flex flex-col gap-4">
+
+          {/* 3 Tombol di dalam burger */}
+          <li className="flex flex-col gap-3 pt-2 border-t border-gray-200">
             <Link
               href="/members/register"
-              className="block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white text-center px-6 py-2.5 rounded-full font-medium transition-colors"
+              className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young text-center"
             >
               Registrasi Member
             </Link>
             <Link
               href="/members/detail"
-              className="block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white text-center px-6 py-2.5 rounded-full font-medium transition-colors"
+              className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young text-center"
             >
               Sudah jadi Member?
             </Link>
             <Link
               href="https://samarindahashhouseharriers.com/bnh2027/"
-              className="block bg-btn-green-normal active:to-btn-green-active hover:to-btn-green-hover text-white text-center px-6 py-2.5 rounded-full font-medium transition-colors"
+              className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young text-center"
             >
-              BNH2027
+              BNH 2027
             </Link>
           </li>
         </ul>

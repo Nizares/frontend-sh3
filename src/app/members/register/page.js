@@ -131,7 +131,7 @@ export default function Members() {
     <Container className="flex flex-col gap-y-8 w-full px-4 md:px-0 max-w-306 mx-auto">
       <RevealSection direction="up">
         <div className="flex flex-col flex-1 items-center justify-center p-8">
-          <h1 className="text-text-colors text-5xl font-bold">
+          <h1 className="text-text-colors text-5xl font-bold font-young">
             Ayo jadi bagian Kami!
           </h1>
         </div>
@@ -199,7 +199,7 @@ export default function Members() {
               onChange={(file) => setPhoto(file)}
             />
             <button
-              className={`flex justify-center items-center rounded-2xl ${submitLoading ? "bg-gray-500" : "bg-btn-green-normal hover:bg-btn-green-hover"} active:bg-green-400 h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+              className={`flex justify-center items-center rounded-2xl ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl font-young`}
               type="submit"
               disabled={submitLoading}
             >
@@ -207,9 +207,9 @@ export default function Members() {
             </button>
           </form>
 
-          <div className="bg-card-bg rounded-lg gap-x-4 p-4 h-fit">
+          <div className="bg-primary-bg rounded-lg gap-x-4 p-4 h-fit">
             <div className="flex flex-col">
-              <h3 className="text-2xl font-bold">Benefits Member</h3>
+              <h3 className="text-2xl font-bold font-young">Benefits Member</h3>
             </div>
             <div className="flex flex-col">
               <ol className="list-decimal list-inside p-2 text-2xl">

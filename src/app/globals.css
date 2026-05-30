@@ -1,14 +1,97 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap'); */
+
 @import "tailwindcss";
 
 
 @theme {
-  /* --font-sans: var(--font-poppins), sans-serif; */
-  /* --font-sans: 'Lora', Georgia, serif;
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-italic: 'DM Serif Display', Georgia, serif; */
-  /* --font-sans: 'Crimson Text', monospace; */
+  --font-young: var(--font-young), serif;
 
+  /* Colors */
+  --color-primary-light: #fcfaf6;
+  --color-primary-light-hover: #fbf7f2;
+  --color-primary-light-active: #f6efe4;
+  
+  --color-primary-normal: #e2caa7;
+  --color-primary-normal-hover: #cbb696;
+  --color-primary-normal-active: #b5a286;
+
+  --color-primary-dark: #aa987d;
+  --color-primary-dark-hover: #887964;
+  --color-primary-dark-active: #665b4b;
+  --color-primary-darker: #4f473a;
+
+
+  --color-secondary-light: #f1f4f1;
+  --color-secondary-light-hover: #e9eeea;
+  --color-secondary-light-active: #d2dcd3;
+  
+  --color-secondary-normal: #6f8f72;
+  --color-secondary-normal-hover: #648167;
+  --color-secondary-normal-active: #59725b;
+
+  --color-secondary-dark: #536b56;
+  --color-secondary-dark-hover: #435644;
+  --color-secondary-dark-active: #324033;
+  --color-secondary-darker: #273228;
+
+
+  --color-tertiary-light: #efeeec;
+  --color-tertiary-light-hover: #e7e5e3;
+  --color-tertiary-light-active: #cdc9c4;
+  
+  --color-tertiary-normal: #5f5242;
+  --color-tertiary-normal-hover: #564a3b;
+  --color-tertiary-normal-active: #4c4235;
+
+  --color-tertiary-dark: #473e32;
+  --color-tertiary-dark-active: #393128;
+  --color-tertiary-dark-hover: #2b251e;
+  --color-tertiary-darker: #211d17;
+
+  
+  --color-neutral-lighter: #bfbdb9;
+  --color-neutral-light-hover: #b2b0ab;
+  --color-neutral-light-active: #a29f9a;
+  
+  --color-neutral-normal: #706c64;
+  --color-neutral-normal-hover: #5f5c55;
+  --color-neutral-normal-active: #524f49;
+
+  --color-neutral-dark: #272623;
+  --color-neutral-dark-hover: #1c1b19;
+  --color-neutral-dark-active: #0c0c0b;
+
+
+  /* Background */
+  --color-primary-bg: var(--color-primary-normal);
+  --color-primary-bg-hover: var(--color-primary-normal-hover);
+  --color-primary-bg-active: var(--color-primary-normal-active);
+
+  --color-secondary-bg: var(--color-secondary-normal);
+  --color-secondary-bg-hover: var(--color-secondary-normal-hover);
+  --color-secondary-bg-active: var(--color-secondary-normal-active);
+
+  --color-tertiary-bg: var(--color-tertiary-normal);
+  --color-tertiary-bg-hover: var(--color-tertiary-light-hover);
+  --color-tertiary-bg-active: var(--color-tertiary-normal-active);
+
+  --color-neutral-bg: var(--color-neutral-lighter);
+  --color-neutral-bg-hover: var(--color-neutral-light-hover);
+  --color-neutral-bg-active: var(--color-neutral-light-active);
+
+
+  /* Foreground / Text */
+  --color-primary-text: var(--color-neutral-normal);
+  --color-secondary-text: var(--color-secondary-normal);
+  --color-tertiary-text: var(--color-tertiary-normal);
+  --color-neutral-text:  var(--color-neutral-dark);
+
+  /* Shadow */
+  --shadow-md: 4px 4px var(--color-neutral-normal);
+  --shadow-md-interact: 8px 8px var(--color-neutral-normal);
+
+  
+
+  /* akan dihapus */
   --color-bg-colors: #f6efe4;
   --color-bg-bright-color: #fcfaf6;
   --color-text-colors: #1D242D;
@@ -19,7 +102,5 @@
   --color-btn-green-active: #245a42;
 
   --color-card-bg: #F6DDB2;
-
-
 
 }

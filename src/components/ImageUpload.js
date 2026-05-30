@@ -52,20 +52,20 @@ export default function ImageUpload({ id = "cover_photo", label = "Cover photo",
           onDragLeave={() => setIsDragging(false)}
           onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleFile(e.dataTransfer.files[0]) }}
           className={`border-2 border-dashed rounded-xl p-10 flex flex-col items-center gap-2 cursor-pointer transition
-            ${isDragging ? "border-text-colors bg-indigo-50" : "border-text-colors hover:border-text-colors hover:bg-gray-50"}`}
+            ${isDragging ? "border-neutral-text bg-indigo-50" : "border-neutral-text hover:border-neutral-text hover:bg-neutral-light-hover"}`}
         >
           <PhotoIcon className="w-9 h-9"/>
-          <p className="text-sm text-text-colors">
-            <span className="text-orange-400 font-medium">Upload a file</span> or drag and drop
+          <p className="text-sm border-neutral-text">
+            <span className="text-secondary-bg font-bold">Upload a file</span> or drag and drop
           </p>
           <p className="text-xs text-text-colors">PNG, JPG, GIF up to 10MB</p>
         </div>
       ) : (
-        <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-3 border border-gray-200">
-          <img src={preview.url} alt="preview" className="w-11 h-11 rounded-md object-cover border border-gray-200 shrink-0" />
+        <div className="flex items-center gap-3 bg-neutral-bg rounded-lg p-3 border border-neutral-bg">
+          <img src={preview.url} alt="preview" className="w-11 h-11 rounded-md object-cover border border-neutral-bg shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-800 truncate">{preview.name}</p>
-            <p className="text-xs text-gray-400">{formatSize(preview.size)}</p>
+            <p className="text-xs text-neutral-dark">{formatSize(preview.size)}</p>
           </div>
           <button
             type="button"

@@ -13,7 +13,7 @@ export default function Members() {
         <RevealSection direction="up">
             {/* Cek Member */}
             <div className="flex items-center justify-center w-full mt-8">
-                <h1 className="text-4xl font-bold m-2">Kamu sudah jadi Member?</h1>
+                <h1 className="text-4xl font-bold m-2 font-young">Kamu sudah jadi Member?</h1>
             </div>
             <div className="flex flex-col justify-center items-center gap-4">
                 <InputType
@@ -27,7 +27,7 @@ export default function Members() {
                     onChange={handleChange}
                 />
                 <button
-                    className={`flex justify-center items-center rounded-2xl p-8 ${loading ? "bg-gray-500" : "bg-btn-green-normal"} hover:bg-btn-green-hover active:bg-green-400 h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+                    className={`flex justify-center items-center rounded-2xl p-8 ${loading ? "bg-neutral-bg-active" : "bg-secondary-bg"} hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl font-young`}
                     type="button"
                     disabled={loading}
                     onClick={handleSearch}

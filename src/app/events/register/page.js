@@ -68,10 +68,11 @@ export default function RegisterEvent() {
 
         setSubmitLoading(true);
         try {
-            console.log("participant_id dikirim:", userData.id);
             const orderRes = await orderService.create(event.id, userData.id);
-            const orderId = orderRes.data.data.id;
-            const { order_id, invoice_number, ticket_code } = orderRes.data.data;
+            const { order, attendance } = orderRes.data.data; // ← ambil dari order
+            const orderId = order.id;
+            const invoice_number = order.invoice_number;
+            const ticket_code = order.ticket_code;
 
             const formData = new FormData();
             formData.append("payment_proof", paymentFile);
@@ -79,17 +80,9 @@ export default function RegisterEvent() {
             formData.append("amount", event.price);
             formData.append("paid_at", new Date().toISOString().slice(0, 19).replace("T", " "));
 
-            console.log(formData);
-
             await orderService.uploadPayment(orderId, formData);
 
-            setOrderResult({ order_id, invoice_number, ticket_code });
-
-            Swal.fire({
-                icon: "success",
-                title: "Pendaftaran Berhasil!",
-                text: "Bukti pembayaran kamu sedang diverifikasi.",
-            });
+            setOrderResult({ order_id: orderId, invoice_number, ticket_code });
         } catch (err) {
             setOrderResult(null);
 
@@ -104,21 +97,29 @@ export default function RegisterEvent() {
         }
     }
 
+    function higherPrice(event_price) {
+        if (event_price > 0) {
+            return event_price * 2;
+        } else {
+            return 1000000;
+        }
+    }
+
     if (!event) return <div className="flex justify-center p-16 text-2xl">Loading...</div>;
 
     return (
-        <Container className="flex flex-col gap-y-4 w-full px-4 md:px-0">
+        <Container className="flex flex-col gap-y-4 w-full px-4 md:px-0 max-w-306 mx-auto">
             <RevealSection direction="up">
                 <div className="flex flex-col gap-y-4 mt-8">
                     <Link href="/events" className="static md:absolute">
                         <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
                     </Link>
                     <div className="flex items-center justify-center w-full">
-                        <h1 className="text-4xl font-bold">{event.title}</h1>
+                        <h1 className="text-4xl font-bold font-young">{event.title}</h1>
                     </div>
 
-                    <div className="flex flex-row justify-between gap-x-2">
-                        <div className="flex flex-row justify-center gap-x-2">
+                    <div className="flex flex-row justify-between gap-x-2 mt-8">
+                        <div className="flex flex-row justify-center gap-x-2 w-1/2">
                             <MapPinIcon className="w-8 h-8" />
                             <div className="text-lg font-bold">{event.location}</div>
                         </div>
@@ -138,13 +139,13 @@ export default function RegisterEvent() {
             </RevealSection>
 
             <RevealSection direction="up">
-                <div className="text-5xl font-bold p-8">TICKET #PENDING</div>
+                <div className="text-3xl font-bold p-8 font-young">TICKET #PENDING</div>
 
                 <div className="flex justify-center gap-8 flex-col md:flex-row">
-                    <div className="bg-card-bg rounded-lg p-4 w-full">
+                    <div className="bg-secondary-bg p-4 w-full">
                         <div className="flex flex-col">
                             <h3 className="text-2xl font-bold">Early Bid</h3>
-                            <div className="text-sm line-through">Rp. 1.400.000</div>
+                            <div className="text-sm line-through">Rp. {formatRupiah(higherPrice(event.price))}</div>
                             <div className="text-lg font-bold">Rp. {formatRupiah(event.price)}/person</div>
                         </div>
                         <div className="flex flex-col">
@@ -154,12 +155,12 @@ export default function RegisterEvent() {
                                 ))}
                             </ol>
                             <div className="text-xl font-bold">Event Organizer</div>
-                            <div className="text-lg font-semibold">{event.organizer?.name}</div>
+                            <div className="text-lg font-semibold">{event.creator?.name}</div>
                         </div>
                     </div>
-                    <div className="flex flex-col items-center justify-center bg-card-bg rounded-lg p-4 w-full">
+                    <div className="flex flex-col items-center justify-center bg-secondary-bg p-4 w-full">
                         <div className="font-bold text-3xl">Slot Tersisa:</div>
-                        <div className="font-bold text-5xl">{event.remaining_quota}</div>
+                        <div className="font-bold text-5xl font-young">{event.remaining_quota}</div>
                     </div>
                 </div>
             </RevealSection>
@@ -167,9 +168,9 @@ export default function RegisterEvent() {
 
             <Form onSubmit={submitPembayaran} className="flex flex-col gap-8">
                 <RevealSection direction="up">
-                    <div className="flex flex-col bg-card-bg rounded-lg p-4 gap-4">
+                    <div className="flex flex-col bg-secondary-bg p-4 gap-4">
                         <div className="flex justify-between">
-                            <div className="text-2xl font-bold">Customer Information</div>
+                            <div className="text-2xl font-bold font-young">Customer Information</div>
                             <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
                         </div>
                         <hr className="border-t-2 border-text-colors" />
@@ -180,13 +181,13 @@ export default function RegisterEvent() {
                                 type="text"
                                 name="idhash"
                                 required
-                                placeholder="HASH000001"
+                                placeholder="0001"
                                 className="flex flex-col gap-2 col-span-1 md:col-span-2"
                                 onChange={e => setId(e.target.value)}
                                 value={id}
                             />
                             <button
-                                className={`flex justify-center items-center rounded-2xl ${loading ? "bg-gray-500" : "bg-btn-green-normal hover:to-btn-green-hover"} active:bg-green-400 font-bold text-xl text-white md:text-2xl w-full h-full`}
+                                className={`flex justify-center items-center ${loading ? "bg-neutral-bg" : "bg-tertiary-bg hover:bg-tertiary-bg-hover active:bg-tertiary-bg-active"}  font-bold text-xl text-white md:text-2xl w-full h-full`}
                                 type="button"
                                 disabled={loading}
                                 onClick={checkTheID}
@@ -218,9 +219,9 @@ export default function RegisterEvent() {
                 </RevealSection>
 
                 <RevealSection direction="up">
-                    <div className="flex flex-col bg-card-bg rounded-lg p-4 gap-4">
+                    <div className="flex flex-col bg-secondary-bg p-4 gap-4">
                         <div className="flex justify-between">
-                            <div className="text-2xl font-bold">Payment Details</div>
+                            <div className="text-2xl font-bold font-young">Payment Details</div>
                             <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
                         </div>
                         <hr className="border-t-2 border-text-colors" />
@@ -234,17 +235,17 @@ export default function RegisterEvent() {
                         </div>
                         <div className="flex justify-between">
                             <div className="text-xl font-bold">Total</div>
-                            <div className="text-2xl font-bold text-orange-400">Rp. {formatRupiah(event.price)}</div>
+                            <div className="text-2xl font-bold text-white">Rp. {formatRupiah(event.price)}</div>
                         </div>
                     </div>
                 </RevealSection>
 
 
-                <div className="flex flex-col bg-card-bg rounded-lg p-4 gap-4">
+                <div className="flex flex-col bg-secondary-bg p-4 gap-4">
                     <RevealSection direction="up">
                         <div className="flex flex-col gap-4">
                             <div className="flex justify-between">
-                                <div className="text-2xl font-bold">Payment Process</div>
+                                <div className="text-2xl font-bold font-young">Payment Process</div>
                                 <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
                             </div>
                             <hr className="border-t-2 border-text-colors" />
@@ -273,7 +274,7 @@ export default function RegisterEvent() {
 
                     <RevealSection direction="up">
                         <div className="flex flex-col gap-4">
-                            <div className="text-2xl font-bold">Upload Proof of Payment</div>
+                            <div className="text-2xl font-bold font-young">Upload Proof of Payment</div>
                             <ImageUpload
                                 id="paymentproof"
                                 label="Payment Proof"
@@ -287,7 +288,7 @@ export default function RegisterEvent() {
                     <RevealSection direction="up">
                         <div className="flex flex-col gap-4">
                             <button
-                                className={`flex justify-center items-center rounded-2xl ${submitLoading ? "bg-gray-500" : "bg-btn-green-normal hover:to-btn-green-hover"} active:bg-green-400 h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+                                className={`flex justify-center items-center rounded-2xl ${submitLoading ? "bg-neutral-bg" : "bg-tertiary-bg hover:bg-tertiary-bg-hover active:bg-tertiary-bg-active"}  h-16 font-bold text-xl text-white m-10 md:text-3xl`}
                                 type="submit"
                                 disabled={submitLoading}
                             >

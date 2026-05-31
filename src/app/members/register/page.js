@@ -73,7 +73,7 @@ export default function Members() {
                     transition:all 0.2s;
                 "
             >
-                📋 Copy
+                Copy
             </button>
         </div>
         <p style="font-size:0.8rem;color:gray">Simpan Hash ID ini untuk login dan daftar event.</p>

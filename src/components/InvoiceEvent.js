@@ -36,14 +36,14 @@ export default function InvoiceEvent({
                     fileName={`Invoice-${invoice_id}.pdf`}
                 >
                     {({ loading }) => (
-                        <button className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+                        <button className="bg-secondary-dark hover:bg-secondary-dark-hover active:bg-secondary-dark-active text-white font-bold py-2 px-6 rounded-lg transition-colors">
                             {loading ? "Menyiapkan PDF..." : "Download PDF"}
                         </button>
                     )}
                 </PDFDownloadLink>
             </div>
 
-            <div className="flex flex-col bg-card-bg p-8 rounded-lg">
+            <div className="flex flex-col bg-secondary-bg p-8 rounded-lg">
                 <div className="flex flex-col items-center p-8">
                     <img
                         src="/assets/images/sh3logo.png"
@@ -54,39 +54,39 @@ export default function InvoiceEvent({
                     />
                 </div>
 
-                <div className="text-text-colors font-bold text-3xl md:text-5xl text-center">INVOICE</div>
+                <div className="text-white font-bold text-3xl md:text-5xl text-center">INVOICE</div>
 
                 <div className="flex flex-col md:flex-row mt-8 md:mt-16">
-                    <div className="flex flex-col w-full md:w-1/2 px-4 md:px-16 text-lg">
+                    <div className="flex flex-col w-full md:w-1/2 px-4 md:px-16 text-lg text-white">
                         <div>To : {name}</div>
                         <div>Email : {email}</div>
                         <div>Hash ID : {hash_id}</div>
                     </div>
                     <div className="flex flex-col items-center w-full md:w-1/2 px-8 mt-4 md:mt-0">
-                        <div className="font-bold text-xl">
+                        <div className="font-bold text-xl text-white">
                             Invoice : {invoice_id}
                         </div>
                     </div>
                 </div>
 
                 <div className="overflow-x-auto my-8 md:my-16">
-                    <table className="border border-text-colors table-auto divide-y w-full">
+                    <table className="border border-neutral-dark table-auto divide-y w-full">
                         <thead>
-                            <tr className="divide-text-colors divide-x bg-amber-500">
+                            <tr className="divide-neutral-dark divide-x bg-tertiary-bg text-white">
                                 <th className="p-4">Qty</th>
                                 <th className="p-4">Description</th>
                                 <th className="p-4">Price</th>
                                 <th className="p-4">Total</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-text-colors">
-                            <tr className="text-right divide-text-colors divide-x">
+                        <tbody className="divide-y divide-neutral-dark">
+                            <tr className="text-right divide-neutral-dark divide-x text-white">
                                 <td className="text-center p-4">{event_qty}</td>
                                 <td className="text-left p-4">{event_title} Ticket</td>
                                 <td className="p-4">Rp. {event_price}</td>
                                 <td className="p-4">Rp. {event_price}</td>
                             </tr>
-                            <tr className="divide-text-colors divide-x bg-amber-500">
+                            <tr className="divide-neutral-dark divide-x bg-tertiary-bg text-white">
                                 <th></th>
                                 <th></th>
                                 <th className="p-4">Total</th>

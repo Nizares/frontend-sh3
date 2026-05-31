@@ -15,13 +15,14 @@ export default function useSearchDataMembers() {
         setUserData(null);
 
         const user = await login(id);
+        console.log(user);
 
         if (user) {
             setUserData({
                 id: user.hash_id,
                 name: user.name,
                 email: user.email,
-                telp_number: user.phone,
+                telp_number: user.phone ?? "-",
             });
         } else {
             setError("Hash ID tidak ditemukan. Pastikan ID kamu benar.");

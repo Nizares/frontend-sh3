@@ -19,6 +19,7 @@ export default function useSearchMembers() {
         if (!searchId) return;
 
         const user = await login(searchId);
+        console.log(user);
 
         if (user) {
             Swal.fire({
@@ -27,7 +28,7 @@ export default function useSearchMembers() {
                 html: `
                     <p>ID: ${user.hash_id}</p>
                     <p>Nama: ${user.name}</p>
-                    <p>Telp: ${hidePhone(user.phone, 2)}</p>
+                    <p>Telp: ${user.phone ? hidePhone(user.phone, 2) : "-"}</p>
                 `,
             });
         } else {

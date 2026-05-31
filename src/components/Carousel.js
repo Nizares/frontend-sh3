@@ -105,7 +105,7 @@ export default function Carousel() {
               <div
                 key={event.id}
                 onClick={() => handleCardClick(index)}
-                className={`relative flex-none mx-3 transition-all duration-500 rounded-2xl overflow-hidden
+                className={`relative flex-none mx-3 transition-all duration-500 overflow-hidden
                   ${!isActive ? "cursor-pointer" : ""}
                   ${isActive
                     ? "w-[55%] md:w-[45%] scale-100 shadow-2xl z-10"

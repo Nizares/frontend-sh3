@@ -87,6 +87,12 @@ export default function PastEvents({ }) {
                         </div>
                     </div>
                 </div>
+                {/* menunggu fitur lihat peserta ketika event udah selesai */}
+                {/* <Link href={`/events/members?id=${event.id}`}>
+                    <div className="flex justify-center items-center rounded-2xl bg-secondary-bg h-20 font-bold text-2xl text-white hover:bg-secondary-bg-hover active:bg-secondary-bg-active">
+                        Lihat Peserta
+                    </div>
+                </Link> */}
             </RevealSection>
         </Container>
     );

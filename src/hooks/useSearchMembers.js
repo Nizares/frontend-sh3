@@ -4,6 +4,7 @@ import useAuth from "./useAuth";
 
 export default function useSearchMembers() {
     const [searchId, setSearchId] = useState("");
+    const [userData, setUserData] = useState(null); // ← tambah ini
     const { loading, error, login } = useAuth();
 
     function handleChange(e) {
@@ -22,6 +23,7 @@ export default function useSearchMembers() {
         console.log(user);
 
         if (user) {
+            setUserData(user); // ← simpan user ke state
             Swal.fire({
                 icon: "success",
                 title: "Data ditemukan!",
@@ -32,6 +34,7 @@ export default function useSearchMembers() {
                 `,
             });
         } else {
+            setUserData(null); // ← reset kalau tidak ditemukan
             Swal.fire({
                 icon: "error",
                 title: "Data tidak ditemukan",
@@ -40,5 +43,5 @@ export default function useSearchMembers() {
         }
     }
 
-    return { loading, searchId, setSearchId, handleSearch, handleChange };
+    return { loading, searchId, setSearchId, handleSearch, handleChange, userData }; // ← tambah userData
 }

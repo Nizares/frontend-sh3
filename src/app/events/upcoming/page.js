@@ -111,7 +111,7 @@ export default function UpcomingEvents() {
 
                 <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3 mt-8">
                     <div className="col-span-1 flex flex-col md:col-span-2">
-                        <h2 className="text-2xl font-bold">Tentang Event</h2>
+                        <h2 className="text-2xl font-bold font-young">Tentang Event</h2>
                         <div className="text-sm">{event.description}</div>
 
                         {/* Belum join → Daftar Sekarang */}
@@ -148,7 +148,7 @@ export default function UpcomingEvents() {
                                 </button>
 
                                 <Link href={`/events/members?id=${event.id}`}>
-                                    <div className="flex justify-center items-center rounded-2xl bg-[#B57506] h-20 font-bold text-2xl text-white hover:bg-yellow-600 active:bg-yellow-700">
+                                    <div className="flex justify-center items-center rounded-2xl bg-tertiary-bg h-20 font-bold text-2xl text-white hover:bg-tertiary-bg-hover active:bg-tertiary-bg-active">
                                         Lihat Peserta
                                     </div>
                                 </Link>

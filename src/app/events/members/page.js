@@ -56,7 +56,7 @@ export default function EventMembers() {
 
                     {/* Stats badge */}
                     <div className="flex justify-center">
-                        <div className="flex items-center gap-x-2 bg-[#00973D]/10 text-[#00973D] font-semibold px-4 py-2 rounded-full text-sm">
+                        <div className="flex items-center gap-x-2 bg-secondary-bg text-white font-semibold px-4 py-2 rounded-full text-sm">
                             <UserGroupIcon className="w-5 h-5" />
                             {data.total_participants} Peserta Terdaftar
                         </div>
@@ -86,13 +86,13 @@ export default function EventMembers() {
 
                 {/* Member grid */}
                 {filtered.length === 0 ? (
-                    <div className="text-center text-gray-400 py-12">Tidak ada peserta ditemukan.</div>
+                    <div className="text-center text-neutral-bg py-12">Tidak ada peserta ditemukan.</div>
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-8">
                         {filtered.map((member) => (
                             <div
                                 key={member.id}
-                                className="flex items-center gap-x-3 bg-white rounded-2xl p-3 shadow-sm hover:shadow-md transition-shadow"
+                                className="flex items-center gap-x-3 bg-white p-3 shadow-sm hover:shadow-md transition-shadow"
                             >
                                 {member.photo_url ? (
                                     <Image
@@ -100,21 +100,21 @@ export default function EventMembers() {
                                         alt={member.name}
                                         width={40}
                                         height={40}
-                                        className="w-10 h-10 rounded-full object-cover shrink-0"
+                                        className="w-10 h-10  object-cover shrink-0"
                                     />
                                 ) : (
-                                    <div className="w-10 h-10 rounded-full bg-[#00973D]/10 flex items-center justify-center shrink-0">
-                                        <span className="text-[#00973D] font-bold text-base">
+                                    <div className="w-10 h-10 bg-secondary-bg flex items-center justify-center shrink-0">
+                                        <span className="text-white font-bold text-base">
                                             {member.name.charAt(0).toUpperCase()}
                                         </span>
                                     </div>
                                 )}
 
                                 <div className="flex flex-col min-w-0">
-                                    <span className="font-semibold text-gray-800 truncate">{member.name}</span>
-                                    <span className="text-xs text-gray-400 truncate">{member.email}</span>
-                                    <span className="text-xs text-gray-400 capitalize">{member.gender}</span>
-                                    <span className="text-xs text-gray-300 mt-1">Joined {formatDate(member.joined_at)}</span>
+                                    <span className="font-semibold text-neutral-dark truncate">{member.name}</span>
+                                    <span className="text-xs text-neutral-bg truncate">{member.email}</span>
+                                    <span className="text-xs text-neutral-bg-active capitalize">{member.gender}</span>
+                                    <span className="text-xs text-neutral-lighter mt-1">Joined {formatDate(member.joined_at)}</span>
                                 </div>
                             </div>
                         ))}

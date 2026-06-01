@@ -22,7 +22,7 @@ export default function Events() {
 
   if (loading) return <div className="flex justify-center p-16 text-2xl">Loading...</div>;
   return (
-    <Container className="flex flex-col gap-y-8">
+    <Container className="flex flex-col gap-y-8 max-w-306 mx-auto">
       <div className="flex flex-col flex-1 items-center justify-center p-8">
         <h1 className="text-text-colors text-5xl font-bold font-young">Events</h1>
       </div>

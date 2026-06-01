@@ -84,12 +84,12 @@ export default function Members() {
 
           copyBtn.addEventListener("click", () => {
             navigator.clipboard.writeText(hashIdText.innerText).then(() => {
-              copyBtn.innerText = "✅ Copied!";
+              copyBtn.innerText = "Copied!";
               copyBtn.style.borderColor = "gray";
               copyBtn.style.color = "gray";
 
               setTimeout(() => {
-                copyBtn.innerText = "📋 Copy";
+                copyBtn.innerText = "Copy";
                 copyBtn.style.borderColor = "#00973D";
                 copyBtn.style.color = "#00973D";
               }, 2000);

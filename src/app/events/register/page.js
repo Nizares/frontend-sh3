@@ -142,7 +142,7 @@ export default function RegisterEvent() {
                 <div className="text-3xl font-bold p-8 font-young">TICKET #PENDING</div>
 
                 <div className="flex justify-center gap-8 flex-col md:flex-row">
-                    <div className="bg-secondary-bg p-4 w-full">
+                    <div className="bg-primary-light border-2 border-neutral-normal p-4 w-full">
                         <div className="flex flex-col">
                             <h3 className="text-2xl font-bold">Early Bid</h3>
                             <div className="text-sm line-through">Rp. {formatRupiah(higherPrice(event.price))}</div>
@@ -158,7 +158,7 @@ export default function RegisterEvent() {
                             <div className="text-lg font-semibold">{event.creator?.name}</div>
                         </div>
                     </div>
-                    <div className="flex flex-col items-center justify-center bg-secondary-bg p-4 w-full">
+                    <div className="flex flex-col items-center justify-center bg-primary-light border-neutral-normal border-2 p-4 w-full">
                         <div className="font-bold text-3xl">Slot Tersisa:</div>
                         <div className="font-bold text-5xl font-young">{event.remaining_quota}</div>
                     </div>
@@ -168,7 +168,7 @@ export default function RegisterEvent() {
 
             <Form onSubmit={submitPembayaran} className="flex flex-col gap-8">
                 <RevealSection direction="up">
-                    <div className="flex flex-col bg-secondary-bg p-4 gap-4">
+                    <div className="flex flex-col bg-primary-light p-4 gap-4 border-neutral-normal border-2">
                         <div className="flex justify-between">
                             <div className="text-2xl font-bold font-young">Customer Information</div>
                             <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
@@ -187,7 +187,7 @@ export default function RegisterEvent() {
                                 value={id}
                             />
                             <button
-                                className={`flex justify-center items-center ${loading ? "bg-neutral-bg" : "bg-tertiary-bg hover:bg-tertiary-bg-hover active:bg-tertiary-bg-active"}  font-bold text-xl text-white md:text-2xl w-full h-full`}
+                                className={`flex justify-center items-center font-young ${loading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}  font-bold text-xl text-white md:text-2xl w-full h-full`}
                                 type="button"
                                 disabled={loading}
                                 onClick={checkTheID}
@@ -219,7 +219,7 @@ export default function RegisterEvent() {
                 </RevealSection>
 
                 <RevealSection direction="up">
-                    <div className="flex flex-col bg-secondary-bg p-4 gap-4">
+                    <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4">
                         <div className="flex justify-between">
                             <div className="text-2xl font-bold font-young">Payment Details</div>
                             <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
@@ -235,13 +235,13 @@ export default function RegisterEvent() {
                         </div>
                         <div className="flex justify-between">
                             <div className="text-xl font-bold">Total</div>
-                            <div className="text-2xl font-bold text-white">Rp. {formatRupiah(event.price)}</div>
+                            <div className="text-2xl font-bold">Rp. {formatRupiah(event.price)}</div>
                         </div>
                     </div>
                 </RevealSection>
 
 
-                <div className="flex flex-col bg-secondary-bg p-4 gap-4">
+                <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4">
                     <RevealSection direction="up">
                         <div className="flex flex-col gap-4">
                             <div className="flex justify-between">
@@ -258,7 +258,7 @@ export default function RegisterEvent() {
                             <div className="flex flex-col items-center justify-center p-8">
                                 {selectedBank && (
                                     <div className="flex flex-row gap-8">
-                                        <Image src={selectedBank.image} alt={selectedBank.nama} width={150} height={100} className="flex object-contain rounded-lg" />
+                                        <Image src={selectedBank.image} alt={selectedBank.nama} width={150} height={100} className="flex object-contain" />
                                         <div className="flex flex-col">
                                             <div className="font-semibold text-lg">{selectedBank.nama}</div>
                                             <div className="font-semibold text-lg">{selectedBank.NoRek}</div>
@@ -266,7 +266,7 @@ export default function RegisterEvent() {
                                     </div>
                                 )}
                                 <div className="text-2xl font-bold m-8">atau</div>
-                                <Image src="/assets/images/qris.jpeg" alt="QRIS" width={450} height={600} className="w-full max-w-sm flex object-cover rounded-lg items-center justify-center" />
+                                <Image src="/assets/images/qris.jpeg" alt="QRIS" width={450} height={600} className="w-full max-w-sm flex object-cover items-center justify-center" />
                             </div>
                         </div>
 
@@ -288,7 +288,7 @@ export default function RegisterEvent() {
                     <RevealSection direction="up">
                         <div className="flex flex-col gap-4">
                             <button
-                                className={`flex justify-center items-center rounded-2xl ${submitLoading ? "bg-neutral-bg" : "bg-tertiary-bg hover:bg-tertiary-bg-hover active:bg-tertiary-bg-active"}  h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+                                className={`flex justify-center font-young items-center ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}  h-16 font-bold text-xl text-white m-10 md:text-3xl`}
                                 type="submit"
                                 disabled={submitLoading}
                             >

@@ -15,13 +15,13 @@ export default function Navbar() {
       <div className="flex items-center justify-between">
 
         {/* Logo */}
-        <div className="flex items-center gap-2">
-          <span className="text-4xl font-bold text-secondary-text">#</span>
-          <div>
-            <p className="font-bold text-gray-800 leading-tight">Samarinda Hash</p>
-            <p className="text-xs text-gray-500">House Harriers</p>
-          </div>
-        </div>
+          <a className="flex items-center gap-2" href="/">
+            <span className="text-4xl font-bold text-secondary-text">#</span>
+            <div>
+              <p className="font-bold text-gray-800 leading-tight">Samarinda Hash</p>
+              <p className="text-xs text-gray-500">House Harriers</p>
+            </div>
+          </a>
 
         {/* Menu Desktop */}
         <ul className="hidden md:flex items-center gap-10">
@@ -29,6 +29,7 @@ export default function Navbar() {
             { href: "/", label: "Home" },
             { href: "/about", label: "About" },
             { href: "/events", label: "Events" },
+            { href: "/merchandise", label: "Merchandise"},
             { href: "/gallery", label: "Gallery" },
           ].map((item) => (
             <li key={item.href}>
@@ -87,6 +88,7 @@ export default function Navbar() {
             { href: "/", label: "Home" },
             { href: "/about", label: "About" },
             { href: "/events", label: "Events" },
+            { href: "/merchandise", label: "Merchandise"},
             { href: "/gallery", label: "Gallery" },
           ].map((item) => (
             <li key={item.href}>

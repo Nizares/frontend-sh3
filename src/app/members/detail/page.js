@@ -128,7 +128,7 @@ export default function DetailMember() {
                         onChange={handleChange}
                     />
                     <button
-                        className={`flex justify-center items-center rounded-2xl p-8 ${loading ? "bg-neutral-bg-active" : "bg-secondary-bg"} hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl font-young`}
+                        className={`flex justify-center items-center p-8 ${loading ? "bg-neutral-bg-active" : "bg-secondary-bg"} hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl font-young`}
                         type="button"
                         disabled={loading}
                         onClick={handleSearch}
@@ -141,9 +141,9 @@ export default function DetailMember() {
             {/* Data User — muncul setelah ditemukan */}
             {userData && (
                 <RevealSection direction="up">
-                    <div className="flex flex-col gap-4 bg-card-bg rounded-lg p-8">
-                        <h2 className="text-3xl font-bold font-young">Data Member</h2>
-                        <hr className="border-t-2 border-text-colors" />
+                    <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 bg-primary-light border-neutral-normal">
+                        <h2 className="text-3xl font-bold font-young text-neutral-normal">Data Member</h2>
+                        <hr className="border-t-2 border-neutral-normal" />
 
                         {/* Tampilan data user */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg">
@@ -171,7 +171,7 @@ export default function DetailMember() {
                         {!showEditForm && (
                             <button
                                 onClick={() => setShowEditForm(true)}
-                                className="flex justify-center items-center rounded-2xl bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-2xl font-young"
+                                className="flex justify-center items-center bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-2xl font-young"
                             >
                                 Edit Profil
                             </button>
@@ -183,21 +183,21 @@ export default function DetailMember() {
             {/* Form Edit Profile — muncul setelah klik tombol */}
             {userData && showEditForm && (
                 <RevealSection direction="up">
-                    <div className="flex flex-col gap-4 bg-card-bg rounded-lg p-8">
+                    <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 border-neutral-normal bg-primary-light">
                         <div className="flex justify-between items-center">
-                            <h2 className="text-3xl font-bold font-young">Edit Profil</h2>
+                            <h2 className="text-3xl font-bold font-young text-neutral-normal">Edit Profil</h2>
                             <button
                                 onClick={() => setShowEditForm(false)}
-                                className="text-gray-500 hover:text-red-500 font-medium"
+                                className="font-medium px-8 py-2  text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all"
                             >
-                                ✕ Batal
+                                Batal
                             </button>
                         </div>
-                        <hr className="border-t-2 border-text-colors" />
+                        <hr className="border-t-2 border-neutral-normal" />
 
                         <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4">
 
-                            <h3 className="text-xl font-bold">Data Diri</h3>
+                            <h3 className="text-xl font-bold font-young">Data Diri</h3>
                             <InputType label="Nama Lengkap" id="name" type="text" name="name"
                                 placeholder="John Doe" className="flex flex-col gap-2"
                                 value={formData.name} onChange={handleFormChange} />
@@ -215,8 +215,8 @@ export default function DetailMember() {
                                 options={bloodTypeOptions} value={formData.blood_type}
                                 placehold="Pilih Golongan Darah..."
                                 onChange={e => setFormData(prev => ({ ...prev, blood_type: e.target.value }))} />
-
-                            <h3 className="text-xl font-bold mt-4">Kontak Darurat</h3>
+                            <hr className="border-t-2 border-neutral-normal" />
+                            <h3 className="text-xl font-bold font-young">Kontak Darurat</h3>
                             <InputType label="Nama Kontak Darurat" id="emergency_contact" type="text"
                                 name="emergency_contact" placeholder="Nama keluarga/teman"
                                 className="flex flex-col gap-2"
@@ -226,20 +226,21 @@ export default function DetailMember() {
                                 className="flex flex-col gap-2"
                                 value={formData.emergency_phone} onChange={handleFormChange} />
 
-                            <h3 className="text-xl font-bold mt-4">Info Kesehatan</h3>
+                            <hr className="border-t-2 border-neutral-normal" />
+                            <h3 className="text-xl font-bold font-young">Info Kesehatan</h3>
                             <div className="flex flex-col gap-2">
                                 <label className="text-xl font-medium">Riwayat Alergi</label>
                                 <textarea
                                     name="allergy_history"
                                     placeholder="Contoh: alergi debu, makanan laut, dll"
-                                    className="border rounded-lg p-3 text-lg bg-transparent"
+                                    className="border-tertiary-normal p-3 text-lg bg-white border-2"
                                     rows={3}
                                     value={formData.allergy_history}
                                     onChange={handleFormChange}
                                 />
                             </div>
-
-                            <h3 className="text-xl font-bold mt-4">Identitas</h3>
+                            <hr className="border-t-2 border-neutral-normal" />
+                            <h3 className="text-xl font-bold font-young">Identitas</h3>
                             <InputType label="Nomor KTP/Passport" id="identity_number" type="text"
                                 name="identity_number" placeholder="3201234567890001"
                                 className="flex flex-col gap-2"
@@ -247,7 +248,8 @@ export default function DetailMember() {
                             <ImageUpload id="identity_photo" label="Foto KTP/Passport"
                                 onChange={file => setIdentityPhoto(file)} />
 
-                            <h3 className="text-xl font-bold mt-4">Foto Profil</h3>
+                            <hr className="border-t-2 border-neutral-normal" />
+                            <h3 className="text-xl font-bold mt-4 font-young">Foto Profil</h3>
                             <ImageUpload id="photo" label="Foto Profil"
                                 onChange={file => setPhoto(file)} />
 
@@ -255,14 +257,14 @@ export default function DetailMember() {
                                 <button
                                     type="button"
                                     onClick={() => setShowEditForm(false)}
-                                    className="flex-1 flex justify-center items-center rounded-2xl bg-gray-400 hover:bg-gray-500 h-16 font-bold text-xl text-white font-young"
+                                    className="flex-1 flex justify-center items-center h-16 font-bold text-xl font-young text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all"
                                 >
                                     Batal
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={submitLoading}
-                                    className={`flex-1 flex justify-center items-center rounded-2xl ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white font-young`}
+                                    className={`flex-1 flex justify-center items-center ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white font-young`}
                                 >
                                     {submitLoading ? "Menyimpan..." : "Simpan Perubahan"}
                                 </button>

@@ -31,7 +31,7 @@ export default function Home() {
   return (
     <Container className="flex flex-col gap-y-16">
       <RevealSection direction="up">
-        <div className="flex flex-col flex-1 items-center justify-center mt-24 p-8 max-w-306 mx-auto">
+        <div className="flex flex-col flex-1 items-center justify-center pt-8 md:pt-0 p-8 max-w-306 mx-auto min-h-[80vh]">
           <div className="flex flex-col md:flex-row">
             <div className="flex flex-col w-full md:w-1/2">
               <h1 className="text-5xl font-bold font-young text-neutral-normal">
@@ -53,7 +53,7 @@ export default function Home() {
                 />
                 <LinkButton
                   destination="/events"
-                  text="Events"
+                  text="Event Terdekat"
                   bg_color="secondary-bg"
                   bg_color_hover="secondary-bg-hover"
                   bg_color_active="secondary-bg-active"
@@ -76,12 +76,9 @@ export default function Home() {
 
       <RevealSection direction="up">
         <TotalStatistic />
-        <div className="flex flex-col bg-tertiary-bg p-8 gap-y-8">
-          <div className="text-white text-2xl text-center font-young">
-            Event Terdekat | <span><a href="#upcomingRun" className="text-neutral-dark hover:text-neutral-dark-hover active:text-neutral-dark-active">Klik Disini!</a></span> | Samarinda
-          </div>
-          <div className="text-white text-2xl text-center font-young">
-            REGULAR RUN  |  EVERY SUNDAY 14.30 WITA
+        <div className="flex flex-col bg-secondary-dark p-8 gap-y-8">
+          <div className="text-white text-2xl text-center font-young lining-nums">
+            REGULAR RUN  |  EVERY SUNDAY 14.30 WITA | Samarinda
           </div>
         </div>
       </RevealSection>
@@ -96,7 +93,7 @@ export default function Home() {
       <h2 className="text-4xl font-bold flex justify-center font-young" id="upcomingRun">
         Event yang Akan Datang
       </h2>
-      <div className="flex md:flex-row justify-center gap-8 flex-col items-center max-w-306 mx-auto" >
+      <div className="flex md:flex-row justify-center gap-8 flex-col items-center">
         {loading ? (
           <p className="text-xl">Loading...</p>
         ) : (
@@ -120,6 +117,7 @@ export default function Home() {
             ))
         )}
       </div>
+
 
       <h2 className="text-4xl font-bold flex justify-center font-young">
         Event yang Sudah Selesai

@@ -8,6 +8,7 @@ import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon } from "@heroicons/react/24/solid";
 import { concateDate } from "@/src/lib/utils";
 import { eventService } from "@/src/services/eventService";
+import SponsorSection from "@/src/components/SponsorSection";
 
 export default function UpcomingEvents() {
     const [event, setEvent] = useState(null);
@@ -38,8 +39,18 @@ export default function UpcomingEvents() {
                     if (joined) setMyOrder(joined.order);
                 })
                 .catch(() => { });
+
+            eventService.getById(eventId)
+                .then(res => {
+                    console.log("Full event response:", res.data.data);
+                    console.log("Sponsors:", res.data.data.sponsors);
+                    setEvent(res.data.data);
+                })
+                .catch(err => console.error(err));
         }
     }, [searchParams]);
+
+
 
     async function handleLihatQR() {
         if (qrCode) {
@@ -106,7 +117,7 @@ export default function UpcomingEvents() {
                     alt={event.title}
                     width={600}
                     height={450}
-                    className="h-128 w-full flex object-cover rounded-lg mt-4"
+                    className="h-128 w-full flex object-cover mt-4"
                 />
 
                 <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3 mt-8">
@@ -117,7 +128,7 @@ export default function UpcomingEvents() {
                         {/* Belum join → Daftar Sekarang */}
                         {!myOrder && (
                             <Link href={`/events/register?id=${event.id}`}>
-                                <div className="flex justify-center items-center rounded-2xl bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-10 md:text-5xl active:bg-secondary-bg-active">
+                                <div className="flex justify-center items-center font-young bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-10 md:text-5xl active:bg-secondary-bg-active">
                                     Daftar Sekarang
                                 </div>
                             </Link>
@@ -126,7 +137,7 @@ export default function UpcomingEvents() {
                         {/* Sudah join tapi belum dikonfirmasi admin */}
                         {isPending && (
                             <div className="flex flex-col gap-2 m-10">
-                                <div className="flex justify-center items-center rounded-2xl bg-neutral-bg h-20 font-bold text-xl text-white cursor-not-allowed">
+                                <div className="flex justify-center items-center font-young bg-neutral-bg h-20 font-bold text-xl text-white cursor-not-allowed">
                                     Menunggu Konfirmasi Admin
                                 </div>
                                 <p className="text-center text-sm text-gray-500">
@@ -141,14 +152,14 @@ export default function UpcomingEvents() {
                                 <button
                                     onClick={handleLihatQR}
                                     disabled={qrLoading}
-                                    className={`flex justify-center items-center rounded-2xl h-20 font-bold text-2xl text-white transition-colors
+                                    className={`flex justify-center items-center h-20 font-bold text-2xl text-white transition-colors
                                     ${qrLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}`}
                                 >
                                     {qrLoading ? "Memuat..." : showQR ? "Sembunyikan Tiket QR" : "Lihat Tiket QR"}
                                 </button>
 
                                 <Link href={`/events/members?id=${event.id}`}>
-                                    <div className="flex justify-center items-center rounded-2xl bg-tertiary-bg h-20 font-bold text-2xl text-white hover:bg-tertiary-bg-hover active:bg-tertiary-bg-active">
+                                    <div className="flex justify-center items-center  font-young h-20 font-bold text-2xl text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all">
                                         Lihat Peserta
                                     </div>
                                 </Link>
@@ -158,9 +169,9 @@ export default function UpcomingEvents() {
 
                     </div>
 
-                    <div className="bg-secondary-bg rounded-lg gap-x-4 p-4 text-white">
+                    <div className="bg-primary-light gap-x-4 p-4 border-2 border-neutral-normal text-neutral-normal">
                         <div className="flex flex-col">
-                            <h3 className="text-2xl font-bold">Early Bid</h3>
+                            <h3 className="text-2xl font-bold font-young">Early Bid</h3>
                             <div className="text-sm line-through">Rp. {formatRupiah(higherPrice(event.price))}</div>
                             <div className="text-lg font-bold">Rp. {formatRupiah(event.price)}/person</div>
                         </div>
@@ -178,7 +189,7 @@ export default function UpcomingEvents() {
                 </div>
                 {/* Tampilan QR Code */}
                 {isPaid && showQR && qrCode && (
-                    <div className="flex flex-col items-center gap-4 bg-secondary-bg rounded-lg p-8 mb-10 mt-8 text-white">
+                    <div className="flex flex-col items-center gap-4 bg-primary-light border-2 border-neutral-normal p-8 mb-10 mt-8">
                         <div className="text-xl font-bold">Tiket QR Kamu</div>
 
                         <img
@@ -187,13 +198,17 @@ export default function UpcomingEvents() {
                             className="w-64 h-64"
                         />
 
-                        <div className="text-sm text-white text-center">
-                            Tunjukkan QR ini saat check-in di venue
+                        <div className="text-sm text-center">
+                            Tunjukkan QR ini saat check-in di Acara
                         </div>
-                        <div className="text-2xl font-young bg-neutral-bg px-4 py-2 rounded-lg text-neutral-dark">
+                        <div className="text-2xl font-young px-4 py-2 text-neutral-dark bg-neutral-bg lining-nums">
                             {myOrder?.ticket_code}
                         </div>
                     </div>
+                )}
+
+                {event.sponsors && (
+                    <SponsorSection sponsors={event.sponsors} />
                 )}
             </div>
         </Container>

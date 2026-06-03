@@ -131,8 +131,8 @@ export default function Members() {
     <Container className="flex flex-col gap-y-8 w-full px-4 md:px-0 max-w-306 mx-auto">
       <RevealSection direction="up">
         <div className="flex flex-col flex-1 items-center justify-center p-8">
-          <h1 className="text-text-colors text-5xl font-bold font-young">
-            Ayo jadi bagian Kami!
+          <h1 className="text-neutral-normal text-5xl font-bold font-young">
+            Ayo jadi bagian dari kami!
           </h1>
         </div>
 
@@ -188,6 +188,7 @@ export default function Members() {
               id="gender"
               name="gender"
               label="Gender"
+              required
               options={genderOptions}
               value={gender}
               placehold="Pilih Gender..."
@@ -207,17 +208,17 @@ export default function Members() {
             </button>
           </form>
 
-          <div className="bg-primary-bg rounded-lg gap-x-4 p-4 h-fit">
+          <div className="bg-primary-light rounded-lg gap-x-4 p-4 h-fit border-neutral-normal border-2">
             <div className="flex flex-col">
-              <h3 className="text-2xl font-bold font-young">Benefits Member</h3>
+              <h3 className="text-2xl font-bold font-young text-neutral-normal">Benefits Member</h3>
             </div>
             <div className="flex flex-col">
-              <ol className="list-decimal list-inside p-2 text-2xl">
-                <li>Mendapatkan Informasi yang Up-to-Date</li>
-                <li>Mendapatkan teman yang banyak</li>
-                <li>Sesi Down-Down setiap event.</li>
-                <li>Lorem Ipsu dolor sir amet.</li>
-                <li>Lorem Ipsu dolor sir amet.</li>
+              <ol className="list-decimal list-outside p-2 pl-8 text-2xl text-neutral-normal">
+                <li className="mt-2">Mendapatkan Informasi yang Up-to-Date</li>
+                <li className="mt-2">Mendapatkan teman yang banyak</li>
+                <li className="mt-2">Sesi Down-Down setiap event.</li>
+                <li className="mt-2">Lorem Ipsu dolor sir amet.</li>
+                <li className="mt-2">Lorem Ipsu dolor sir amet.</li>
               </ol>
             </div>
           </div>

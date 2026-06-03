@@ -16,7 +16,7 @@ export default function EventCard({
   console.log(status);
 
   return (
-    <div className="flex flex-col items-center bg-white w-full max-w-sm">
+    <div className="flex flex-col items-center bg-white h-full w-full max-w-sm">
       <Image
         src={img}
         alt="image"
@@ -30,8 +30,8 @@ export default function EventCard({
         <div className="flex flex-col justify-between w-full md:flex-row gap-8">
           <div className="text-xl font-semibold">{category}</div>
           <Link
-            href={isOngoing ? `/events/upcoming?id=${id}` : `/events/past?id=${id}`}
-            className={`text-white px-5 py-2.5 font-medium transition-colors
+            href={isOngoing ? `/events/upcoming?id=${id}` : `/events/finished?id=${id}`}
+            className={`text-white px-5 py-2.5 font-medium transition-colors font-young
               ${isOngoing ? "bg-tertiary-bg hover:bg-tertiary-bg-hover active:bg-tertiary-bg-active" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}`}
           >
             {isOngoing ? "Daftar" : "Detail"}

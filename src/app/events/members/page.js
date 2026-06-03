@@ -56,7 +56,7 @@ export default function EventMembers() {
 
                     {/* Stats badge */}
                     <div className="flex justify-center">
-                        <div className="flex items-center gap-x-2 bg-secondary-bg text-white font-semibold px-4 py-2 rounded-full text-sm">
+                        <div className="flex items-center gap-x-2 bg-secondary-bg text-white font-semibold px-4 py-2 text-sm">
                             <UserGroupIcon className="w-5 h-5" />
                             {data.total_participants} Peserta Terdaftar
                         </div>

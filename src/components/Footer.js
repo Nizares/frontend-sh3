@@ -2,11 +2,11 @@ import Link from "next/link"
 
 export default function Footer() {
     return (
-        <div className="flex items-center justify-center w-full bg-bg-bright-color h-auto p-8 mt-8">
+        <div className="flex items-center justify-center w-full bg-primary-light h-auto p-8 mt-8">
             <div className="flex flex-col md:flex-row max-w-306 gap-8">
                 <div className="flex flex-col justify-center w-full md:w-lg gap-4">
                     <div className="flex items-center gap-2">
-                        <span className="text-4xl font-bold text-[#B57506]">#</span>
+                        <span className="text-4xl font-bold text-secondary-text">#</span>
                         <div>
                             <p className="font-bold text-gray-800 leading-tight">Samarinda Hash</p>
                             <p className="text-xs text-gray-500">House Harriers</p>

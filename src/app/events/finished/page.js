@@ -12,6 +12,7 @@ import { TagIcon } from "@heroicons/react/24/solid";
 import { concateDate } from "@/src/lib/utils";
 import { eventService } from "@/src/services/eventService";
 import { RevealSection } from "@/src/components/RevealSection";
+import SponsorSection from "@/src/components/SponsorSection";
 
 export default function PastEvents({ }) {
     const [event, setEvent] = useState(null);
@@ -24,7 +25,7 @@ export default function PastEvents({ }) {
             .catch(err => console.error(err));
     }, []);
 
-    console.log(event);
+    console.log(event)
 
     if (!event) return <div className="flex justify-center p-16 text-2xl">Loading...</div>;
 
@@ -32,7 +33,6 @@ export default function PastEvents({ }) {
         <Container className="flex flex-col gap-y-4 w-full">
             <div className="max-w-306 mx-auto">
                 <RevealSection direction="up">
-
                     <div className="flex flex-col gap-y-4 mt-8">
                         <Link href="/events" className="static md:absolute">
                             <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
@@ -69,7 +69,6 @@ export default function PastEvents({ }) {
                 </RevealSection>
             </div>
 
-
             <RevealSection direction="up" delay="100">
                 <div className="flex flex-col w-full justify-center items-center gap-8 md:gap-32 md:flex-row bg-secondary-bg p-8 text-white font-young">
                     <div className="flex flex-row items-center justify-center gap-8">
@@ -87,13 +86,16 @@ export default function PastEvents({ }) {
                         </div>
                     </div>
                 </div>
-                {/* menunggu fitur lihat peserta ketika event udah selesai */}
-                {/* <Link href={`/events/members?id=${event.id}`}>
-                    <div className="flex justify-center items-center rounded-2xl bg-secondary-bg h-20 font-bold text-2xl text-white hover:bg-secondary-bg-hover active:bg-secondary-bg-active">
-                        Lihat Peserta
-                    </div>
-                </Link> */}
             </RevealSection>
+
+            {/* ========== SPONSOR SECTION ========== */}
+            {event.sponsors && (
+                <RevealSection direction="up" delay="100">
+                    <div className="max-w-306 mx-auto w-full px-4">
+                        <SponsorSection sponsors={event.sponsors} />
+                    </div>
+                </RevealSection>
+            )}
         </Container>
     );
 }

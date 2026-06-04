@@ -84,13 +84,13 @@ export default function Home() {
       </RevealSection>
 
       <RevealSection direction="up">
-        <h2 className="text-4xl font-bold flex justify-center font-young" id="upcomingRun">
+        <h2 className="text-4xl font-bold flex justify-center font-young text-neutral-normal" id="upcomingRun" >
           Run Highlights
         </h2>
         <Carousel />
       </RevealSection>
 
-      <h2 className="text-4xl font-bold flex justify-center font-young" id="upcomingRun">
+      <h2 className="text-4xl font-bold flex justify-center font-young text-neutral-normal" id="upcomingRun">
         Event yang Akan Datang
       </h2>
       <div className="flex md:flex-row justify-center gap-8 flex-col items-center">
@@ -119,7 +119,7 @@ export default function Home() {
       </div>
 
 
-      <h2 className="text-4xl font-bold flex justify-center font-young">
+      <h2 className="text-4xl font-bold flex justify-center font-young text-neutral-normal">
         Event yang Sudah Selesai
       </h2>
       <div className="flex justify-center">

@@ -15,17 +15,13 @@ export default function Gallery() {
             .then(res => {
                 const events = res.data.data ?? [];
 
-                // console.log(events);
-                const mappedImages = events.flatMap(event =>
-                    
-                    (event.galleries || []).map(url => ({  // ← hapus .slice(0,2)
-                        url,
-                        title: event.title,
-                        subtitle: event.category?.name ?? "",
-                        id: event.id,  // ← tambah ini untuk link ke detail
-                        status: event.status
-                    }))
-                );
+                const mappedImages = events.map(event => ({
+                    id: event.id,
+                    url: event.galleries?.[0] ?? null,  // ambil 1 gambar pertama saja
+                    title: event.title,
+                    subtitle: event.category?.name ?? "",
+                    status: event.status,
+                })).filter(img => img.url); // buang event yang tidak punya gambar
 
                 setImages(mappedImages);
             })

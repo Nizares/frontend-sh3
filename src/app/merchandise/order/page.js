@@ -12,9 +12,17 @@ import { ChevronUpIcon } from "@heroicons/react/24/solid"
 import { merchandiseService } from "@/src/services/merchandiseService"
 import { formatRupiah } from "@/src/lib/utils"
 import { useRouter } from "next/navigation"
+import ImageUpload from "@/src/components/ImageUpload"
 import Swal from "sweetalert2"
 
+
 export default function MerchandiseOrderPage() {
+    const paymentMethodOptions = [
+        { value: "bank_transfer", label: "Bank Transfer" },
+        { value: "qris", label: "QRIS" },
+        { value: "ewallet", label: "E-Wallet (Dana/OVO/GoPay)" },
+    ]
+
     const [item, setItem] = useState(null)
     const [qty, setQty] = useState(1)
     const [selectedSize, setSelectedSize] = useState("")
@@ -24,6 +32,8 @@ export default function MerchandiseOrderPage() {
     const [submitLoading, setSubmitLoading] = useState(false)
     const [orderResult, setOrderResult] = useState(null)
     const [userData, setUserData] = useState(null)
+    const [paymentFile, setPaymentFile] = useState(null)
+    const [paymentMethod, setPaymentMethod] = useState("")
     const router = useRouter()
 
     useEffect(() => {
@@ -76,9 +86,19 @@ export default function MerchandiseOrderPage() {
             Swal.fire({ icon: "warning", title: "Isi nomor HP pengiriman dulu!" })
             return
         }
+        if (!paymentFile) { // ← tambah validasi bukti bayar
+            Swal.fire({ icon: "warning", title: "Upload bukti pembayaran dulu!" })
+            return
+        }
+
+        if (!paymentMethod) {
+            Swal.fire({ icon: "warning", title: "Pilih metode pembayaran dulu!" })
+            return
+        }
 
         setSubmitLoading(true)
         try {
+            // Step 1: Buat order
             const orderRes = await merchandiseService.createOrder({
                 merchandise_id: item.id,
                 quantity: qty,
@@ -89,13 +109,22 @@ export default function MerchandiseOrderPage() {
             })
 
             const order = orderRes.data.data
+
+            // Step 2: Upload bukti bayar
+            const formData = new FormData()
+            formData.append("payment_proof", paymentFile)
+            formData.append("payment_method", paymentMethod)
+            formData.append("paid_amount", totalPrice)
+            formData.append("paid_at", new Date().toISOString().slice(0, 19).replace("T", " "))
+
+            await merchandiseService.uploadPayment(order.order_id, formData)
+
             setOrderResult({
                 order_id: order.order_id,
                 invoice_number: order.invoice_number,
                 payment_instructions: order.payment_instructions,
             })
 
-            // Scroll ke invoice
             setTimeout(() => {
                 document.getElementById("invoice-section")?.scrollIntoView({ behavior: "smooth" })
             }, 300)
@@ -294,6 +323,17 @@ export default function MerchandiseOrderPage() {
                                 <div className="text-2xl font-bold">Rp. {formatRupiah(totalPrice)}</div>
                             </div>
 
+                            <SelectInput
+                                id="paymentmethod"
+                                name="paymentmethod"
+                                label="Metode Pembayaran"
+                                required
+                                placehold="Pilih metode pembayaran..."
+                                options={paymentMethodOptions}
+                                value={paymentMethod}
+                                onChange={e => setPaymentMethod(e.target.value)}
+                            />
+
                             {/* Instruksi bayar */}
                             <div className=" bg-primary-light-active border border-neutral-normal p-4 text-sm text-neutral-dark">
                                 <div className="flex flex-col items-center">
@@ -310,6 +350,16 @@ export default function MerchandiseOrderPage() {
                                     />
                                 </div>
 
+                            </div>
+
+                            <div className="flex flex-col gap-2 mt-4">
+                                <div className="font-bold text-xl">Upload Bukti Pembayaran</div>
+                                <ImageUpload
+                                    id="paymentproof"
+                                    label="Bukti Transfer"
+                                    required
+                                    onChange={file => setPaymentFile(file)}
+                                />
                             </div>
                         </div>
                     </RevealSection>

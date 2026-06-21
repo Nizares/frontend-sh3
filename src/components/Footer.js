@@ -6,9 +6,9 @@ export default function Footer() {
             <div className="flex flex-col md:flex-row max-w-306 gap-8">
                 <div className="flex flex-col justify-center w-full md:w-lg gap-4">
                     <div className="flex items-center gap-2">
-                        <span className="text-4xl font-bold text-secondary-text">#</span>
+                        <span className="text-4xl font-bold text-secondary-text font-young">#</span>
                         <div>
-                            <p className="font-bold text-gray-800 leading-tight">Samarinda Hash</p>
+                            <p className="font-bold text-gray-800 leading-tight font-young">Samarinda Hash</p>
                             <p className="text-xs text-gray-500">House Harriers</p>
                         </div>
                     </div>

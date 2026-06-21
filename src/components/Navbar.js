@@ -16,10 +16,10 @@ export default function Navbar() {
 
         {/* Logo */}
           <a className="flex items-center gap-2" href="/">
-            <span className="text-4xl font-bold text-secondary-text">#</span>
+            <span className="text-4xl font-bold text-secondary-text font-young">#</span>
             <div>
-              <p className="font-bold text-gray-800 leading-tight">Samarinda Hash</p>
-              <p className="text-xs text-gray-500">House Harriers</p>
+              <p className="font-bold text-gray-800 leading-tight font-young">Samarinda Hash</p>
+              <p className="text-xs text-gray-500 font-young">House Harriers</p>
             </div>
           </a>
 

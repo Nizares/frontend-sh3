@@ -6,11 +6,11 @@ import Image from "next/image"
 import StructureProfileCard from "@/src/components/StructureProfileCard";
 
 const pimpinan = [
-    { name: "Minardi Soetomo", position: "Hash Master (Ketua Umum)", images: "/assets/images/contohfotopejabat.jpeg", periode: "2024-2027" },
-    { name: "Haryanto Widjojo", position: "Vice Master (Wakil Ketua I)", images: "/assets/images/contohfotopejabat.jpeg", periode: "2024-2027"},
-    { name: "Veronika", position: "Joint Master I (Wakil Ketua II)", images: "/assets/images/contohfotopejabat.jpeg", periode: "2024-2027"},
-    { name: "Handra Suryadinata", position: "Joint Master II (Wakil Ketua III)", images: "/assets/images/contohfotopejabat.jpeg", periode: "2024-2027"},
-    { name: "Cohan Luchas", position: "Hash Secretary (Wakil Ketua IV)", images: "/assets/images/contohfotopejabat.jpeg", periode: "2024-2027"},
+    { name: "Minardi Soetomo", position: "Hash Master (Ketua Umum)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027" },
+    { name: "Haryanto Widjojo", position: "Vice Master (Wakil Ketua I)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027"},
+    { name: "Veronika", position: "Joint Master I (Wakil Ketua II)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027"},
+    { name: "Handra Suryadinata", position: "Joint Master II (Wakil Ketua III)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027"},
+    { name: "Cohan Luchas", position: "Hash Secretary (Wakil Ketua IV)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027"},
 ]
 
 export default function About() {

@@ -111,7 +111,6 @@ export default function About() {
                             images={pimpinan[0].images}
                             name={pimpinan[0].name}
                             position={pimpinan[0].position}
-                            periode={pimpinan[0].periode}
                         />
                     </div>
 
@@ -121,7 +120,6 @@ export default function About() {
                             images={pimpinan[1].images}
                             name={pimpinan[1].name}
                             position={pimpinan[1].position}
-                            periode={pimpinan[0].periode}
                         />
                     </div>
 
@@ -133,7 +131,6 @@ export default function About() {
                                 images={item.images}
                                 name={item.name}
                                 position={item.position}
-                                periode={item.periode}
                             />
                         ))}
                     </div>

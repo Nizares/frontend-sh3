@@ -1,95 +1,120 @@
-
 @import "tailwindcss";
 
 
 @theme {
   --font-young: var(--font-young), serif;
 
-  /* Colors */
-  --color-primary-light: #fcfaf6;
-  --color-primary-light-hover: #fbf7f2;
-  --color-primary-light-active: #f6efe4;
-  
-  --color-primary-normal: #e2caa7;
-  --color-primary-normal-hover: #cbb696;
-  --color-primary-normal-active: #b5a286;
-
-  --color-primary-dark: #aa987d;
-  --color-primary-dark-hover: #887964;
-  --color-primary-dark-active: #665b4b;
-  --color-primary-darker: #4f473a;
+  /* ============================================================
+     COLOR PALETTE — Extracted from SH3 Website Reference
+     
+     PRIMARY   = Golden Amber (dominant accent, CTA buttons, logo tone)
+     SECONDARY = Cream Yellow (hero background gradient)
+     TERTIARY  = Deep Brown (headings, dark text, dark surfaces)
+     NEUTRAL   = White / Off-white / Near-black (body text, contrast)
+     ============================================================ */
 
 
-  --color-secondary-light: #f1f4f1;
-  --color-secondary-light-hover: #e9eeea;
-  --color-secondary-light-active: #d2dcd3;
-  
-  --color-secondary-normal: #6f8f72;
-  --color-secondary-normal-hover: #648167;
-  --color-secondary-normal-active: #59725b;
+  /* PRIMARY — Golden Amber
+     Dari: tombol CTA, kartu section, warna logo emas, subtitle "HASH"
+     Range: kuning gelap (#f5c842) → amber mid (#c98520) → coklat amber (#7a4f0a)
+  */
+  --color-primary-light:        #fef3c7;
+  --color-primary-light-hover:  #fde68a;
+  --color-primary-light-active: #fcd34d;
 
-  --color-secondary-dark: #536b56;
-  --color-secondary-dark-hover: #435644;
-  --color-secondary-dark-active: #324033;
-  --color-secondary-darker: #273228;
+  --color-primary-normal:        #c98520;
+  --color-primary-normal-hover:  #b57519;
+  --color-primary-normal-active: #a06614;
+
+  --color-primary-dark:        #7a4f0a;
+  --color-primary-dark-hover:  #623f08;
+  --color-primary-dark-active: #4a2f06;
+  --color-primary-darker:      #2e1c02;
 
 
-  --color-tertiary-light: #efeeec;
-  --color-tertiary-light-hover: #e7e5e3;
-  --color-tertiary-light-active: #cdc9c4;
-  
-  --color-tertiary-normal: #5f5242;
-  --color-tertiary-normal-hover: #564a3b;
-  --color-tertiary-normal-active: #4c4235;
+  /* SECONDARY — Cream Yellow (Background)
+     Dari: background hero yang gradient kuning muda ke krem
+     Range: putih krem (#fffef5) → kuning muda (#f5e8a3) → kuning cerah (#e8d060)
+  */
+  --color-secondary-light:        #fffef5;
+  --color-secondary-light-hover:  #fdf9dc;
+  --color-secondary-light-active: #faf0b0;
 
-  --color-tertiary-dark: #473e32;
-  --color-tertiary-dark-active: #393128;
-  --color-tertiary-dark-hover: #2b251e;
-  --color-tertiary-darker: #211d17;
+  --color-secondary-normal:        #f5e8a3;
+  --color-secondary-normal-hover:  #f0dc7a;
+  --color-secondary-normal-active: #e8ce55;
 
-  
-  --color-neutral-lighter: #bfbdb9;
-  --color-neutral-light-hover: #b2b0ab;
-  --color-neutral-light-active: #a29f9a;
-  
-  --color-neutral-normal: #706c64;
-  --color-neutral-normal-hover: #5f5c55;
-  --color-neutral-normal-active: #524f49;
+  --color-secondary-dark:        #d4b830;
+  --color-secondary-dark-hover:  #b89e28;
+  --color-secondary-dark-active: #9c8521;
+  --color-secondary-darker:      #6b5a15;
 
-  --color-neutral-dark: #272623;
-  --color-neutral-dark-hover: #1c1b19;
-  --color-neutral-dark-active: #0c0c0b;
 
+  /* TERTIARY — Deep Brown (Dark Surfaces & Headings)
+     Dari: heading "SAMARINDA" (hitam pekat), card border, dark overlay
+     Range: coklat muda (#c4a882) → coklat mid (#5c3a10) → hitam kecoklatan (#1a1508)
+  */
+  --color-tertiary-light:        #f7efe4;
+  --color-tertiary-light-hover:  #eddec8;
+  --color-tertiary-light-active: #ddc8a8;
+
+  --color-tertiary-normal:        #5c3a10;
+  --color-tertiary-normal-hover:  #4e3109;
+  --color-tertiary-normal-active: #402808;
+
+  --color-tertiary-dark:        #2e1c04;
+  --color-tertiary-dark-hover:  #201304;
+  --color-tertiary-dark-active: #140c02;
+  --color-tertiary-darker:      #1a1508;
+
+
+  /* NEUTRAL — White & Near-black
+     Dari: teks putih di atas card amber, background putih footer
+     Range: putih murni (#ffffff) → abu warm (#d4cfc6) → gelap (#1c1a14)
+  */
+  --color-neutral-lighter:       #ffffff;
+  --color-neutral-light-hover:   #f5f0e8;
+  --color-neutral-light-active:  #e8e2d6;
+
+  --color-neutral-normal:        #a09880;
+  --color-neutral-normal-hover:  #8a8268;
+  --color-neutral-normal-active: #746c54;
+
+  --color-neutral-dark:        #1c1a14;
+  --color-neutral-dark-hover:  #131109;
+  --color-neutral-dark-active: #0a0904;
+
+
+  /* ============================================================
+     SEMANTIC ALIASES
+     ============================================================ */
 
   /* Background */
-  --color-primary-bg: var(--color-primary-normal);
-  --color-primary-bg-hover: var(--color-primary-normal-hover);
+  --color-primary-bg:        var(--color-primary-normal);
+  --color-primary-bg-hover:  var(--color-primary-normal-hover);
   --color-primary-bg-active: var(--color-primary-normal-active);
 
-  --color-secondary-bg: var(--color-secondary-normal);
-  --color-secondary-bg-hover: var(--color-secondary-normal-hover);
+  --color-secondary-bg:        var(--color-secondary-normal);
+  --color-secondary-bg-hover:  var(--color-secondary-normal-hover);
   --color-secondary-bg-active: var(--color-secondary-normal-active);
 
-  --color-tertiary-bg: var(--color-tertiary-normal);
-  --color-tertiary-bg-hover: var(--color-tertiary-light-hover);
-  --color-tertiary-bg-active: var(--color-tertiary-normal-active);
+  --color-tertiary-bg:        var(--color-tertiary-darker);
+  --color-tertiary-bg-hover:  var(--color-tertiary-dark-hover);
+  --color-tertiary-bg-active: var(--color-tertiary-dark-active);
 
-  --color-neutral-bg: var(--color-neutral-lighter);
-  --color-neutral-bg-hover: var(--color-neutral-light-hover);
+  --color-neutral-bg:        var(--color-neutral-lighter);
+  --color-neutral-bg-hover:  var(--color-neutral-light-hover);
   --color-neutral-bg-active: var(--color-neutral-light-active);
 
 
   /* Foreground / Text */
-  --color-primary-text: var(--color-neutral-normal);
-  --color-secondary-text: var(--color-secondary-normal);
-  --color-tertiary-text: var(--color-tertiary-normal);
-  --color-neutral-text:  var(--color-neutral-dark);
+  --color-primary-text:   var(--color-primary-normal);
+  --color-secondary-text: var(--color-secondary-dark);
+  --color-tertiary-text:  var(--color-tertiary-darker);
+  --color-neutral-text:   var(--color-neutral-dark);
+
 
   /* Shadow */
-  --shadow-md: 4px 4px var(--color-neutral-normal);
-  --shadow-md-interact: 8px 8px var(--color-neutral-normal);
-
-  
-
-
+  --shadow-md:          4px 4px var(--color-primary-dark);
+  --shadow-md-interact: 8px 8px var(--color-primary-dark);
 }

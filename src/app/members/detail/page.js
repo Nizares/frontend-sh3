@@ -122,7 +122,7 @@ export default function DetailMember() {
                         id="hashid"
                         type="text"
                         name="cariid"
-                        placeholder="SH3ID000001"
+                        placeholder="0001"
                         className="flex flex-col gap-2"
                         value={searchId}
                         onChange={handleChange}

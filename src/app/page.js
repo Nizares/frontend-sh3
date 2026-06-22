@@ -78,7 +78,7 @@ export default function Home() {
         <TotalStatistic />
         <div className="flex flex-col bg-secondary-dark p-8 gap-y-8">
           <div className="text-white text-2xl text-center font-young lining-nums">
-            REGULAR RUN  |  EVERY SUNDAY 14.30 WITA | Samarinda
+            REGULAR RUN  |  EVERY SUNDAY 14.30 WITA OPEN REGISTRATION | Samarinda
           </div>
         </div>
       </RevealSection>

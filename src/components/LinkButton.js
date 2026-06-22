@@ -9,7 +9,7 @@ export default function LinkButton({
     return (
         <Link
         href={destination}
-        className={`bg-${bg_color} text-white px-6 py-2.5 m-5 font-medium hover:bg-${bg_color_hover} active:bg-${bg_color_active} font-young shadow-md transition-all hover:shadow-md-interact hover:-translate-x-1 hover:-translate-y-1  active:shadow-md-interact active:-translate-x-1 active:-translate-y-1 focus:shadow-md-interact focus:-translate-x-1 focus:-translate-y-1`}
+        className={`bg-${bg_color} text-white px-6 py-2.5 m-5 font-medium hover:bg-${bg_color_hover} active:bg-${bg_color_active} font-young shadow-flat transition-all hover:shadow-flat-interact hover:-translate-x-1 hover:-translate-y-1  active:shadow-flat-interact active:-translate-x-1 active:-translate-y-1 focus:shadow-flat-interact focus:-translate-x-1 focus:-translate-y-1`}
         >
         {text}
         </Link>

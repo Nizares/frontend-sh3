@@ -27,16 +27,14 @@ export default function EventCard({
       <div className="flex flex-col w-full gap-4 p-8">
         <div className="text-2xl font-bold font-young">{title}</div>
         <div className="text-lg">{concateDate(start_date, end_date)}</div>
-        <div className="flex flex-col justify-between w-full md:flex-row gap-8">
           <div className="text-xl font-semibold">{category}</div>
           <Link
             href={isOngoing ? `/events/upcoming?id=${id}` : `/events/finished?id=${id}`}
-            className={`text-white px-5 py-2.5 font-medium transition-colors font-young
-              ${isOngoing ? "bg-tertiary-bg hover:bg-tertiary-bg-hover active:bg-tertiary-bg-active" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}`}
+            className={`text-white text-center px-5 py-2.5 font-medium transition-colors font-young shadow-md
+              ${isOngoing ? "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active  "}`}
           >
             {isOngoing ? "Daftar" : "Detail"}
           </Link>
-        </div>
       </div>
     </div>
   )

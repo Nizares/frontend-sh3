@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
       className={` h-full antialiased ${libreB.className} ${youngS.variable}`}
     >
 
-      <body className="min-h-full flex flex-col bg-primary-light-active text-neutral-text">
+      <body className="min-h-full flex flex-col text-neutral-text">
         <Navbar />
         {children}
         <Footer />

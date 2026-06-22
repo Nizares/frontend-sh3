@@ -10,8 +10,8 @@ export default function StructureProfileCard({
             <Image
                 src={images}
                 alt="image"
-                width={250}
-                height={250}
+                width={150}
+                height={150}
                 className="w-full object-cover"
             />
             <div className="flex flex-col w-full gap-4 p-8">

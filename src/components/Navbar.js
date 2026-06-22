@@ -16,7 +16,7 @@ export default function Navbar() {
 
         {/* Logo */}
           <a className="flex items-center gap-2" href="/">
-            <span className="text-4xl font-bold text-secondary-text font-young">#</span>
+            <span className="text-4xl font-bold text-primary-normal font-young">#</span>
             <div>
               <p className="font-bold text-gray-800 leading-tight font-young">Samarinda Hash</p>
               <p className="text-xs text-gray-500 font-young">House Harriers</p>
@@ -31,6 +31,7 @@ export default function Navbar() {
             { href: "/events", label: "Events" },
             { href: "/merchandise", label: "Merchandise"},
             { href: "/gallery", label: "Gallery" },
+            { href: "#", label: "Sponsorship"}
           ].map((item) => (
             <li key={item.href}>
               <Link
@@ -51,22 +52,22 @@ export default function Navbar() {
         <div className="hidden md:flex gap-4">
           <Link
             href="/members/register"
-            className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young"
+            className="bg-primary-bg text-white px-6 py-2.5 font-medium hover:bg-primary-bg-hover active:bg-primary-bg-active font-young"
           >
             Registrasi Member
           </Link>
           <Link
             href="/members/detail"
-            className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young"
+            className="bg-primary-bg text-white px-6 py-2.5 font-medium hover:bg-primary-bg-hover active:bg-primary-bg-active font-young"
           >
             Sudah jadi Member?
           </Link>
-          <Link
+          {/* <Link
             href="https://samarindahashhouseharriers.com/bnh2027/"
             className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young"
           >
             BNH 2027
-          </Link>
+          </Link> */}
         </div>
 
         {/* Burger Button */}

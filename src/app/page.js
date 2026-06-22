@@ -29,16 +29,27 @@ export default function Home() {
   }, []);
 
   return (
-    <Container className="flex flex-col gap-y-16">
+    <Container className="flex flex-col">
       <RevealSection direction="up">
-        <div className="flex flex-col flex-1 items-center justify-center pt-8 md:pt-0 p-8 max-w-306 mx-auto min-h-[80vh]">
-          <div className="flex flex-col md:flex-row">
-            <div className="flex flex-col w-full md:w-1/2">
-              <h1 className="text-5xl font-bold font-young text-neutral-normal">
-                Samarinda <span className="text-secondary-text">Hash </span> <br className="hidden sm:inline" />
+
+        <div className="flex flex-col flex-1 items-center justify-center pt-8 md:pt-0 p-8 max-w-306 mx-auto min-h-[80vh] overflow-hidden ">
+          {/* <div className="absolute inset-0 bg-[url('/assets/images/batik1.jpg')] bg-repeat bg-size-[100px] opacity-15 -z-10" /> */}
+          <Image
+            src="/assets/images/hero1.jpg"
+            alt="Hero background"
+            fill // 2. Forces image to expand to the parent size
+            priority // 3. Preloads the image if it's above the fold
+            sizes="100vh" // 4. Tells Next.js to serve a full-width image size
+            
+            className="object-cover -z-1 brightness-75"
+          />
+          <div className="flex flex-col-reverse md:flex-row">
+            <div className="flex flex-col w-full md:w-1/2 text-white">
+              <h1 className="text-5xl font-bold font-young">
+                Samarinda <span className="text-primary-light">Hash </span> <br className="hidden sm:inline" />
                 House Harriers
               </h1>
-              <h2 className="text-3xl font-semibold font-young text-neutral-light-active">On On!</h2>
+              <h2 className="text-3xl font-semibold font-young my-4">On On! - <span className="text-primary-text">Adventure in <span className="text-secondary-text">Nature</span></span></h2>
               <p className="py-5">
                 A Drinking Club With a Running Problem,
                 Kami mengadakan lari mingguan di berbagai sudut kota dan alam Kalimantan, dilanjutkan dengan sesi down-down yang penuh keceriaan.
@@ -47,16 +58,16 @@ export default function Home() {
                 <LinkButton
                   destination="/about"
                   text="About"
-                  bg_color="secondary-bg"
-                  bg_color_hover="secondary-bg-hover"
-                  bg_color_active="secondary-bg-active"
+                  bg_color="primary-bg"
+                  bg_color_hover="primary-bg-hover"
+                  bg_color_active="primary-bg-active"
                 />
                 <LinkButton
                   destination="/events"
                   text="Event Terdekat"
-                  bg_color="secondary-bg"
-                  bg_color_hover="secondary-bg-hover"
-                  bg_color_active="secondary-bg-active"
+                  bg_color="primary-bg"
+                  bg_color_hover="primary-bg-hover"
+                  bg_color_active="primary-bg-active"
                 />
 
               </div>
@@ -71,59 +82,62 @@ export default function Home() {
               />
             </div>
           </div>
+          <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-b from-transparent to-white -z-1" />
         </div>
+
+
       </RevealSection>
 
       <RevealSection direction="up">
+        <Carousel />
+      </RevealSection>
+
+
+      <RevealSection direction="up">
         <TotalStatistic />
-        <div className="flex flex-col bg-secondary-dark p-8 gap-y-8">
+        <div className="flex flex-col bg-primary-light-active p-8 gap-y-8">
           <div className="text-white text-2xl text-center font-young lining-nums">
             REGULAR RUN  |  EVERY SUNDAY 14.30 WITA OPEN REGISTRATION | Samarinda
           </div>
         </div>
       </RevealSection>
 
-      <RevealSection direction="up">
-        <h2 className="text-4xl font-bold flex justify-center font-young text-neutral-normal" id="upcomingRun" >
-          Run Highlights
+
+
+      <div className="bg-primary-bg p-8">
+        <h2 className="text-4xl font-bold flex justify-center font-young text-white my-16" id="upcomingRun">
+          Event yang Akan Datang
         </h2>
-        <Carousel />
-      </RevealSection>
-
-      <h2 className="text-4xl font-bold flex justify-center font-young text-neutral-normal" id="upcomingRun">
-        Event yang Akan Datang
-      </h2>
-      <div className="flex md:flex-row justify-center gap-8 flex-col items-center">
-        {loading ? (
-          <p className="text-xl">Loading...</p>
-        ) : (
-          events
-            .filter((item) => new Date(item.start_date) > now)
-            .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
-            .slice(0, 3)
-            .map((item, i) => (
-              <RevealSection key={i} direction="up" delay={i * 100}>
-                <EventCard
-                  key={item.id}
-                  id={item.id}
-                  title={item.title}
-                  start_date={item.start_date}
-                  end_date={item.end_date}
-                  category={item.category?.name}
-                  img={item.image_url}
-                  status={item.status}
-                />
-              </RevealSection>
-            ))
-        )}
-      </div>
+        <div className="flex md:flex-row justify-center gap-8 flex-col items-center">
+          {loading ? (
+            <p className="text-xl">Loading...</p>
+          ) : (
+            events
+              .filter((item) => new Date(item.start_date) > now)
+              .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
+              .slice(0, 4)
+              .map((item, i) => (
+                <RevealSection key={i} direction="up" delay={i * 100}>
+                  <EventCard
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    start_date={item.start_date}
+                    end_date={item.end_date}
+                    category={item.category?.name}
+                    img={item.image_url}
+                    status={item.status}
+                  />
+                </RevealSection>
+              ))
+          )}
+        </div>
 
 
-      <h2 className="text-4xl font-bold flex justify-center font-young text-neutral-normal">
-        Event yang Sudah Selesai
-      </h2>
-      <div className="flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-center max-w-306 mx-auto">
+        <h2 className="text-4xl font-bold flex justify-center font-young text-white my-16">
+          Event yang Sudah Selesai
+        </h2>
+        <div className="flex md:flex-row justify-center gap-8 flex-col items-center">
           {loading ? (
             <p className="text-xl">Loading...</p>
           ) : (

@@ -36,18 +36,18 @@
      Dari: background hero yang gradient kuning muda ke krem
      Range: putih krem (#fffef5) → kuning muda (#f5e8a3) → kuning cerah (#e8d060)
   */
-  --color-secondary-light:        #fffef5;
-  --color-secondary-light-hover:  #fdf9dc;
-  --color-secondary-light-active: #faf0b0;
+  --color-secondary-light:        #e6ffe6;
+  --color-secondary-light-hover:  #88ff88;
+  --color-secondary-light-active: #8aff8a;
 
-  --color-secondary-normal:        #f5e8a3;
-  --color-secondary-normal-hover:  #f0dc7a;
-  --color-secondary-normal-active: #e8ce55;
+  --color-secondary-normal:        #00bf00;
+  --color-secondary-normal-hover:  #2eff2e;
+  --color-secondary-normal-active: #5cff5c;
 
-  --color-secondary-dark:        #d4b830;
-  --color-secondary-dark-hover:  #b89e28;
-  --color-secondary-dark-active: #9c8521;
-  --color-secondary-darker:      #6b5a15;
+  --color-secondary-dark:        #004700;
+  --color-secondary-dark-hover:  #00a300;
+  --color-secondary-dark-active: #00bf00;
+  --color-secondary-darker:      #001a00;
 
 
   /* TERTIARY — Deep Brown (Dark Surfaces & Headings)
@@ -115,6 +115,6 @@
 
 
   /* Shadow */
-  --shadow-md:          4px 4px var(--color-primary-dark);
-  --shadow-md-interact: 8px 8px var(--color-primary-dark);
+  --shadow-flat:          4px 4px var(--color-primary-dark);
+  --shadow-flat-interact: 8px 8px var(--color-primary-dark);
 }

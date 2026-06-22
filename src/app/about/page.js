@@ -7,19 +7,19 @@ import StructureProfileCard from "@/src/components/StructureProfileCard";
 
 const pimpinan = [
     { name: "Minardi Soetomo", position: "Hash Master (Ketua Umum)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027" },
-    { name: "Haryanto Widjojo", position: "Vice Master (Wakil Ketua I)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027"},
-    { name: "Veronika", position: "Joint Master I (Wakil Ketua II)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027"},
-    { name: "Handra Suryadinata", position: "Joint Master II (Wakil Ketua III)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027"},
-    { name: "Cohan Luchas", position: "Hash Secretary (Wakil Ketua IV)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027"},
+    { name: "Haryanto Widjojo", position: "Vice Master (Wakil Ketua I)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027" },
+    { name: "Veronika", position: "Joint Master I (Wakil Ketua II)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027" },
+    { name: "Handra Suryadinata", position: "Joint Master II (Wakil Ketua III)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027" },
+    { name: "Cohan Luchas", position: "Hash Secretary (Wakil Ketua IV)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027" },
 ]
 
 export default function About() {
     return (
-        <Container className="flex flex-col gap-y-16">
+        <Container className="flex flex-col">
 
             {/* Header */}
             <div className="flex flex-col flex-1 items-center justify-center p-8">
-                <h1 className="text-neutral-normal text-5xl font-bold font-young">About</h1>
+                <h1 className="text-5xl font-bold font-young">About</h1>
             </div>
 
             {/* Logo & Deskripsi */}
@@ -35,8 +35,8 @@ export default function About() {
                         />
                     </div>
                     <div className="w-full p-auto md:w-1/2 flex flex-col gap-4">
-                        <p className="text-4xl font-bold font-young text-neutral-normal">A Drinking Club With a Running Problem</p>
-                        <h2 className="text-3xl font-bold font-young text-neutral-normal">Samarinda <span className="text-secondary-text">Hash</span> House Harriers</h2>
+                        <p className="text-4xl font-bold font-young">A Drinking Club With a Running Problem</p>
+                        <h2 className="text-3xl font-bold font-young">Samarinda <span className="text-primary-text">Hash</span> House Harriers</h2>
                         <p className="text-neutral-text leading-relaxed font-medium">
                             Samarinda Hash House Harriers (SH3) adalah komunitas lari sosial yang berdiri di Samarinda, Kalimantan Timur. Kami mengadakan lari mingguan di berbagai sudut kota dan alam Kalimantan, dilanjutkan dengan sesi down-down yang penuh keceriaan.
                         </p>
@@ -51,21 +51,21 @@ export default function About() {
             <RevealSection direction="up">
                 <div className="flex flex-col text-white gap-4">
                     <div className="flex flex-row w-full justify-center gap-4">
-                        <div className="flex flex-col w-lg bg-secondary-dark p-8">
+                        <div className="flex flex-col w-lg bg-primary-dark p-8">
                             <div className="font-bold font-young text-2xl">Weekly Runs</div>
                             <div className="text-xl">Setiap Senin & Sabtu, lokasi berbeda setiap minggu</div>
                         </div>
-                        <div className="flex flex-col w-lg bg-secondary-dark p-8">
+                        <div className="flex flex-col w-lg bg-primary-dark p-8">
                             <div className="font-bold font-young text-2xl">Down Down</div>
                             <div className="text-xl">Tradisi Hash yang meriah setelah setiap lari</div>
                         </div>
                     </div>
                     <div className="flex flex-row w-full justify-center gap-4">
-                        <div className="flex flex-col w-lg bg-secondary-dark p-8">
+                        <div className="flex flex-col w-lg bg-primary-dark p-8">
                             <div className="font-bold font-young text-2xl">Alam Borneo</div>
                             <div className="text-xl">Trail di hutan, sungai, dan bukit Kalimantan</div>
                         </div>
-                        <div className="flex flex-col w-lg bg-secondary-dark p-8">
+                        <div className="flex flex-col w-lg bg-primary-dark p-8">
                             <div className="font-bold font-young text-2xl">Komunitas</div>
                             <div className="text-xl">Inklusif, ramah, dan penuh tawa</div>
                         </div>
@@ -75,8 +75,8 @@ export default function About() {
 
             {/* Sejarah */}
             <RevealSection direction="up">
-                <div className="flex flex-col max-w-306 mx-auto gap-4">
-                    <div className="font-bold text-neutral-normal text-4xl font-young md:p-4">Sejarah</div>
+                <div className="flex flex-col max-w-306 mx-auto gap-4 p-8">
+                    <div className="font-bold text-4xl font-young md:p-4">Sejarah</div>
                     <div className="indent-32 text-justify">
                         Samarinda Hash House Harriers (SH3) merupakan salah satu komunitas olahraga non-prestasi tertua dan paling legendaris di Samarinda yang diperkirakan telah berdiri sejak era 1980-an.
                         Kehadiran komunitas ini tidak lepas dari sejarah global Hash House Harriers yang pertama kali lahir di Kuala Lumpur, Malaysia, pada tahun 1938. Ketika industri minyak, gas, dan perkayuan
@@ -100,40 +100,43 @@ export default function About() {
 
             {/* ====== STRUKTUR ORGANISASI - PIMPINAN SAJA ====== */}
             <RevealSection direction="up">
-                <div className="flex flex-col max-w-306 mx-auto w-full gap-8">
-                    <div className="font-bold text-neutral-normal text-4xl font-young md:p-4">
-                        Struktur Organisasi
-                    </div>
+                <div className="bg-primary-bg p-8">
+                    <div className="flex flex-col max-w-306 mx-auto w-full gap-8">
+                        <div className="font-bold text-4xl font-young md:p-4">
+                            Struktur Organisasi
+                        </div>
 
-                    {/* Hash Master - sendiri di tengah atas */}
-                    <div className="flex justify-center">
-                        <StructureProfileCard
-                            images={pimpinan[0].images}
-                            name={pimpinan[0].name}
-                            position={pimpinan[0].position}
-                        />
-                    </div>
-
-                    {/* Vice Master */}
-                    <div className="flex justify-center">
-                        <StructureProfileCard
-                            images={pimpinan[1].images}
-                            name={pimpinan[1].name}
-                            position={pimpinan[1].position}
-                        />
-                    </div>
-
-                    {/* Joint Master I, Joint Master II, Hash Secretary - berjajar */}
-                    <div className="flex flex-wrap justify-center gap-6">
-                        {pimpinan.slice(2).map((item, i) => (
+                        {/* Hash Master - sendiri di tengah atas */}
+                        <div className="flex justify-center">
                             <StructureProfileCard
-                                key={i}
-                                images={item.images}
-                                name={item.name}
-                                position={item.position}
+                                images={pimpinan[0].images}
+                                name={pimpinan[0].name}
+                                position={pimpinan[0].position}
                             />
-                        ))}
+                        </div>
+
+                        {/* Vice Master */}
+                        <div className="flex justify-center">
+                            <StructureProfileCard
+                                images={pimpinan[1].images}
+                                name={pimpinan[1].name}
+                                position={pimpinan[1].position}
+                            />
+                        </div>
+
+                        {/* Joint Master I, Joint Master II, Hash Secretary - berjajar */}
+                        <div className="flex flex-wrap justify-center gap-6">
+                            {pimpinan.slice(2).map((item, i) => (
+                                <StructureProfileCard
+                                    key={i}
+                                    images={item.images}
+                                    name={item.name}
+                                    position={item.position}
+                                />
+                            ))}
+                        </div>
                     </div>
+
                 </div>
             </RevealSection>
 

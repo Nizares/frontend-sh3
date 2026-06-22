@@ -1,6 +1,6 @@
 export default function TotalStatistic() {
     return (
-        <div className="flex flex-col items-center gap-x-8 p-6 text-white bg-secondary-bg md:flex-row md:justify-around left-0">
+        <div className="flex flex-col items-center gap-x-8 p-6 text-white bg-primary-bg md:flex-row md:justify-around left-0">
             <div className="flex flex-row items-center">
                 <div className="flex flex-col gap-2 items-center">
                     <p className="font-semibold text-xl md:text-3xl">2381</p>

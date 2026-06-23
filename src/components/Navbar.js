@@ -31,7 +31,7 @@ export default function Navbar() {
             { href: "/events", label: "Events" },
             { href: "/merchandise", label: "Merchandise"},
             { href: "/gallery", label: "Gallery" },
-            { href: "#", label: "Sponsorship"}
+            { href: "/sponsor", label: "Sponsorship"}
           ].map((item) => (
             <li key={item.href}>
               <Link
@@ -52,22 +52,16 @@ export default function Navbar() {
         <div className="hidden md:flex gap-4">
           <Link
             href="/members/register"
-            className="bg-primary-bg text-white px-6 py-2.5 font-medium hover:bg-primary-bg-hover active:bg-primary-bg-active font-young"
+            className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young"
           >
             Registrasi Member
           </Link>
           <Link
             href="/members/detail"
-            className="bg-primary-bg text-white px-6 py-2.5 font-medium hover:bg-primary-bg-hover active:bg-primary-bg-active font-young"
+            className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young"
           >
             Sudah jadi Member?
           </Link>
-          {/* <Link
-            href="https://samarindahashhouseharriers.com/bnh2027/"
-            className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young"
-          >
-            BNH 2027
-          </Link> */}
         </div>
 
         {/* Burger Button */}
@@ -91,6 +85,7 @@ export default function Navbar() {
             { href: "/events", label: "Events" },
             { href: "/merchandise", label: "Merchandise"},
             { href: "/gallery", label: "Gallery" },
+            { href: "/sponsor", label: "Sponsorship"}
           ].map((item) => (
             <li key={item.href}>
               <Link
@@ -119,12 +114,6 @@ export default function Navbar() {
               className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young text-center"
             >
               Sudah jadi Member?
-            </Link>
-            <Link
-              href="https://samarindahashhouseharriers.com/bnh2027/"
-              className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active font-young text-center"
-            >
-              BNH 2027
             </Link>
           </li>
         </ul>

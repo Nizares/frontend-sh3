@@ -31,7 +31,6 @@ export default function Home() {
   return (
     <Container className="flex flex-col">
       <RevealSection direction="up">
-
         <div className="flex flex-col flex-1 items-center justify-center pt-8 md:pt-0 p-8 max-w-306 mx-auto min-h-[80vh] overflow-hidden ">
           {/* <div className="absolute inset-0 bg-[url('/assets/images/batik1.jpg')] bg-repeat bg-size-[100px] opacity-15 -z-10" /> */}
           <Image
@@ -40,19 +39,26 @@ export default function Home() {
             fill // 2. Forces image to expand to the parent size
             priority // 3. Preloads the image if it's above the fold
             sizes="100vh" // 4. Tells Next.js to serve a full-width image size
-            
             className="object-cover -z-1 brightness-75"
           />
           <div className="flex flex-col-reverse md:flex-row">
             <div className="flex flex-col w-full md:w-1/2 text-white">
               <h1 className="text-5xl font-bold font-young">
-                Samarinda <span className="text-primary-light">Hash </span> <br className="hidden sm:inline" />
+                Samarinda <span className="text-primary-light">Hash </span>{" "}
+                <br className="hidden sm:inline" />
                 House Harriers
               </h1>
-              <h2 className="text-3xl font-semibold font-young my-4">On On! - <span className="text-primary-text">Adventure in <span className="text-secondary-text">Nature</span></span></h2>
+              <h2 className="text-3xl font-semibold font-young my-4">
+                On On! -{" "}
+                <span className="text-primary-text">
+                  Adventure in{" "}
+                  <span className="text-secondary-text">Nature</span>
+                </span>
+              </h2>
               <p className="py-5">
-                A Drinking Club With a Running Problem,
-                Kami mengadakan lari mingguan di berbagai sudut kota dan alam Kalimantan, dilanjutkan dengan sesi down-down yang penuh keceriaan.
+                A Drinking Club With a Running Problem, Kami mengadakan lari
+                mingguan di berbagai sudut kota dan alam Kalimantan, dilanjutkan
+                dengan sesi down-down yang penuh keceriaan.
               </p>
               <div className="flex flex-row flex-wrap">
                 <LinkButton
@@ -69,7 +75,6 @@ export default function Home() {
                   bg_color_hover="primary-bg-hover"
                   bg_color_active="primary-bg-active"
                 />
-
               </div>
             </div>
             <div className="flex flex-col p-8 w-full md:w-1/2 items-center">
@@ -82,30 +87,33 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-b from-transparent to-white -z-1" />
+          <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-b from-transparent to-[#001a00] -z-1" />
         </div>
-
-
       </RevealSection>
 
-      <RevealSection direction="up">
-        <Carousel />
-      </RevealSection>
+      <div className="bg-secondary-darker">
+        <RevealSection direction="up">
+          <div className="mt-8">
+            <Carousel />
+          </div>
+        </RevealSection>
+      </div>
 
 
       <RevealSection direction="up">
         <TotalStatistic />
         <div className="flex flex-col bg-primary-light-active p-8 gap-y-8">
           <div className="text-white text-2xl text-center font-young lining-nums">
-            REGULAR RUN  |  EVERY SUNDAY 14.30 WITA OPEN REGISTRATION | Samarinda
+            REGULAR RUN | EVERY SUNDAY 14.30 WITA OPEN REGISTRATION | Samarinda
           </div>
         </div>
       </RevealSection>
 
-
-
       <div className="bg-primary-bg p-8">
-        <h2 className="text-4xl font-bold flex justify-center font-young text-white my-16" id="upcomingRun">
+        <h2
+          className="text-4xl font-bold flex justify-center font-young text-white my-16"
+          id="upcomingRun"
+        >
           Event yang Akan Datang
         </h2>
         <div className="flex md:flex-row justify-center gap-8 flex-col items-center">
@@ -132,7 +140,6 @@ export default function Home() {
               ))
           )}
         </div>
-
 
         <h2 className="text-4xl font-bold flex justify-center font-young text-white my-16">
           Event yang Sudah Selesai

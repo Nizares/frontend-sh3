@@ -8,6 +8,7 @@ import Carousel from "@/src/components/Carousel";
 import EventCard from "@/src/components/EventCard";
 import TotalStatistic from "../components/TotalStatistics";
 import LinkButton from "../components/LinkButton";
+import { SponsorMarquee } from "../components/SponsorMarquee";
 import { eventService } from "@/src/services/eventService";
 
 import { RevealSection } from "../components/RevealSection";
@@ -87,9 +88,20 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-b from-transparent to-[#001a00] -z-1" />
+
+          <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-b from-transparent to-secondary-darker -z-1" />
         </div>
       </RevealSection>
+
+      <div className="bg-secondary-darker">
+        <div className="text-center text-3xl text-white mt-8 font-bold font-young">
+          Sponsor
+        </div>
+        <RevealSection direction="up">
+
+          <SponsorMarquee />
+        </RevealSection>
+      </div>
 
       <div className="bg-secondary-darker">
         <RevealSection direction="up">
@@ -109,9 +121,17 @@ export default function Home() {
         </div>
       </RevealSection>
 
-      <div className="bg-primary-bg p-8">
+      <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light p-8">
+        <div
+          className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left"
+          style={{ backgroundImage: `url('/assets/images/batik4.svg')`, backgroundSize: '112px' }}
+        />
+        <div
+          className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100"
+          style={{ backgroundImage: `url('/assets/images/batik4.svg')`, backgroundSize: '112px' }}
+        />
         <h2
-          className="text-4xl font-bold flex justify-center font-young text-white my-16"
+          className="text-4xl font-bold flex justify-center font-young text-primary-darker my-16"
           id="upcomingRun"
         >
           Event yang Akan Datang
@@ -141,7 +161,7 @@ export default function Home() {
           )}
         </div>
 
-        <h2 className="text-4xl font-bold flex justify-center font-young text-white my-16">
+        <h2 className="text-4xl font-bold flex justify-center font-young text-primary-darker my-16">
           Event yang Sudah Selesai
         </h2>
         <div className="flex md:flex-row justify-center gap-8 flex-col items-center">

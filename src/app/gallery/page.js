@@ -38,7 +38,7 @@ export default function Gallery() {
             <h1 className="text-5xl font-bold text-center p-8 font-young text-neutral-normal">Cerita Kami saat Berlari!</h1>
 
             {images.length === 0 ? (
-                <p className="text-center text-shadow-neutral-normal py-16">Belum ada foto event.</p>
+                <p className="text-center text-xl py-16 min-h-screen">Belum ada foto event.</p>
             ) : (
                 <MasonryGallery images={images} />
             )}

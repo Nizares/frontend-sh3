@@ -5,7 +5,7 @@ import { useSponsor } from "../hooks/useSponsor";
 
 function SponsorCard({ sponsor }) {
     const inner = (
-        <div className="flex flex-col items-center justify-center gap-2 p-4 transition-colors min-w-30 cursor-pointer ">
+        <div className="flex flex-col items-center justify-center gap-2 p-4 min-w-[120px] cursor-pointer">
             {sponsor.logo_url ? (
                 <img
                     src={sponsor.logo_url}
@@ -17,7 +17,7 @@ function SponsorCard({ sponsor }) {
                     {sponsor.name.slice(0, 2).toUpperCase()}
                 </div>
             )}
-            <div className="text-sm font-semibold text-center">{sponsor.name}</div>
+            <div className="text-sm font-semibold text-center text-white">{sponsor.name}</div>
         </div>
     )
 
@@ -37,7 +37,7 @@ function SponsorCard({ sponsor }) {
     return <div>{inner}</div>
 }
 
-export function SponsorList() {
+export function SponsorMarquee() {
     const { sponsors, loading, error } = useSponsor();
 
     if (loading) return <p>Loading...</p>;
@@ -48,13 +48,18 @@ export function SponsorList() {
 
     if (allSponsors.length === 0) return <p className="min-h-screen text-center text-2xl p-16">Belum ada Sponsor</p>;
 
-    return (
-        <section className="py-10 px-6 min-h-screen">
+    // Ambil 5 sponsor pertama, lalu duplikat untuk efek marquee seamless
+    const topSponsors = allSponsors.slice(0, 5);
+    const marqueeItems = [...topSponsors, ...topSponsors];
 
-            <div className="flex flex-wrap justify-center gap-6">
-                {allSponsors.map((sponsor) => (
-                    <SponsorCard key={sponsor.id} sponsor={sponsor} />
-                ))}
+    return (
+        <section className="py-10 px-6">
+            <div className="overflow-hidden w-full">
+                <div className="flex w-max gap-8 animate-marquee hover:[animation-play-state:paused]">
+                    {marqueeItems.map((sponsor, index) => (
+                        <SponsorCard key={`${sponsor.id}-${index}`} sponsor={sponsor} />
+                    ))}
+                </div>
             </div>
         </section>
     )

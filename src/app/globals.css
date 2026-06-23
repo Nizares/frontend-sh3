@@ -118,3 +118,13 @@
   --shadow-flat:          4px 4px var(--color-primary-dark);
   --shadow-flat-interact: 8px 8px var(--color-primary-dark);
 }
+
+/* app/globals.css */
+@keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+@utility animate-marquee {
+    animation: marquee-scroll 18s linear infinite;
+}

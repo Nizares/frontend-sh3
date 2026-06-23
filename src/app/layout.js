@@ -1,7 +1,7 @@
 import Navbar from "@/src/components/Navbar";
 import Footer from "@/src/components/Footer";
 import "./globals.css";
-import { Libre_Baskerville, Young_Serif } from 'next/font/google';
+import { Libre_Baskerville, Young_Serif} from 'next/font/google';
 
 const libreB = Libre_Baskerville({
   subsets: ['latin'],

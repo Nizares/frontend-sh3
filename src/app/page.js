@@ -35,33 +35,43 @@ export default function Home() {
         <div className="flex flex-col flex-1 items-center justify-center pt-8 md:pt-0 p-8 max-w-306 mx-auto min-h-[80vh] overflow-hidden ">
           {/* <div className="absolute inset-0 bg-[url('/assets/images/batik1.jpg')] bg-repeat bg-size-[100px] opacity-15 -z-10" /> */}
           <Image
-            src="/assets/images/hero1.jpg"
+            src="/assets/images/home1.png"
             alt="Hero background"
             fill // 2. Forces image to expand to the parent size
             priority // 3. Preloads the image if it's above the fold
             sizes="100vh" // 4. Tells Next.js to serve a full-width image size
             className="object-cover -z-1 brightness-75"
           />
-          <div className="flex flex-col-reverse md:flex-row">
-            <div className="flex flex-col w-full md:w-1/2 text-white">
-              <h1 className="text-5xl font-bold font-young">
-                Samarinda <span className="text-primary-light">Hash </span>{" "}
+          <div className="flex flex-col justify-center items-center mt-16">
+            <div className="flex flex-col p-8 w-full md:w-1/2 items-center">
+              <Image
+                src="/assets/images/sh3logo.png"
+                alt="Logo"
+                width={250}
+                height={250}
+                className="object-cover rounded-lg"
+              />
+            </div>
+            <div className="flex flex-col w-full md:w-3/4 text-white">
+              <h1 className="text-5xl font-bold text-center">
+                Samarinda {" "}
                 <br className="hidden sm:inline" />
+                <span className="text-primary-light">Hash </span>
                 House Harriers
               </h1>
-              <h2 className="text-3xl font-semibold font-young my-4">
+              <h2 className="text-3xl font-semibold font-young my-4 text-center">
                 On On! -{" "}
                 <span className="text-primary-text">
                   Adventure in{" "}
                   <span className="text-secondary-text">Nature</span>
                 </span>
               </h2>
-              <p className="py-5">
+              <p className="py-5 text-center font-semibold">
                 A Drinking Club With a Running Problem, Kami mengadakan lari
                 mingguan di berbagai sudut kota dan alam Kalimantan, dilanjutkan
                 dengan sesi down-down yang penuh keceriaan.
               </p>
-              <div className="flex flex-row flex-wrap">
+              <div className="flex flex-row flex-wrap justify-center">
                 <LinkButton
                   destination="/about"
                   text="About"
@@ -78,15 +88,7 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="flex flex-col p-8 w-full md:w-1/2 items-center">
-              <Image
-                src="/assets/images/sh3logo.png"
-                alt="Logo"
-                width={250}
-                height={250}
-                className="object-cover rounded-lg"
-              />
-            </div>
+
           </div>
 
           <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-b from-transparent to-secondary-darker -z-1" />
@@ -123,11 +125,11 @@ export default function Home() {
 
       <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light p-8">
         <div
-          className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left"
+          className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left mask-r-from-5%"
           style={{ backgroundImage: `url('/assets/images/batik4.svg')`, backgroundSize: '112px' }}
         />
         <div
-          className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100"
+          className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100 mask-r-from-5%"
           style={{ backgroundImage: `url('/assets/images/batik4.svg')`, backgroundSize: '112px' }}
         />
         <h2
@@ -145,7 +147,7 @@ export default function Home() {
               .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
               .slice(0, 4)
               .map((item, i) => (
-                <RevealSection key={i} direction="up" delay={i * 100}>
+                <RevealSection key={i} direction="up" delay={i * 100} className="flex-1">
                   <EventCard
                     key={item.id}
                     id={item.id}
@@ -164,7 +166,7 @@ export default function Home() {
         <h2 className="text-4xl font-bold flex justify-center font-young text-primary-darker my-16">
           Event yang Sudah Selesai
         </h2>
-        <div className="flex md:flex-row justify-center gap-8 flex-col items-center">
+        <div className="flex md:flex-row justify-between gap-8 flex-col">
           {loading ? (
             <p className="text-xl">Loading...</p>
           ) : (
@@ -173,7 +175,7 @@ export default function Home() {
               .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
               .slice(0, 4)
               .map((item, i) => (
-                <RevealSection key={i} direction="up" delay={i * 100}>
+                <RevealSection key={i} direction="up" delay={i * 100} className="flex-1">
                   <EventCard
                     key={item.id}
                     id={item.id}

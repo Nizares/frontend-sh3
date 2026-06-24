@@ -1,15 +1,13 @@
 import Navbar from "@/src/components/Navbar";
 import Footer from "@/src/components/Footer";
 import "./globals.css";
-import { Libre_Baskerville, Young_Serif} from 'next/font/google';
+import {Poppins} from 'next/font/google';
 
-const libreB = Libre_Baskerville({
+
+const poppins = Poppins({
+  weight: ['400', '600', '700'],
   subsets: ['latin'],
-})
-const youngS = Young_Serif({
-  weight: '400',
-  subsets: ['latin'],
-  variable: "--font-young"
+  variable: "--font-poppins"
 })
 
 export const metadata = {
@@ -21,7 +19,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={` h-full antialiased ${libreB.className} ${youngS.variable}`}
+      className={` h-full antialiased ${poppins.className}`}
     >
 
       <body className="min-h-full flex flex-col text-neutral-text">

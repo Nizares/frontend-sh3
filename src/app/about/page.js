@@ -18,7 +18,7 @@ export default function About() {
         <Container className="flex flex-col">
 
             {/* Header */}
-            <div className="flex flex-col flex-1 items-center justify-center p-8">
+            <div className="flex flex-col flex-1 items-center justify-center p-8 mt-16">
                 <h1 className="text-5xl font-bold font-young">About</h1>
             </div>
 

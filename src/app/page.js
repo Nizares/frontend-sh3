@@ -54,8 +54,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col w-full md:w-3/4 text-white">
               <h1 className="text-5xl font-bold text-center">
-                Samarinda {" "}
-                <br className="hidden sm:inline" />
+                Samarinda <br className="hidden sm:inline" />
                 <span className="text-primary-light">Hash </span>
                 House Harriers
               </h1>
@@ -88,7 +87,6 @@ export default function Home() {
                 />
               </div>
             </div>
-
           </div>
 
           <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-b from-transparent to-secondary-darker -z-1" />
@@ -100,7 +98,6 @@ export default function Home() {
           Sponsor
         </div>
         <RevealSection direction="up">
-
           <SponsorMarquee />
         </RevealSection>
       </div>
@@ -113,12 +110,11 @@ export default function Home() {
         </RevealSection>
       </div>
 
-
       <RevealSection direction="up">
         <TotalStatistic />
         <div className="flex flex-col bg-primary-light-active p-8 gap-y-8">
-          <div className="text-white text-2xl text-center font-young lining-nums">
-            REGULAR RUN | EVERY SUNDAY 14.30 WITA OPEN REGISTRATION | Samarinda
+          <div className="text-white text-2xl text-center font-bold lining-nums">
+            REGULAR RUN | EVERY SUNDAY 14.00 WITA OPEN REGISTRATION | Samarinda
           </div>
         </div>
       </RevealSection>
@@ -126,11 +122,17 @@ export default function Home() {
       <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light p-8">
         <div
           className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left mask-r-from-5%"
-          style={{ backgroundImage: `url('/assets/images/batik4.svg')`, backgroundSize: '112px' }}
+          style={{
+            backgroundImage: `url('/assets/images/batik4.svg')`,
+            backgroundSize: "112px",
+          }}
         />
         <div
           className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100 mask-r-from-5%"
-          style={{ backgroundImage: `url('/assets/images/batik4.svg')`, backgroundSize: '112px' }}
+          style={{
+            backgroundImage: `url('/assets/images/batik4.svg')`,
+            backgroundSize: "112px",
+          }}
         />
         <h2
           className="text-4xl font-bold flex justify-center font-young text-primary-darker my-16"
@@ -138,28 +140,42 @@ export default function Home() {
         >
           Event yang Akan Datang
         </h2>
-        <div className="flex md:flex-row justify-center gap-8 flex-col items-center">
+        <div className="flex md:flex-row justify-between gap-8 flex-col">
           {loading ? (
-            <p className="text-xl">Loading...</p>
+            <p className="text-xl w-full text-center">Loading...</p>
           ) : (
-            events
-              .filter((item) => new Date(item.start_date) > now)
-              .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
-              .slice(0, 4)
-              .map((item, i) => (
-                <RevealSection key={i} direction="up" delay={i * 100} className="flex-1">
-                  <EventCard
-                    key={item.id}
-                    id={item.id}
-                    title={item.title}
-                    start_date={item.start_date}
-                    end_date={item.end_date}
-                    category={item.category?.name}
-                    img={item.image_url}
-                    status={item.status}
-                  />
-                </RevealSection>
-              ))
+            (() => {
+              const upcomingEvents = events
+                .filter((item) => new Date(item.start_date) > now)
+                .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
+                .slice(0, 4);
+
+              return upcomingEvents.length === 0 ? (
+                <p className="text-xl text-neutral-dark py-12 w-full text-center">
+                  Belum ada event yang akan datang. Pantau terus ya!
+                </p>
+              ) : (
+                upcomingEvents.map((item, i) => (
+                  <RevealSection
+                    key={i}
+                    direction="up"
+                    delay={i * 100}
+                    className="flex-1"
+                  >
+                    <EventCard
+                      key={item.id}
+                      id={item.id}
+                      title={item.title}
+                      start_date={item.start_date}
+                      end_date={item.end_date}
+                      category={item.category?.name}
+                      img={item.image_url}
+                      status={item.status}
+                    />
+                  </RevealSection>
+                ))
+              );
+            })()
           )}
         </div>
 
@@ -168,26 +184,40 @@ export default function Home() {
         </h2>
         <div className="flex md:flex-row justify-between gap-8 flex-col">
           {loading ? (
-            <p className="text-xl">Loading...</p>
+            <p className="text-xl w-full text-center">Loading...</p>
           ) : (
-            events
-              .filter((item) => new Date(item.start_date) < now)
-              .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
-              .slice(0, 4)
-              .map((item, i) => (
-                <RevealSection key={i} direction="up" delay={i * 100} className="flex-1">
-                  <EventCard
-                    key={item.id}
-                    id={item.id}
-                    title={item.title}
-                    start_date={item.start_date}
-                    end_date={item.end_date}
-                    category={item.category?.name}
-                    img={item.image_url}
-                    status={item.status}
-                  />
-                </RevealSection>
-              ))
+            (() => {
+              const upcomingEvents = events
+                .filter((item) => new Date(item.start_date) < now)
+                .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
+                .slice(0, 4);
+
+              return upcomingEvents.length === 0 ? (
+                <p className="text-xl text-center text-neutral-dark py-12 w-full text-center">
+                  Belum ada event. Pantau terus ya!
+                </p>
+              ) : (
+                upcomingEvents.map((item, i) => (
+                  <RevealSection
+                    key={i}
+                    direction="up"
+                    delay={i * 100}
+                    className="flex-1"
+                  >
+                    <EventCard
+                      key={item.id}
+                      id={item.id}
+                      title={item.title}
+                      start_date={item.start_date}
+                      end_date={item.end_date}
+                      category={item.category?.name}
+                      img={item.image_url}
+                      status={item.status}
+                    />
+                  </RevealSection>
+                ))
+              );
+            })()
           )}
         </div>
       </div>

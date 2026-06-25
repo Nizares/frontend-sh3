@@ -41,7 +41,7 @@ export default function UpcomingEvents() {
           console.log("My Order:", joined?.order);
           if (joined) setMyOrder(joined.order);
         })
-        .catch(() => {});
+        .catch(() => { });
 
       eventService
         .getById(eventId)
@@ -92,7 +92,7 @@ export default function UpcomingEvents() {
   }
 
   function handleDownloadQR() {
-    const img = new window. Image();
+    const img = new window.Image();
 
     // Menggunakan SVG blob agar lebih kompatibel di berbagai browser
     const svgString = atob(qrCode); // Dekode base64 ke string SVG asli
@@ -139,141 +139,239 @@ export default function UpcomingEvents() {
   }
 
   if (!event)
-    return <div className="flex justify-center p-16 text-2xl">Loading...</div>;
+    return <div className="flex justify-center p-16 text-2xl mt-16 h-screen">Loading...</div>;
 
   const isPaid = myOrder?.status === "paid" || myOrder?.status === "free";
   const isPending = myOrder?.status === "pending";
 
   return (
     <Container className="flex flex-col gap-y-4 w-full">
-      <div className="mt-8 max-w-306 mx-auto">
-        <Link href="/events" className="static md:absolute">
-          <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
-        </Link>
-        <div className="flex items-center justify-center w-full">
-          <h1 className="text-4xl font-bold font-young">{event.title}</h1>
-        </div>
-
-        <div className="flex flex-row justify-between gap-x-2 mt-8">
-          <div className="flex flex-row justify-center gap-x-2 w-1/2">
-            <MapPinIcon className="w-8 h-8" />
-            <div className="text-lg font-bold">{event.location}</div>
-          </div>
-          <div className="text-lg font-bold">
-            {concateDate(event.start_date, event.end_date)}
-          </div>
-        </div>
-
-        <Image
-          src={event.image_url}
-          alt={event.title}
-          width={600}
-          height={450}
-          className="h-128 w-full flex object-cover mt-4"
+      <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
+        <div
+          className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left mask-r-from-5%"
+          style={{
+            backgroundImage: `url('/assets/images/batik4.svg')`,
+            backgroundSize: "112px",
+          }}
         />
+        <div
+          className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100 mask-r-from-5%"
+          style={{
+            backgroundImage: `url('/assets/images/batik4.svg')`,
+            backgroundSize: "112px",
+          }}
+        />
+        <div className="mt-8 max-w-306 mx-auto">
+          <Link href="/events" className="static md:absolute">
+            <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
+          </Link>
+          <div className="flex items-center justify-center w-full">
+            <h1 className="text-4xl font-bold text-primary-darker mt-16">{event.title}</h1>
+          </div>
 
-        <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3 mt-8">
-          <div className="col-span-1 flex flex-col md:col-span-2">
-            <h2 className="text-2xl font-bold font-young">Tentang Event</h2>
-            <div className="text-sm">{event.description}</div>
+          <div className="flex flex-row justify-between gap-x-2 mt-8 text-primary-darker">
+            <div className="flex flex-row justify-center gap-x-2 w-1/2">
+              <MapPinIcon className="w-8 h-8 " />
+              <div className="text-lg font-bold">{event.location}</div>
+            </div>
+            <div className="text-lg font-bold">
+              {concateDate(event.start_date, event.end_date)}
+            </div>
+          </div>
 
-            {/* Belum join → Daftar Sekarang */}
-            {!myOrder && (
-              <Link href={`/events/register?id=${event.id}`}>
-                <div className="flex justify-center items-center font-young bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-10 md:text-5xl active:bg-secondary-bg-active">
-                  Daftar Sekarang
-                </div>
-              </Link>
-            )}
+          <Image
+            src={event.image_url}
+            alt={event.title}
+            width={600}
+            height={450}
+            className="h-128 w-full flex object-cover mt-4"
+          />
 
-            {/* Sudah join tapi belum dikonfirmasi admin */}
-            {isPending && (
-              <div className="flex flex-col gap-2 m-10">
-                <div className="flex justify-center items-center font-young bg-neutral-bg h-20 font-bold text-xl text-white cursor-not-allowed">
-                  Menunggu Konfirmasi Admin
-                </div>
-                <p className="text-center text-sm text-gray-500">
-                  Pembayaranmu sedang diverifikasi. Silakan cek kembali nanti.
-                </p>
-              </div>
-            )}
+          <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3 my-8">
+            <div className="col-span-1 flex flex-col md:col-span-2">
+              <h2 className="text-2xl font-bold text-primary-darker">Tentang Event</h2>
+              <div className="text-sm">{event.description}</div>
 
-            {/* Sudah dikonfirmasi → QR + Lihat Peserta */}
-            {isPaid && (
-              <div className="flex flex-col gap-4 m-10">
-                <button
-                  onClick={handleLihatQR}
-                  disabled={qrLoading}
-                  className={`flex justify-center items-center h-20 font-bold text-2xl text-white transition-colors
-                                    ${qrLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}`}
-                >
-                  {qrLoading
-                    ? "Memuat..."
-                    : showQR
-                      ? "Sembunyikan Tiket QR"
-                      : "Lihat Tiket QR"}
-                </button>
-
-                <Link href={`/events/members?id=${event.id}`}>
-                  <div className="flex justify-center items-center  font-young h-20 font-bold text-2xl text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all">
-                    Lihat Peserta
+              {/* Belum join → Daftar Sekarang */}
+              {!myOrder && (
+                <Link href={`/events/register?id=${event.id}`}>
+                  <div className="flex justify-center items-center rounded-md bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-10 md:text-5xl active:bg-secondary-bg-active">
+                    Daftar Sekarang
                   </div>
                 </Link>
-              </div>
-            )}
-          </div>
+              )}
 
-          <div className="bg-primary-light gap-x-4 p-4 border-2 border-neutral-normal text-neutral-normal">
-            <div className="flex flex-col">
-              <h3 className="text-2xl font-bold font-young">Early Bid</h3>
-              <div className="text-sm line-through">
-                Rp. {formatRupiah(higherPrice(event.price))}
+              {/* Sudah join tapi belum dikonfirmasi admin */}
+              {isPending && (
+                <div className="flex flex-col gap-2 m-10">
+                  <div className="flex justify-center items-center bg-neutral-normal-active h-20 font-bold text-xl text-white cursor-not-allowed rounded-md">
+                    Menunggu Konfirmasi Admin
+                  </div>
+                  <p className="text-center text-sm text-gray-500 rounded-md">
+                    Pembayaranmu sedang diverifikasi. Silakan cek kembali nanti.
+                  </p>
+                </div>
+              )}
+
+              {/* Sudah dikonfirmasi → QR + Lihat Peserta */}
+              {isPaid && (
+                <div className="flex flex-col gap-4 m-10">
+                  <button
+                    onClick={handleLihatQR}
+                    disabled={qrLoading}
+                    className={`flex justify-center items-center h-20 font-bold text-2xl text-white transition-colors rounded-md
+                                    ${qrLoading ? "bg-neutral-normal-active" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}`}
+                  >
+                    {qrLoading
+                      ? "Memuat..."
+                      : showQR
+                        ? "Sembunyikan Tiket QR"
+                        : "Lihat Tiket QR"}
+                  </button>
+
+                  <Link href={`/events/members?id=${event.id}`}>
+                    <div className="flex justify-center items-center  rounded-md font-young h-20 font-bold text-2xl text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all">
+                      Lihat Peserta
+                    </div>
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <div className="bg-primary-light gap-x-4 p-4 border-4 border-primary-normal text-primary-normal rounded-md">
+              <div className="flex flex-col">
+                <h3 className="text-2xl font-bold font-young">Early Bid</h3>
+                <div className="text-sm line-through">
+                  Rp. {formatRupiah(higherPrice(event.price))}
+                </div>
+                <div className="text-lg font-bold">
+                  Rp. {formatRupiah(event.price)}/person
+                </div>
               </div>
-              <div className="text-lg font-bold">
-                Rp. {formatRupiah(event.price)}/person
+              <div className="flex flex-col">
+                <ol className="list-decimal list-inside p-2">
+                  {event.key_points?.map((point, i) => (
+                    <li key={i}>{point}</li>
+                  ))}
+                </ol>
+                <div className="text-xl font-bold">Event Organizer</div>
+                <div className="text-lg font-semibold">{event.creator?.name}</div>
               </div>
             </div>
-            <div className="flex flex-col">
-              <ol className="list-decimal list-inside p-2">
-                {event.key_points?.map((point, i) => (
-                  <li key={i}>{point}</li>
+          </div>
+          {/* Tampilan QR Code */}
+          {isPaid && showQR && qrCode && (
+            <div className="flex flex-col items-center gap-4 bg-primary-light border-2 border-neutral-normal p-8 mb-10 mt-8 rounded-md">
+              <div className="text-xl font-bold">Tiket QR Kamu</div>
+
+              <div className="p-8 bg-white rounded-md">
+                <img
+                  src={`data:image/svg+xml;base64,${qrCode}`}
+                  alt="QR Code Tiket"
+                  className="w-64 h-64"
+                />
+              </div>
+
+              <div className="text-sm text-center">
+                Tunjukkan QR ini saat check-in di Acara
+              </div>
+              <div className="text-2xl font-young px-4 py-2 text-neutral-dark bg-neutral-bg lining-nums rounded-md">
+                {attendanceCode ?? myOrder?.ticket_code}
+              </div>
+
+              <button
+                onClick={handleDownloadQR}
+                className="flex justify-center items-center gap-2 bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold px-8 py-3 font-young rounded-md"
+              >
+                Download QR
+              </button>
+            </div>
+          )}
+
+          {isPaid && event.merchandise?.length > 0 && (
+            <div className="mt-8 mb-10">
+              <h2 className="text-2xl font-bold font-young mb-4 text-primary-darker">Merchandise Event</h2>
+              <p className="text-sm text-neutral-dark mb-4">
+                Harga spesial khusus peserta event ini
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {event.merchandise.map(item => (
+                  <div key={item.id} className="flex flex-col bg-primary-light border-2 border-neutral-normal hover:border-secondary-bg transition-colors rounded-md">
+                    {/* Gambar */}
+                    <div className="relative w-full h-[250px] overflow-hidden bg-neutral-bg">
+                      {item.image_url ? (
+                        <img
+                          src={item.image_url}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-neutral-dark text-4xl font-bold font-young">
+                          {item.name.slice(0, 2).toUpperCase()}
+                        </div>
+                      )}
+                      {item.has_discount && (
+                        <div className="absolute top-2 left-2 bg-secondary-bg text-white text-xs font-bold px-2 py-1">
+                          -{item.discount_percentage}%
+                        </div>
+                      )}
+                      {item.stock === 0 && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                          <span className="text-white font-bold text-lg">Habis</span>
+                        </div>
+                      )}
+                      {item.stock_status === "limited" && (
+                        <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1">
+                          Sisa {item.stock}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Info */}
+                    <div className="p-3 flex flex-col gap-1 flex-1">
+                      <div className="flex flex-col gap-1 flex-1">
+                        <div className="font-semibold text-sm line-clamp-2">{item.name}</div>
+                        {item.has_discount ? (
+                          <div className="flex flex-col">
+                            <div className="text-xs text-neutral-dark line-through">
+                              {item.price_formatted}
+                            </div>
+                            <div className="font-bold text-secondary-bg">
+                              {item.event_price_formatted}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="font-bold text-secondary-bg">
+                            {item.price_formatted}
+                          </div>
+                        )}
+                        {item.sizes?.length > 0 && (
+                          <div className="text-xs text-neutral-dark">
+                            Size: {item.sizes.join(", ")}
+                          </div>
+                        )}
+                      </div>
+                      <Link
+                        href={`/merchandise/order?id=${item.id}`}
+                        className={`mt-2 text-white text-center px-5 py-2.5 text-sm font-medium transition-colors font-young shadow-md
+                                ${item.stock === 0
+                            ? "bg-neutral-normal pointer-events-none opacity-60"
+                            : "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active"
+                          }`}
+                      >
+                        {item.stock === 0 ? "Habis" : "Pesan"}
+                      </Link>
+                    </div>
+                  </div>
                 ))}
-              </ol>
-              <div className="text-xl font-bold">Event Organizer</div>
-              <div className="text-lg font-semibold">{event.creator?.name}</div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {event.sponsors && <SponsorSection sponsors={event.sponsors} />}
+
+          {event.sponsors && <SponsorSection sponsors={event.sponsors} />}
         </div>
-        {/* Tampilan QR Code */}
-        {isPaid && showQR && qrCode && (
-          <div className="flex flex-col items-center gap-4 bg-primary-light border-2 border-neutral-normal p-8 mb-10 mt-8">
-            <div className="text-xl font-bold">Tiket QR Kamu</div>
-
-            <div className="p-8 bg-white">
-              <img
-                src={`data:image/svg+xml;base64,${qrCode}`}
-                alt="QR Code Tiket"
-                className="w-64 h-64"
-              />
-            </div>
-
-            <div className="text-sm text-center">
-              Tunjukkan QR ini saat check-in di Acara
-            </div>
-            <div className="text-2xl font-young px-4 py-2 text-neutral-dark bg-neutral-bg lining-nums">
-              {attendanceCode ?? myOrder?.ticket_code}
-            </div>
-
-            <button
-              onClick={handleDownloadQR}
-              className="flex justify-center items-center gap-2 bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold px-8 py-3 font-young"
-            >
-              Download QR
-            </button>
-          </div>
-        )}
-
-        {event.sponsors && <SponsorSection sponsors={event.sponsors} />}
       </div>
     </Container>
   );

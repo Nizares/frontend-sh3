@@ -42,7 +42,7 @@ export default function Home() {
             sizes="100vh" // 4. Tells Next.js to serve a full-width image size
             className="object-cover -z-1 brightness-75"
           />
-          <div className="flex flex-col justify-center items-center mt-16">
+          <div className="flex flex-col justify-center items-center h-screen">
             <div className="flex flex-col p-8 w-full md:w-1/2 items-center">
               <Image
                 src="/assets/images/sh3logo.png"
@@ -61,9 +61,10 @@ export default function Home() {
               <h2 className="text-3xl font-semibold font-young my-4 text-center">
                 On On! -{" "}
                 <span className="text-primary-text">
-                  Adventure in{" "}
-                  <span className="text-secondary-text">Nature</span>
+                  Adventure {" "}
                 </span>
+                in {" "}
+                <span className="text-emerald-400">Nature</span>
               </h2>
               <p className="py-5 text-center font-semibold">
                 A Drinking Club With a Running Problem, Kami mengadakan lari
@@ -89,20 +90,17 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-b from-transparent to-secondary-darker -z-1" />
+          <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-b from-transparent to-primary-light -z-1" />
         </div>
       </RevealSection>
 
-      <div className="bg-secondary-darker">
-        <div className="text-center text-3xl text-white mt-8 font-bold font-young">
+      <div className="bg-linear-to-b from-primary-light to-primary-light-hover">
+        <div className="text-center text-3xl text-primary-dark-active mt-8 font-bold font-young relative heading-separator w-3/4 mx-auto">
           Sponsor
         </div>
         <RevealSection direction="up">
           <SponsorMarquee />
         </RevealSection>
-      </div>
-
-      <div className="bg-secondary-darker">
         <RevealSection direction="up">
           <div className="mt-8">
             <Carousel />
@@ -119,7 +117,7 @@ export default function Home() {
         </div>
       </RevealSection>
 
-      <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light p-8">
+      <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover p-8">
         <div
           className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left mask-r-from-5%"
           style={{
@@ -135,7 +133,7 @@ export default function Home() {
           }}
         />
         <h2
-          className="text-4xl font-bold flex justify-center font-young text-primary-darker my-16"
+          className="text-4xl font-bold justify-center font-young text-primary-dark-active my-16 relative heading-separator after:content-[''] w-3/4 mx-auto text-center"
           id="upcomingRun"
         >
           Event yang Akan Datang
@@ -179,7 +177,7 @@ export default function Home() {
           )}
         </div>
 
-        <h2 className="text-4xl font-bold flex justify-center font-young text-primary-darker my-16">
+        <h2 className="text-4xl font-bold font-young text-primary-dark-active my-16 relative heading-separator w-3/4 mx-auto text-center">
           Event yang Sudah Selesai
         </h2>
         <div className="flex md:flex-row justify-between gap-8 flex-col">
@@ -193,7 +191,7 @@ export default function Home() {
                 .slice(0, 4);
 
               return upcomingEvents.length === 0 ? (
-                <p className="text-xl text-center text-neutral-dark py-12 w-full text-center">
+                <p className="text-xl text-center text-neutral-dark py-12 w-full ">
                   Belum ada event. Pantau terus ya!
                 </p>
               ) : (

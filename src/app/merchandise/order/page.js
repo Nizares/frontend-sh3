@@ -1,3 +1,4 @@
+// src/app/merchandise/order/page.jsx
 "use client"
 import { useState, useEffect } from "react"
 import Link from "next/link"
@@ -15,12 +16,10 @@ import { useRouter } from "next/navigation"
 import ImageUpload from "@/src/components/ImageUpload"
 import Swal from "sweetalert2"
 
-
 export default function MerchandiseOrderPage() {
     const paymentMethodOptions = [
         { value: "bank_transfer", label: "Bank Transfer" },
         { value: "qris", label: "QRIS" },
-        { value: "ewallet", label: "E-Wallet (Dana/OVO/GoPay)" },
     ]
 
     const [item, setItem] = useState(null)
@@ -34,10 +33,15 @@ export default function MerchandiseOrderPage() {
     const [userData, setUserData] = useState(null)
     const [paymentFile, setPaymentFile] = useState(null)
     const [paymentMethod, setPaymentMethod] = useState("")
+
+    // State untuk diskon event
+    const [eventId, setEventId] = useState(null)
+    const [eventPrice, setEventPrice] = useState(null)
+    const [discountPercentage, setDiscountPercentage] = useState(null)
+
     const router = useRouter()
 
     useEffect(() => {
-        // Cek login dulu — kalau belum, redirect ke halaman login
         const token = localStorage.getItem("token")
         if (!token) {
             Swal.fire({
@@ -51,7 +55,16 @@ export default function MerchandiseOrderPage() {
 
         const params = new URLSearchParams(window.location.search)
         const id = params.get("id")
+        const eId = params.get("event_id")
+        const ePrice = params.get("event_price")
+        const eDiscount = params.get("discount_percentage")
+
         if (!id) return
+
+        // Simpan info event kalau ada
+        if (eId) setEventId(eId)
+        if (ePrice) setEventPrice(Number(ePrice))
+        if (eDiscount) setDiscountPercentage(Number(eDiscount))
 
         merchandiseService.getById(id)
             .then(res => setItem(res.data.data))
@@ -61,7 +74,9 @@ export default function MerchandiseOrderPage() {
         if (user) setUserData(JSON.parse(user))
     }, [])
 
-    const totalPrice = item ? item.price * qty : 0
+    // Harga yang dipakai: event_price kalau ada, fallback ke harga normal
+    const activePrice = eventPrice ?? item?.price ?? 0
+    const totalPrice = activePrice * qty
 
     async function submitOrder(e) {
         e.preventDefault()
@@ -86,11 +101,10 @@ export default function MerchandiseOrderPage() {
             Swal.fire({ icon: "warning", title: "Isi nomor HP pengiriman dulu!" })
             return
         }
-        if (!paymentFile) { // ← tambah validasi bukti bayar
+        if (!paymentFile) {
             Swal.fire({ icon: "warning", title: "Upload bukti pembayaran dulu!" })
             return
         }
-
         if (!paymentMethod) {
             Swal.fire({ icon: "warning", title: "Pilih metode pembayaran dulu!" })
             return
@@ -98,19 +112,20 @@ export default function MerchandiseOrderPage() {
 
         setSubmitLoading(true)
         try {
-            // Step 1: Buat order
-            const orderRes = await merchandiseService.createOrder({
+            const orderPayload = {
                 merchandise_id: item.id,
                 quantity: qty,
                 size: selectedSize || null,
                 color: selectedColor || null,
                 shipping_address: shippingAddress,
                 shipping_phone: shippingPhone,
-            })
+                // Kirim event_id kalau ada — backend akan ignore kalau belum support
+                ...(eventId && { event_id: eventId }),
+            }
 
+            const orderRes = await merchandiseService.createOrder(orderPayload)
             const order = orderRes.data.data
 
-            // Step 2: Upload bukti bayar
             const formData = new FormData()
             formData.append("payment_proof", paymentFile)
             formData.append("payment_method", paymentMethod)
@@ -145,12 +160,13 @@ export default function MerchandiseOrderPage() {
 
     const sizeOptions = item.sizes?.map(s => ({ value: s, label: s })) ?? []
     const colorOptions = item.colors?.map(c => ({ value: c, label: c })) ?? []
+    const hasDiscount = eventPrice !== null && eventPrice < item.price
 
     return (
         <Container className="flex flex-col gap-y-4 w-full px-4 md:px-0 max-w-306 mx-auto">
             <RevealSection direction="up">
-                <div className="flex flex-col gap-y-4 mt-8">
-                    <Link href="/merchandise" className="static md:absolute">
+                <div className="flex flex-col gap-y-4 mt-24">
+                    <Link href={eventId ? `/events/upcoming?id=${eventId}` : "/merchandise"} className="static md:absolute">
                         <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
                     </Link>
                     <div className="flex items-center justify-center w-full">
@@ -161,13 +177,9 @@ export default function MerchandiseOrderPage() {
 
             <RevealSection direction="up">
                 {item.image_url ? (
-                    <img
-                        src={item.image_url}
-                        alt={item.name}
-                        className="h-80 w-full object-cover"
-                    />
+                    <img src={item.image_url} alt={item.name} className="h-80 w-full object-cover" />
                 ) : (
-                    <div className="h-80 w-full bg-neutral-bg flex items-center justify-center text-5xl font-bold font-young">
+                    <div className="h-80 w-full bg-neutral-bg flex items-center justify-center text-5xl font-bold font-young border-1">
                         {item.name.slice(0, 2).toUpperCase()}
                     </div>
                 )}
@@ -175,17 +187,41 @@ export default function MerchandiseOrderPage() {
 
             <RevealSection direction="up">
                 <div className="flex justify-center gap-8 flex-col md:flex-row">
-                    <div className="bg-primary-light border-2 border-neutral-normal p-4 w-full">
+                    <div className="bg-primary-light border-2 border-neutral-normal p-4 w-full rounded-md">
                         <h3 className="text-2xl font-bold font-young mb-2">{item.name}</h3>
                         <div className="text-sm text-neutral-dark mb-4">{item.description}</div>
-                        <div className="text-lg font-bold text-secondary-bg">
-                            Rp. {formatRupiah(item.price)} / pcs
-                        </div>
+
+                        {/* Harga — tampilkan diskon kalau ada */}
+                        {hasDiscount ? (
+                            <div className="flex flex-col gap-1">
+                                <div className="text-sm text-neutral-dark line-through">
+                                    Rp. {formatRupiah(item.price)} / pcs
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="text-lg font-bold text-secondary-bg">
+                                        Rp. {formatRupiah(eventPrice)} / pcs
+                                    </div>
+                                    {discountPercentage && (
+                                        <div className="bg-secondary-bg text-white text-xs font-bold px-2 py-1">
+                                            -{discountPercentage}%
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="text-xs text-secondary-bg font-medium">
+                                    Harga spesial peserta event
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-lg font-bold text-secondary-bg">
+                                Rp. {formatRupiah(item.price)} / pcs
+                            </div>
+                        )}
+
                         {item.category && (
                             <div className="text-sm mt-1">Kategori: <span className="font-medium">{item.category}</span></div>
                         )}
                     </div>
-                    <div className="flex flex-col items-center justify-center bg-primary-light border-neutral-normal border-2 p-4 w-full">
+                    <div className="flex flex-col items-center justify-center bg-primary-light border-neutral-normal border-2 p-4 w-full rounded-md" >
                         <div className="font-bold text-3xl">Stok Tersisa</div>
                         <div className={`font-bold text-5xl font-young ${item.stock === 0 ? "text-red-500" : ""}`}>
                             {item.stock === 0 ? "Habis" : item.stock}
@@ -200,104 +236,54 @@ export default function MerchandiseOrderPage() {
                 </div>
             ) : (
                 <form onSubmit={submitOrder} className="flex flex-col gap-8">
-
-                    {/* Detail Order */}
                     <RevealSection direction="up">
-                        <div className="flex flex-col bg-primary-light p-4 gap-4 border-neutral-normal border-2">
+                        <div className="flex flex-col bg-primary-light p-4 gap-4 border-neutral-normal border-2 rounded-md">
                             <div className="flex justify-between">
                                 <div className="text-2xl font-bold font-young">Detail Order</div>
                                 <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
                             </div>
                             <hr className="border-t-2 border-text-colors" />
-
-                            {/* Qty */}
                             <div className="flex flex-col gap-2">
                                 <label className="font-medium text-xl">
                                     Jumlah <span className="text-red-500">*</span>
                                 </label>
                                 <div className="flex items-center gap-4">
-                                    <button
-                                        type="button"
-                                        onClick={() => setQty(q => Math.max(1, q - 1))}
-                                        className="w-10 h-10 bg-neutral-normal text-white font-bold text-xl hover:bg-neutral-dark transition-colors"
-                                    >
-                                        −
-                                    </button>
+                                    <button type="button" onClick={() => setQty(q => Math.max(1, q - 1))}
+                                        className="w-10 h-10 bg-neutral-normal text-white font-bold text-xl hover:bg-neutral-dark transition-colors">−</button>
                                     <span className="text-2xl font-bold w-8 text-center">{qty}</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => setQty(q => Math.min(item.stock, q + 1))}
-                                        className="w-10 h-10 bg-secondary-bg text-white font-bold text-xl hover:bg-secondary-bg-hover transition-colors"
-                                    >
-                                        +
-                                    </button>
+                                    <button type="button" onClick={() => setQty(q => Math.min(item.stock, q + 1))}
+                                        className="w-10 h-10 bg-secondary-bg text-white font-bold text-xl hover:bg-secondary-bg-hover transition-colors">+</button>
                                 </div>
                             </div>
-
-                            {/* Size */}
                             {sizeOptions.length > 0 && (
-                                <SelectInput
-                                    id="size"
-                                    name="size"
-                                    label="Ukuran"
-                                    required
-                                    placehold="Pilih ukuran..."
-                                    options={sizeOptions}
-                                    value={selectedSize}
-                                    onChange={e => setSelectedSize(e.target.value)}
-                                />
+                                <SelectInput id="size" name="size" label="Ukuran" required placehold="Pilih ukuran..."
+                                    options={sizeOptions} value={selectedSize} onChange={e => setSelectedSize(e.target.value)} />
                             )}
-
-                            {/* Color */}
                             {colorOptions.length > 0 && (
-                                <SelectInput
-                                    id="color"
-                                    name="color"
-                                    label="Warna"
-                                    required
-                                    placehold="Pilih warna..."
-                                    options={colorOptions}
-                                    value={selectedColor}
-                                    onChange={e => setSelectedColor(e.target.value)}
-                                />
+                                <SelectInput id="color" name="color" label="Warna" required placehold="Pilih warna..."
+                                    options={colorOptions} value={selectedColor} onChange={e => setSelectedColor(e.target.value)} />
                             )}
                         </div>
                     </RevealSection>
 
-                    {/* Shipping Info */}
                     <RevealSection direction="up">
-                        <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4">
+                        <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md">
                             <div className="flex justify-between">
                                 <div className="text-2xl font-bold font-young">Shipping Info</div>
                                 <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
                             </div>
                             <hr className="border-t-2 border-text-colors" />
-                            <InputType
-                                label="Shipping Address"
-                                id="shippingaddress"
-                                required
-                                type="text"
-                                name="shippingaddress"
-                                placeholder="Jl. Contoh No. 1, Kota"
-                                className="flex flex-col gap-2"
-                                value={shippingAddress}
-                                onChange={e => setShippingAddress(e.target.value)}
-                            />
-                            <InputType
-                                label="Shipping Phone"
-                                id="shippingphone"
-                                required
-                                type="text"
-                                name="shippingphone"
-                                placeholder="08123456789"
-                                className="flex flex-col gap-2"
-                                value={shippingPhone}
-                                onChange={e => setShippingPhone(e.target.value)}
-                            />
+                            <InputType label="Shipping Address" id="shippingaddress" required type="text"
+                                name="shippingaddress" placeholder="Jl. Contoh No. 1, Kota"
+                                className="flex flex-col gap-2" value={shippingAddress}
+                                onChange={e => setShippingAddress(e.target.value)} />
+                            <InputType label="Shipping Phone" id="shippingphone" required type="text"
+                                name="shippingphone" placeholder="08123456789"
+                                className="flex flex-col gap-2" value={shippingPhone}
+                                onChange={e => setShippingPhone(e.target.value)} />
                         </div>
                     </RevealSection>
 
-                    {/* Payment Details */}
                     <RevealSection direction="up">
                         <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4">
                             <div className="flex justify-between">
@@ -311,7 +297,16 @@ export default function MerchandiseOrderPage() {
                             </div>
                             <div className="flex justify-between">
                                 <div className="text-xl font-medium">Harga Satuan</div>
-                                <div className="text-xl font-medium">Rp. {formatRupiah(item.price)}</div>
+                                <div className="flex flex-col items-end">
+                                    {hasDiscount && (
+                                        <div className="text-sm text-neutral-dark line-through">
+                                            Rp. {formatRupiah(item.price)}
+                                        </div>
+                                    )}
+                                    <div className="text-xl font-medium">
+                                        Rp. {formatRupiah(activePrice)}
+                                    </div>
+                                </div>
                             </div>
                             <div className="flex justify-between">
                                 <div className="text-xl font-medium">Jumlah</div>
@@ -323,61 +318,37 @@ export default function MerchandiseOrderPage() {
                                 <div className="text-2xl font-bold">Rp. {formatRupiah(totalPrice)}</div>
                             </div>
 
-                            <SelectInput
-                                id="paymentmethod"
-                                name="paymentmethod"
-                                label="Metode Pembayaran"
-                                required
-                                placehold="Pilih metode pembayaran..."
-                                options={paymentMethodOptions}
-                                value={paymentMethod}
-                                onChange={e => setPaymentMethod(e.target.value)}
-                            />
+                            <SelectInput id="paymentmethod" name="paymentmethod" label="Metode Pembayaran" required
+                                placehold="Pilih metode pembayaran..." options={paymentMethodOptions}
+                                value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} />
 
-                            {/* Instruksi bayar */}
-                            <div className=" bg-primary-light-active border border-neutral-normal p-4 text-sm text-neutral-dark">
+                            <div className="bg-primary-light-active border border-neutral-normal p-4 text-sm text-neutral-dark">
                                 <div className="flex flex-col items-center">
                                     <div className="font-bold mb-1">Cara Pembayaran:</div>
                                     <div>Setelah order dikonfirmasi, silakan transfer ke rekening berikut:</div>
                                     <div className="mt-2 font-semibold">BCA 1234567890 a.n SH3 Event</div>
                                     <div className="mt-1">Atau scan QRIS di bawah ini:</div>
-                                    <Image
-                                        src="/assets/images/qris.jpeg"
-                                        alt="QRIS"
-                                        width={300}
-                                        height={300}
-                                        className="mt-2 object-contain"
-                                    />
+                                    <Image src="/assets/images/qris.jpeg" alt="QRIS" width={300} height={300} className="mt-2 object-contain" />
                                 </div>
-
                             </div>
 
                             <div className="flex flex-col gap-2 mt-4">
                                 <div className="font-bold text-xl">Upload Bukti Pembayaran</div>
-                                <ImageUpload
-                                    id="paymentproof"
-                                    label="Bukti Transfer"
-                                    required
-                                    onChange={file => setPaymentFile(file)}
-                                />
+                                <ImageUpload id="paymentproof" label="Bukti Transfer" required onChange={file => setPaymentFile(file)} />
                             </div>
                         </div>
                     </RevealSection>
 
-                    {/* Submit */}
                     <RevealSection direction="up">
                         <button
                             className={`flex justify-center font-young items-center ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"} h-16 font-bold text-xl text-white md:text-3xl w-full`}
-                            type="submit"
-                            disabled={submitLoading}
-                        >
+                            type="submit" disabled={submitLoading}>
                             {submitLoading ? "Memproses..." : "Confirm Order"}
                         </button>
                     </RevealSection>
                 </form>
             )}
 
-            {/* Invoice setelah order berhasil */}
             {orderResult && userData && (
                 <RevealSection direction="up">
                     <div id="invoice-section">
@@ -387,7 +358,7 @@ export default function MerchandiseOrderPage() {
                             hash_id={userData.id}
                             invoice_id={orderResult.invoice_number}
                             merch_name={item.name}
-                            merch_price={formatRupiah(item.price)}
+                            merch_price={formatRupiah(activePrice)}
                             merch_qty={qty}
                             merch_size={selectedSize}
                             merch_color={selectedColor}

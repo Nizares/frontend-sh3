@@ -16,13 +16,13 @@ export default function EventCard({
   console.log(status);
 
   return (
-    <div className="flex flex-col shrink-0 basis-1/4 items-center bg-white h-full w-full max-w-sm">
+    <div className="flex flex-col shrink-0 basis-1/4 items-center bg-white h-full w-full max-w-sm rounded-md">
       <Image
         src={img}
         alt="image"
         width={250}
         height={250}
-        className="w-full object-cover"
+        className="w-full object-cover rounded-t-md"
       />
       <div className="flex flex-col gap-4 p-8 justify-between h-full">
 
@@ -31,8 +31,8 @@ export default function EventCard({
         <div className="text-xl font-semibold">{category}</div>
         <Link
           href={isOngoing ? `/events/upcoming?id=${id}` : `/events/finished?id=${id}`}
-          className={`text-white text-center px-5 py-2.5 font-medium transition-colors font-young shadow-md
-              ${isOngoing ? "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active  "}`}
+          className={`text-white text-center px-5 py-2.5 font-medium transition-colors font-young shadow-md rounded-md
+              ${isOngoing ? "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active" : "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-400  "}`}
         >
           {isOngoing ? "Daftar" : "Detail"}
         </Link>

@@ -13,11 +13,11 @@ function SponsorCard({ sponsor }) {
                     className="w-20 h-20 object-contain"
                 />
             ) : (
-                <div className="flex items-center justify-center bg-neutral-bg text-neutral-dark text-xl font-bold font-young w-20 h-20">
+                <div className="flex items-center justify-center bg-neutral-bg text-neutral-dark text-xl font-bold font-young w-20 h-20 rounded-full">
                     {sponsor.name.slice(0, 2).toUpperCase()}
                 </div>
             )}
-            <div className="text-sm font-semibold text-center text-white">{sponsor.name}</div>
+            <div className="text-sm font-semibold text-center text-neutral-dark">{sponsor.name}</div>
         </div>
     )
 

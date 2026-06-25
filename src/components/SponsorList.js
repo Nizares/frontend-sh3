@@ -13,7 +13,7 @@ function SponsorCard({ sponsor }) {
                     className="w-20 h-20 object-contain"
                 />
             ) : (
-                <div className="flex items-center justify-center bg-neutral-bg text-neutral-dark text-xl font-bold font-young w-20 h-20">
+                <div className="flex items-center justify-center bg-neutral-bg text-neutral-dark text-xl font-bold font-young w-20 h-20 rounded-full">
                     {sponsor.name.slice(0, 2).toUpperCase()}
                 </div>
             )}
@@ -63,7 +63,7 @@ export function SponsorList() {
                 {sortedYears.map((year) => (
                     <div key={year} className="flex flex-col gap-4">
                         
-                        <h3 className="text-lg font-semibold mx-auto year-separator relative w-3/4 text-center">{year}</h3>
+                        <h3 className="text-lg font-semibold mx-auto heading-separator relative w-3/4 text-center text-primary-darker">{year}</h3>
                         <div className="flex flex-wrap justify-center gap-6">
                             {groupedByYear[year].map((sponsor) => (
                                 <SponsorCard key={sponsor.id} sponsor={sponsor} />

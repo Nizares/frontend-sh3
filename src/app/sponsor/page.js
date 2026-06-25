@@ -15,7 +15,7 @@ export default function SponsorsPage() {
           style={{ backgroundImage: `url('/assets/images/batik4.svg')`, backgroundSize: '112px' }}
         />
         <div className="mt-8 max-w-306 mx-auto  relative">
-          <div className="text-5xl font-bold font-young text-center">
+          <div className="text-5xl font-bold font-young text-center mt-24">
             Sponsor Komunitas kami!
           </div>
           <SponsorList />

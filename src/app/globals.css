@@ -18,13 +18,13 @@
   --color-primary-darker:      #2e1c02;
 
 
-  --color-secondary-light:        #e6ffe6;
-  --color-secondary-light-hover:  #88ff88;
-  --color-secondary-light-active: #8aff8a;
+  --color-secondary-light:        var(--color-emerald-300);
+  --color-secondary-light-hover:  var(--color-emerald-200);
+  --color-secondary-light-active: var(--color-emerald-100);
 
-  --color-secondary-normal:        #00bf00;
-  --color-secondary-normal-hover:  #2eff2e;
-  --color-secondary-normal-active: #5cff5c;
+  --color-secondary-normal:        var(--color-emerald-600);
+  --color-secondary-normal-hover:  var(--color-emerald-500);
+  --color-secondary-normal-active: var(--color-emerald-400);
 
   --color-secondary-dark:        #004700;
   --color-secondary-dark-hover:  #00a300;
@@ -111,16 +111,11 @@
     animation: marquee-scroll 18s linear infinite;
 }
 
-.year-separator::before, .year-separator::after {
-   content: "";
-   width: 33%;
-   display: block;
-   height: 2px;
-   background-color: var(--color-primary-normal);
-   position: absolute;
-   top: 15px;
+
+.heading-separator::before, .heading-separator::after {
+   @apply content-[''] w-1/4 block h-0.5 bg-primary-normal absolute top-3.5
 }
 
-.year-separator::after {
-   right: 0;
+.heading-separator::after {
+   @apply right-0
 }

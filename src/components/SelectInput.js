@@ -12,7 +12,7 @@ export default function SelectInput({ id, name, label, placehold, required = fal
         <select
           id={id}
           name={name}
-          className="w-full bg-white outline-2 outline-tertiary-normal px-3 pr-9 h-9 text-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 hover:border-gray-400 transition"
+          className="w-full bg-white outline-2 rounded-md outline-tertiary-normal px-3 pr-9 h-9 text-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 hover:border-gray-400 transition"
           {...props}
         >
           <option value="">{placehold}</option>

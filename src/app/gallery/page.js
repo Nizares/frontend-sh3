@@ -30,18 +30,38 @@ export default function Gallery() {
     }, []);
 
     if (loading) {
-        return <div className="flex justify-center p-16 text-2xl">Loading...</div>;
+        return <div className="flex justify-center p-16 text-2xl h-screen mt-16">Loading...</div>;
     }
 
     return (
-        <Container className="flex flex-col gap-y-4 w-full max-w-306 mx-auto">
-            <h1 className="text-5xl font-bold text-center p-8 font-young text-neutral-normal">Cerita Kami saat Berlari!</h1>
+        <Container className="flex flex-col  w-full ">
+            <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
+                <div
+                    className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left mask-r-from-5%"
+                    style={{
+                        backgroundImage: `url('/assets/images/batik4.svg')`,
+                        backgroundSize: "112px",
+                    }}
+                />
+                <div
+                    className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100 mask-r-from-5%"
+                    style={{
+                        backgroundImage: `url('/assets/images/batik4.svg')`,
+                        backgroundSize: "112px",
+                    }}
+                />
+                <div className="gap-y-4 max-w-306 mx-auto">
+                    <h1 className="text-5xl font-bold text-center p-8 font-young text-primary-dark mt-16">Cerita Kami saat Berlari!</h1>
 
-            {images.length === 0 ? (
-                <p className="text-center text-xl py-16 min-h-screen">Belum ada foto event.</p>
-            ) : (
-                <MasonryGallery images={images} />
-            )}
+                    {images.length === 0 ? (
+                        <p className="text-center text-xl py-16 min-h-screen">Belum ada foto event.</p>
+                    ) : (
+                        <MasonryGallery images={images} />
+                    )}
+                </div>
+
+            </div>
+
         </Container>
     );
 }

@@ -91,13 +91,13 @@ export default function Navbar() {
         <div className="hidden md:flex gap-4">
           <Link
             href="/members/register"
-            className="bg-emerald-600 text-white rounded-sm px-6 py-2.5 font-medium hover:bg-emerald-500 active:bg-emerald-600 "
+            className="bg-emerald-600 text-white rounded-sm px-6 py-2.5 font-medium hover:bg-emerald-500 active:bg-emerald-400 "
           >
             Registrasi Member
           </Link>
           <Link
             href="/members/detail"
-            className="bg-emerald-600 text-white rounded-sm px-6 py-2.5 font-medium hover:bg-emerald-500 active:bg-emerald-600 "
+            className="bg-emerald-600 text-white rounded-sm px-6 py-2.5 font-medium hover:bg-emerald-500 active:bg-emerald-400 "
           >
             Sudah jadi Member?
           </Link>
@@ -143,13 +143,13 @@ export default function Navbar() {
           <li className="flex flex-col gap-3 pt-2 border-t border-gray-200">
             <Link
               href="/members/register"
-              className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active  text-center"
+              className="bg-emerald-600 text-white px-6 py-2.5 font-medium rounded-sm hover:bg-emerald-500 active:bg-emerald-400  text-center"
             >
               Registrasi Member
             </Link>
             <Link
               href="/members/detail"
-              className="bg-secondary-bg text-white px-6 py-2.5 font-medium hover:bg-secondary-bg-hover active:bg-secondary-bg-active  text-center"
+              className="bg-emerald-600 text-white px-6 py-2.5 font-medium rounded-sm hover:bg-emerald-500 active:bg-emerald-400  text-center"
             >
               Sudah jadi Member?
             </Link>

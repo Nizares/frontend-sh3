@@ -136,106 +136,123 @@ export default function Members() {
     }
 
     return (
-        <Container className="flex flex-col gap-y-8 w-full px-4 md:px-0 max-w-306 mx-auto">
-            <RevealSection direction="up">
-                <div className="flex flex-col flex-1 items-center justify-center p-8">
-                    <h1 className="text-neutral-normal text-5xl font-bold font-young">
-                        Ayo jadi bagian dari kami!
-                    </h1>
+        <Container className="flex flex-col  w-full ">
+            <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
+                <div
+                    className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left mask-r-from-5%"
+                    style={{
+                        backgroundImage: `url('/assets/images/batik4.svg')`,
+                        backgroundSize: "112px",
+                    }}
+                />
+                <div
+                    className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100 mask-r-from-5%"
+                    style={{
+                        backgroundImage: `url('/assets/images/batik4.svg')`,
+                        backgroundSize: "112px",
+                    }}
+                />
+                <div className="gap-y-8 px-4 md:px-0 max-w-306 mx-auto">
+                    <RevealSection direction="up">
+                        <div className="flex flex-col flex-1 items-center justify-center p-8">
+                            <h1 className="text-primary-darker text-5xl font-bold font-young mt-16">
+                                Ayo jadi bagian dari kami!
+                            </h1>
+                        </div>
+
+                        <div className="flex flex-col gap-x-16 md:grid md:grid-cols-3">
+                            <form onSubmit={handleRegister} className="col-span-1 flex flex-col md:col-span-2 gap-4">
+
+                                {/* Data Dasar */}
+                                <h3 className="text-xl font-bold font-young">Data Diri</h3>
+                                <InputType label="Full Name" id="name" required type="text" name="name"
+                                    placeholder="John Doe" className="flex flex-col gap-2"
+                                    value={formData.name} onChange={handleFormChange} />
+                                <InputType label="Email" id="email" required type="email" name="email"
+                                    placeholder="you@example.com" className="flex flex-col gap-2"
+                                    value={formData.email} onChange={handleFormChange} />
+                                <InputType label="Nomor Telepon/WA" type="text" id="phone" required name="phone"
+                                    placeholder="08123456789" className="flex flex-col gap-2"
+                                    value={formData.phone} onChange={handleFormChange} />
+                                <InputType label="Tanggal Lahir" type="date" id="birthdate" required name="birthdate"
+                                    className="flex flex-col gap-2"
+                                    value={formData.birthdate} onChange={handleFormChange} />
+                                <SelectInput id="gender" name="gender" label="Gender" required
+                                    options={genderOptions} value={gender} placehold="Pilih Gender..."
+                                    onChange={(e) => setGender(e.target.value)} />
+                                <SelectInput id="blood_type" name="blood_type" label="Golongan Darah" required
+                                    options={bloodTypeOptions} value={bloodType} placehold="Pilih Golongan Darah..."
+                                    onChange={(e) => setBloodType(e.target.value)} />
+
+                                {/* Kontak Darurat */}
+                                <hr className="border-t-2 border-neutral-normal mt-2" />
+                                <h3 className="text-xl font-bold font-young">Kontak Darurat</h3>
+                                <InputType label="Nama Kontak Darurat" id="emergency_contact" type="text" required
+                                    name="emergency_contact" placeholder="Nama keluarga/teman"
+                                    className="flex flex-col gap-2"
+                                    value={formData.emergency_contact} onChange={handleFormChange} />
+                                <InputType label="Nomor Kontak Darurat" id="emergency_phone" type="text" required
+                                    name="emergency_phone" placeholder="08123456789"
+                                    className="flex flex-col gap-2"
+                                    value={formData.emergency_phone} onChange={handleFormChange} />
+
+                                {/* Info Kesehatan */}
+                                <hr className="border-t-2 border-neutral-normal mt-2" />
+                                <h3 className="text-xl font-bold font-young">Info Kesehatan</h3>
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-xl font-medium">Riwayat Alergi<span className="text-red-500 ml-0.5">*</span></label>
+                                    <textarea
+                                        name="allergy_history"
+                                        placeholder="Contoh: alergi debu, makanan laut, dll"
+                                        className="border-tertiary-normal p-3 text-lg bg-white border-2 rounded-md"
+                                        rows={3}
+                                        value={formData.allergy_history}
+                                        onChange={handleFormChange}
+                                    />
+                                </div>
+
+                                {/* Identitas */}
+                                <hr className="border-t-2 border-neutral-normal mt-2" />
+                                <h3 className="text-xl font-bold font-young">Identitas</h3>
+                                <InputType label="Nomor KTP/Passport" id="identity_number" type="text" required
+                                    name="identity_number" placeholder="3201234567890001"
+                                    className="flex flex-col gap-2"
+                                    value={formData.identity_number} onChange={handleFormChange} />
+                                <ImageUpload id="identity_photo" label="Foto KTP/Passport" required
+                                    onChange={file => setIdentityPhoto(file)} />
+
+                                {/* Foto Profil */}
+                                <hr className="border-t-2 border-neutral-normal mt-2" />
+                                <h3 className="text-xl font-bold font-young">Foto Profil</h3>
+                                <ImageUpload id="photo" label="Foto Profil"
+                                    onChange={(file) => setPhoto(file)} />
+
+                                <button
+                                    className={`flex justify-center items-center mb-8 rounded-md ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-3xl font-young`}
+                                    type="submit"
+                                    disabled={submitLoading}
+                                >
+                                    {submitLoading ? "Memproses..." : "Registrasi Member"}
+                                </button>
+                            </form>
+
+                            <div className="bg-primary-light rounded-lg gap-x-4 p-4 h-fit border-primary-normal border-2">
+                                <div className="flex flex-col">
+                                    <h3 className="text-2xl font-bold font-young text-primary-normal">Benefits Member</h3>
+                                </div>
+                                <div className="flex flex-col">
+                                    <ol className="list-decimal list-outside p-2 pl-8 text-2xl text-primary-normal">
+                                        <li className="mt-2">Mendapatkan Informasi yang Up-to-Date</li>
+                                        <li className="mt-2">Mendapatkan teman yang banyak</li>
+                                        <li className="mt-2">Sesi Down-Down setiap event.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </RevealSection>
                 </div>
 
-                <div className="flex flex-col gap-x-16 md:grid md:grid-cols-3">
-                    <form onSubmit={handleRegister} className="col-span-1 flex flex-col md:col-span-2 gap-4">
-
-                        {/* Data Dasar */}
-                        <h3 className="text-xl font-bold font-young">Data Diri</h3>
-                        <InputType label="Full Name" id="name" required type="text" name="name"
-                            placeholder="John Doe" className="flex flex-col gap-2"
-                            value={formData.name} onChange={handleFormChange} />
-                        <InputType label="Email" id="email" required type="email" name="email"
-                            placeholder="you@example.com" className="flex flex-col gap-2"
-                            value={formData.email} onChange={handleFormChange} />
-                        <InputType label="Nomor Telepon/WA" type="text" id="phone" required name="phone"
-                            placeholder="08123456789" className="flex flex-col gap-2"
-                            value={formData.phone} onChange={handleFormChange} />
-                        <InputType label="Tanggal Lahir" type="date" id="birthdate" required name="birthdate"
-                            className="flex flex-col gap-2"
-                            value={formData.birthdate} onChange={handleFormChange} />
-                        <SelectInput id="gender" name="gender" label="Gender" required
-                            options={genderOptions} value={gender} placehold="Pilih Gender..."
-                            onChange={(e) => setGender(e.target.value)} />
-                        <SelectInput id="blood_type" name="blood_type" label="Golongan Darah" required
-                            options={bloodTypeOptions} value={bloodType} placehold="Pilih Golongan Darah..."
-                            onChange={(e) => setBloodType(e.target.value)} />
-
-                        {/* Kontak Darurat */}
-                        <hr className="border-t-2 border-neutral-normal mt-2" />
-                        <h3 className="text-xl font-bold font-young">Kontak Darurat</h3>
-                        <InputType label="Nama Kontak Darurat" id="emergency_contact" type="text" required
-                            name="emergency_contact" placeholder="Nama keluarga/teman"
-                            className="flex flex-col gap-2"
-                            value={formData.emergency_contact} onChange={handleFormChange} />
-                        <InputType label="Nomor Kontak Darurat" id="emergency_phone" type="text" required
-                            name="emergency_phone" placeholder="08123456789"
-                            className="flex flex-col gap-2"
-                            value={formData.emergency_phone} onChange={handleFormChange} />
-
-                        {/* Info Kesehatan */}
-                        <hr className="border-t-2 border-neutral-normal mt-2" />
-                        <h3 className="text-xl font-bold font-young">Info Kesehatan</h3>
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xl font-medium">Riwayat Alergi<span className="text-red-500 ml-0.5">*</span></label>
-                            <textarea
-                                name="allergy_history"
-                                placeholder="Contoh: alergi debu, makanan laut, dll"
-                                className="border-tertiary-normal p-3 text-lg bg-white border-2"
-                                rows={3}
-                                value={formData.allergy_history}
-                                onChange={handleFormChange}
-                            />
-                        </div>
-
-                        {/* Identitas */}
-                        <hr className="border-t-2 border-neutral-normal mt-2" />
-                        <h3 className="text-xl font-bold font-young">Identitas</h3>
-                        <InputType label="Nomor KTP/Passport" id="identity_number" type="text" required
-                            name="identity_number" placeholder="3201234567890001"
-                            className="flex flex-col gap-2"
-                            value={formData.identity_number} onChange={handleFormChange} />
-                        <ImageUpload id="identity_photo" label="Foto KTP/Passport" required
-                            onChange={file => setIdentityPhoto(file)} />
-
-                        {/* Foto Profil */}
-                        <hr className="border-t-2 border-neutral-normal mt-2" />
-                        <h3 className="text-xl font-bold font-young">Foto Profil</h3>
-                        <ImageUpload id="photo" label="Foto Profil"
-                            onChange={(file) => setPhoto(file)} />
-
-                        <button
-                            className={`flex justify-center items-center mb-8 ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-3xl font-young`}
-                            type="submit"
-                            disabled={submitLoading}
-                        >
-                            {submitLoading ? "Memproses..." : "Registrasi Member"}
-                        </button>
-                    </form>
-
-                    <div className="bg-primary-light rounded-lg gap-x-4 p-4 h-fit border-neutral-normal border-2">
-                        <div className="flex flex-col">
-                            <h3 className="text-2xl font-bold font-young text-neutral-normal">Benefits Member</h3>
-                        </div>
-                        <div className="flex flex-col">
-                            <ol className="list-decimal list-outside p-2 pl-8 text-2xl text-neutral-normal">
-                                <li className="mt-2">Mendapatkan Informasi yang Up-to-Date</li>
-                                <li className="mt-2">Mendapatkan teman yang banyak</li>
-                                <li className="mt-2">Sesi Down-Down setiap event.</li>
-                                <li className="mt-2">Lorem Ipsu dolor sir amet.</li>
-                                <li className="mt-2">Lorem Ipsu dolor sir amet.</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </RevealSection>
+            </div>
         </Container>
     );
 }

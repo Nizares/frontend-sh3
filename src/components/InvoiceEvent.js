@@ -19,7 +19,7 @@ export default function InvoiceEvent({
     event_qty
 }) {
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 my-4">
             <div className="flex justify-end">
                 <PDFDownloadLink
                     document={
@@ -36,14 +36,14 @@ export default function InvoiceEvent({
                     fileName={`Invoice-${invoice_id}.pdf`}
                 >
                     {({ loading }) => (
-                        <button className="bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold py-2 px-6 transition-colors">
+                        <button className="bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold py-2 px-6 transition-colors rounded-md">
                             {loading ? "Menyiapkan PDF..." : "Download PDF"}
                         </button>
                     )}
                 </PDFDownloadLink>
             </div>
 
-            <div className="flex flex-col bg-primary-light p-8 border-2 border-neutral-normal">
+            <div className="flex flex-col bg-primary-light p-8 border-2 border-neutral-normal rounded-md">
                 <div className="flex flex-col items-center p-8">
                     <img
                         src="/assets/images/sh3logo.png"

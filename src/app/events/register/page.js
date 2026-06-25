@@ -25,47 +25,12 @@ import Swal from "sweetalert2";
 
 const paymentOptions = [
   {
-    value: "Transfer Bank BCA",
-    label: "Bank Transfer BCA",
-    NoRek: "0273178314",
-    nama: "Muhammad Nizar",
-    image: "/assets/icon/bca.png",
-  },
-  {
     value: "Transfer Bank Mandiri",
     label: "Bank Transfer Mandiri",
-    NoRek: "14400000011",
-    nama: "Muhammad Nizar",
+    NoRek: "1480087846666",
+    nama: "An. Samarinda Hidup Hutan Hijau",
     image: "/assets/icon/mandiri.png",
-  },
-  {
-    value: "Transfer Bank BRI",
-    label: "Bank Transfer BRI",
-    NoRek: "14400000011",
-    nama: "Muhammad Nizar",
-    image: "/assets/icon/bri.png",
-  },
-  {
-    value: "Transfer saldo DANA",
-    label: "DANA",
-    NoRek: "08123456789",
-    nama: "Muhammad Nizar",
-    image: "/assets/icon/dana.png",
-  },
-  {
-    value: "Transfer saldo OVO",
-    label: "OVO",
-    NoRek: "08123456789",
-    nama: "Muhammad Nizar",
-    image: "/assets/icon/ovo.png",
-  },
-  {
-    value: "Transfer saldo gopay",
-    label: "GoPay",
-    NoRek: "08123456789",
-    nama: "Muhammad Nizar",
-    image: "/assets/icon/gopay.png",
-  },
+  }
 ];
 
 export default function RegisterEvent() {
@@ -164,270 +129,288 @@ export default function RegisterEvent() {
     return <div className="flex justify-center p-16 text-2xl">Loading...</div>;
 
   return (
-    <Container className="flex flex-col gap-y-4 w-full px-4 md:px-0 max-w-306 mx-auto">
-      <RevealSection direction="up">
-        <div className="flex flex-col gap-y-4 mt-8">
-          <Link href="/events" className="static md:absolute">
-            <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
-          </Link>
-          <div className="flex items-center justify-center w-full">
-            <h1 className="text-4xl font-bold font-young">{event.title}</h1>
-          </div>
-
-          <div className="flex flex-row justify-between gap-x-2 mt-8">
-            <div className="flex flex-row justify-center gap-x-2 w-1/2">
-              <MapPinIcon className="w-8 h-8" />
-              <div className="text-lg font-bold">{event.location}</div>
-            </div>
-            <div className="text-lg font-bold">
-              {concateDate(event.start_date, event.end_date)}
-            </div>
-          </div>
-        </div>
-      </RevealSection>
-
-      <RevealSection direction="up">
-        <Image
-          src={event.image_url}
-          alt={event.title}
-          width={600}
-          height={450}
-          className="h-128 w-full flex object-cover rounded-lg"
+    <Container className="flex flex-col w-full">
+      <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
+        <div
+          className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left mask-r-from-5%"
+          style={{
+            backgroundImage: `url('/assets/images/batik4.svg')`,
+            backgroundSize: "112px",
+          }}
         />
-      </RevealSection>
+        <div
+          className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100 mask-r-from-5%"
+          style={{
+            backgroundImage: `url('/assets/images/batik4.svg')`,
+            backgroundSize: "112px",
+          }}
+        />
+        <div className="px-4 md:px-0 max-w-306 mx-auto">
+        <RevealSection direction="up">
+          <div className="flex flex-col gap-y-4 mt-8">
+            <Link href="/events" className="static md:absolute">
+              <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
+            </Link>
+            <div className="flex items-center justify-center w-full">
+              <h1 className="text-4xl font-bold mt-16">{event.title}</h1>
+            </div>
 
-      <RevealSection direction="up">
-        <div className="text-3xl font-bold p-8 font-young">TICKET #PENDING</div>
-
-        <div className="flex justify-center gap-8 flex-col md:flex-row">
-          <div className="bg-primary-light border-2 border-neutral-normal p-4 w-full">
-            <div className="flex flex-col">
-              <h3 className="text-2xl font-bold">Early Bid</h3>
-              <div className="text-sm line-through">
-                Rp. {formatRupiah(higherPrice(event.price))}
+            <div className="flex flex-row justify-between gap-x-2 mt-8">
+              <div className="flex flex-row justify-center gap-x-2 w-1/2">
+                <MapPinIcon className="w-8 h-8" />
+                <div className="text-lg font-bold">{event.location}</div>
               </div>
               <div className="text-lg font-bold">
-                Rp. {formatRupiah(event.price)}/person
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <ol className="list-decimal list-inside p-2">
-                {event.key_points?.map((point, i) => (
-                  <li key={i}>{point}</li>
-                ))}
-              </ol>
-              <div className="text-xl font-bold">Event Organizer</div>
-              <div className="text-lg font-semibold">{event.creator?.name}</div>
-            </div>
-          </div>
-          <div className="flex flex-col items-center justify-center bg-primary-light border-neutral-normal border-2 p-4 w-full">
-            <div className="font-bold text-3xl">Slot Tersisa:</div>
-            <div className="font-bold text-5xl font-young">
-              {event.remaining_quota}
-            </div>
-          </div>
-        </div>
-      </RevealSection>
-
-      <Form onSubmit={submitPembayaran} className="flex flex-col gap-8">
-        <RevealSection direction="up">
-          <div className="flex flex-col bg-primary-light p-4 gap-4 border-neutral-normal border-2">
-            <div className="flex justify-between">
-              <div className="text-2xl font-bold font-young">
-                Customer Information
-              </div>
-              <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
-            </div>
-            <hr className="border-t-2 border-text-colors" />
-            <div className="grid grid-cols-2 w-full items-center md:grid-cols-3 gap-8">
-              <InputType
-                label="ID Hash"
-                id="hashid"
-                type="text"
-                name="idhash"
-                required
-                placeholder="0001"
-                className="flex flex-col gap-2 col-span-1 md:col-span-2"
-                onChange={(e) => setId(e.target.value)}
-                value={id}
-              />
-              <button
-                className={`flex justify-center items-center font-young ${loading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}  font-bold text-xl text-white md:text-2xl w-full h-full`}
-                type="button"
-                disabled={loading}
-                onClick={checkTheID}
-              >
-                {loading ? "Checking..." : "Check ID"}
-              </button>
-            </div>
-            {error && (
-              <p className="text-red-500 font-medium text-3xl">{error}</p>
-            )}
-
-            {userData && (
-              <RevealSection direction="up">
-                <>
-                  <div className="flex flex-col gap-2">
-                    <InputType
-                      label="Full Name"
-                      id="name"
-                      required
-                      type="text"
-                      name="fullname"
-                      placeholder="John Doe"
-                      className="flex flex-col gap-2"
-                      value={userData.name}
-                      readOnly
-                    />
-                    <InputType
-                      label="Email"
-                      id="email"
-                      required
-                      type="email"
-                      name="email"
-                      placeholder="you@example.com"
-                      className="flex flex-col gap-2"
-                      value={userData.email}
-                      readOnly
-                    />
-                    <InputType
-                      label="Nomor Telepon/WA"
-                      type="text"
-                      id="telpnumber"
-                      required
-                      name="telpnumber"
-                      placeholder="08123456789"
-                      className="flex flex-col gap-2"
-                      value={userData.telp_number}
-                      readOnly
-                    />
-                  </div>
-                </>
-              </RevealSection>
-            )}
-          </div>
-        </RevealSection>
-
-        <RevealSection direction="up">
-          <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4">
-            <div className="flex justify-between">
-              <div className="text-2xl font-bold font-young">
-                Payment Details
-              </div>
-              <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
-            </div>
-            <hr className="border-t-2 border-text-colors" />
-            <div className="flex justify-between">
-              <div className="text-xl font-medium">Event Name</div>
-              <div className="text-xl font-medium">{event.title}</div>
-            </div>
-            <div className="flex justify-between">
-              <div className="text-xl font-medium">Event Price</div>
-              <div className="text-xl font-medium">
-                Rp. {formatRupiah(event.price)}
-              </div>
-            </div>
-            <div className="flex justify-between">
-              <div className="text-xl font-bold">Total</div>
-              <div className="text-2xl font-bold">
-                Rp. {formatRupiah(event.price)}
+                {concateDate(event.start_date, event.end_date)}
               </div>
             </div>
           </div>
         </RevealSection>
 
-        <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4">
+        <RevealSection direction="up">
+          <Image
+            src={event.image_url}
+            alt={event.title}
+            width={600}
+            height={450}
+            className="h-128 w-full flex object-cover rounded-lg"
+          />
+        </RevealSection>
+
+        <RevealSection direction="up">
+          <div className="text-3xl font-bold p-8 font-young">Register Detail</div>
+
+          <div className="flex justify-center gap-8 flex-col md:flex-row mb-8">
+            <div className="bg-primary-light border-2 border-neutral-normal p-4 w-full rounded-md">
+              <div className="flex flex-col">
+                <h3 className="text-2xl font-bold">Early Bid</h3>
+                <div className="text-sm line-through">
+                  Rp. {formatRupiah(higherPrice(event.price))}
+                </div>
+                <div className="text-lg font-bold">
+                  Rp. {formatRupiah(event.price)}/person
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <ol className="list-decimal list-inside p-2">
+                  {event.key_points?.map((point, i) => (
+                    <li key={i}>{point}</li>
+                  ))}
+                </ol>
+                <div className="text-xl font-bold">Event Organizer</div>
+                <div className="text-lg font-semibold">{event.creator?.name}</div>
+              </div>
+            </div>
+            <div className="flex flex-col items-center justify-center bg-primary-light border-neutral-normal border-2 p-4 w-full rounded-md">
+              <div className="font-bold text-3xl">Slot Tersisa:</div>
+              <div className="font-bold text-5xl font-young">
+                {event.remaining_quota}
+              </div>
+            </div>
+          </div>
+        </RevealSection>
+
+        <Form onSubmit={submitPembayaran} className="flex flex-col gap-8">
           <RevealSection direction="up">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col bg-primary-light p-4 gap-4 border-neutral-normal border-2 rounded-md">
               <div className="flex justify-between">
                 <div className="text-2xl font-bold font-young">
-                  Payment Process
+                  Customer Information
                 </div>
                 <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
               </div>
               <hr className="border-t-2 border-text-colors" />
-              <SelectInput
-                id="payoptions"
-                name="payOptions"
-                label="Payment Options"
-                options={paymentOptions}
-                value={payOptions}
-                placehold="Pilih Pembayaran..."
-                onChange={(e) => setPayOptions(e.target.value)}
-              />
-              <div className="flex flex-col items-center justify-center p-8">
-                {selectedBank && (
-                  <div className="flex flex-row gap-8">
-                    <Image
-                      src={selectedBank.image}
-                      alt={selectedBank.nama}
-                      width={150}
-                      height={100}
-                      className="flex object-contain"
-                    />
-                    <div className="flex flex-col">
-                      <div className="font-semibold text-lg">
-                        {selectedBank.nama}
-                      </div>
-                      <div className="font-semibold text-lg">
-                        {selectedBank.NoRek}
+              <div className="grid grid-cols-2 w-full items-center md:grid-cols-3 gap-8">
+                <InputType
+                  label="ID Hash"
+                  id="hashid"
+                  type="text"
+                  name="idhash"
+                  required
+                  placeholder="0001"
+                  className="flex flex-col gap-2 col-span-1 md:col-span-2"
+                  onChange={(e) => setId(e.target.value)}
+                  value={id}
+                />
+                <button
+                  className={`flex justify-center items-center font-young ${loading ? "bg-neutral-normal-active" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}  font-bold text-xl text-white md:text-2xl w-full h-full rounded-md`}
+                  type="button"
+                  disabled={loading}
+                  onClick={checkTheID}
+                >
+                  {loading ? "Checking..." : "Check ID"}
+                </button>
+              </div>
+              {error && (
+                <p className="text-red-500 font-medium text-3xl">{error}</p>
+              )}
+
+              {userData && (
+                <RevealSection direction="up">
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <InputType
+                        label="Full Name"
+                        id="name"
+                        required
+                        type="text"
+                        name="fullname"
+                        placeholder="John Doe"
+                        className="flex flex-col gap-2"
+                        value={userData.name}
+                        readOnly
+                      />
+                      <InputType
+                        label="Email"
+                        id="email"
+                        required
+                        type="email"
+                        name="email"
+                        placeholder="you@example.com"
+                        className="flex flex-col gap-2"
+                        value={userData.email}
+                        readOnly
+                      />
+                      <InputType
+                        label="Nomor Telepon/WA"
+                        type="text"
+                        id="telpnumber"
+                        required
+                        name="telpnumber"
+                        placeholder="08123456789"
+                        className="flex flex-col gap-2"
+                        value={userData.telp_number}
+                        readOnly
+                      />
+                    </div>
+                  </>
+                </RevealSection>
+              )}
+            </div>
+          </RevealSection>
+
+          <RevealSection direction="up">
+            <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md">
+              <div className="flex justify-between">
+                <div className="text-2xl font-bold font-young">
+                  Payment Details
+                </div>
+                <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
+              </div>
+              <hr className="border-t-2 border-text-colors" />
+              <div className="flex justify-between">
+                <div className="text-xl font-medium">Event Name</div>
+                <div className="text-xl font-medium">{event.title}</div>
+              </div>
+              <div className="flex justify-between">
+                <div className="text-xl font-medium">Event Price</div>
+                <div className="text-xl font-medium">
+                  Rp. {formatRupiah(event.price)}
+                </div>
+              </div>
+              <div className="flex justify-between">
+                <div className="text-xl font-bold">Total</div>
+                <div className="text-2xl font-bold">
+                  Rp. {formatRupiah(event.price)}
+                </div>
+              </div>
+            </div>
+          </RevealSection>
+
+          <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md">
+            <RevealSection direction="up">
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-between">
+                  <div className="text-2xl font-bold font-young">
+                    Payment Process
+                  </div>
+                  <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
+                </div>
+                <hr className="border-t-2 border-text-colors" />
+                <SelectInput
+                  id="payoptions"
+                  name="payOptions"
+                  label="Payment Options"
+                  options={paymentOptions}
+                  value={payOptions}
+                  placehold="Pilih Pembayaran..."
+                  onChange={(e) => setPayOptions(e.target.value)}
+                />
+                <div className="flex flex-col items-center justify-center p-8">
+                  {selectedBank && (
+                    <div className="flex flex-row gap-8">
+                      <Image
+                        src={selectedBank.image}
+                        alt={selectedBank.nama}
+                        width={150}
+                        height={100}
+                        className="flex object-contain"
+                      />
+                      <div className="flex flex-col">
+                        <div className="font-semibold text-lg">
+                          {selectedBank.nama}
+                        </div>
+                        <div className="font-semibold text-lg">
+                          {selectedBank.NoRek}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-                <div className="text-2xl font-bold m-8">atau</div>
-                <Image
-                  src="/assets/images/qris.jpeg"
-                  alt="QRIS"
-                  width={450}
-                  height={600}
-                  className="w-full max-w-sm flex object-cover items-center justify-center"
+                  )}
+                  <div className="text-2xl font-bold m-8">atau</div>
+                  <Image
+                    src="/assets/images/qris.jpeg"
+                    alt="QRIS"
+                    width={450}
+                    height={600}
+                    className="w-full max-w-sm flex object-cover items-center justify-center"
+                  />
+                </div>
+              </div>
+            </RevealSection>
+
+            <RevealSection direction="up">
+              <div className="flex flex-col gap-4">
+                <div className="text-2xl font-bold font-young">
+                  Upload Proof of Payment
+                </div>
+                <ImageUpload
+                  id="paymentproof"
+                  label="Payment Proof"
+                  required
+                  onChange={(file) => setPaymentFile(file)}
                 />
               </div>
-            </div>
-          </RevealSection>
+            </RevealSection>
 
-          <RevealSection direction="up">
-            <div className="flex flex-col gap-4">
-              <div className="text-2xl font-bold font-young">
-                Upload Proof of Payment
+            <RevealSection direction="up">
+              <div className="flex flex-col gap-4">
+                <button
+                  className={`flex justify-center font-young rounded-md items-center ${submitLoading ? "bg-neutral-normal-active" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}  h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+                  type="submit"
+                  disabled={submitLoading}
+                >
+                  {submitLoading ? "Memproses..." : "Confirm Payment"}
+                </button>
               </div>
-              <ImageUpload
-                id="paymentproof"
-                label="Payment Proof"
-                required
-                onChange={(file) => setPaymentFile(file)}
-              />
-            </div>
-          </RevealSection>
+            </RevealSection>
+          </div>
+        </Form>
 
+        {orderResult && (
           <RevealSection direction="up">
-            <div className="flex flex-col gap-4">
-              <button
-                className={`flex justify-center font-young items-center ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}  h-16 font-bold text-xl text-white m-10 md:text-3xl`}
-                type="submit"
-                disabled={submitLoading}
-              >
-                {submitLoading ? "Memproses..." : "Confirm Payment"}
-              </button>
-            </div>
+            <InvoiceEvent
+              name={userData.name}
+              email={userData.email}
+              hash_id={userData?.id}
+              invoice_id={orderResult.invoice_number}
+              event_title={event.title}
+              event_price={formatRupiah(event.price)}
+              event_qty="1"
+            />
           </RevealSection>
+        )}
         </div>
-      </Form>
-
-      {orderResult && (
-        <RevealSection direction="up">
-          <InvoiceEvent
-            name={userData.name}
-            email={userData.email}
-            hash_id={userData?.id}
-            invoice_id={orderResult.invoice_number}
-            event_title={event.title}
-            event_price={formatRupiah(event.price)}
-            event_qty="1"
-          />
-        </RevealSection>
-      )}
+      </div>
     </Container>
   );
 }

@@ -51,7 +51,7 @@ export default function ImageUpload({ id = "cover_photo", label = "Cover photo",
           onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleFile(e.dataTransfer.files[0]) }}
-          className={`border-2 border-dashed p-10 flex flex-col items-center gap-2 cursor-pointer transition
+          className={`border-2 border-dashed p-10 flex flex-col items-center gap-2 cursor-pointer transition rounded-md
             ${isDragging ? "border-tertiary-normal  bg-indigo-50" : "border-tertiary-normal hover:border-neutral-text hover:bg-neutral-light-hover"}`}
         >
           <PhotoIcon className="w-9 h-9"/>

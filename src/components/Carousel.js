@@ -80,7 +80,7 @@ export default function Carousel() {
 
   if (loading) {
     return (
-      <div className="bg-bg-colors py-16 flex justify-center items-center min-h-[300px]">
+      <div className="bg-bg-colors py-16 flex justify-center items-center min-h-75">
         <p className="text-gray-400">Memuat event...</p>
       </div>
     )
@@ -88,14 +88,14 @@ export default function Carousel() {
 
   if (events.length === 0) {
     return (
-      <div className="bg-bg-colors py-16 flex justify-center items-center min-h-[300px]">
+      <div className="bg-bg-colors py-16 flex justify-center items-center min-h-75">
         <p className="text-gray-400">Belum ada past event.</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-bg-colors py-16">
+    <div className="py-16">
 
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex items-center">
@@ -118,10 +118,10 @@ export default function Carousel() {
                     src={event.image_url}
                     alt={event.title}
                     fill
-                    className="object-cover"
+                    className="object-cover rounded-md"
                   />
 
-                  <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent rounded-md" />
 
                   {isActive && (
                     <div className="absolute bottom-0 left-0 right-0 p-5 text-white">

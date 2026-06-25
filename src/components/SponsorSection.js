@@ -45,7 +45,7 @@ function SponsorCard({ sponsor, logoSize }) {
                 />
             ) : (
                 <div
-                    className="flex items-center justify-center bg-neutral-bg text-neutral-dark text-xl font-bold font-young"
+                    className="flex items-center justify-center bg-neutral-bg text-neutral-dark text-xl font-bold font-young rounded-full"
                     style={{ width: logoSize, height: logoSize }}
                 >
                     {sponsor.name.slice(0, 2).toUpperCase()}

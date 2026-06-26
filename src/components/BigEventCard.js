@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { concateDate } from "@/src/lib/utils";
 
-export default function EventCard({
+export default function BigEventCard({
   id,        // ← tambah prop id
   title,
   start_date,
@@ -16,13 +16,13 @@ export default function EventCard({
   console.log(status);
 
   return (
-    <div className="flex flex-col flex-1 shrink-0 basis-1/4 items-center bg-white h-full w-full max-w-sm rounded-md">
+    <div className="flex flex-col md:flex-row flex-1 shrink-0 basis-1/2 items-center bg-white h-full w-full max-w-3xl rounded-md">
       <Image
         src={img}
         alt="image"
         width={250}
         height={250}
-        className="w-full object-cover rounded-t-md"
+        className="w-full object-cover rounded-l-md"
       />
       <div className="flex flex-col gap-4 p-8 justify-between h-full">
 

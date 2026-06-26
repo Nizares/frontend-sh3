@@ -113,7 +113,8 @@
 
 
 .heading-separator::before, .heading-separator::after {
-   @apply content-[''] w-1/4 block h-0.5 bg-primary-normal absolute top-3.5
+   @apply  w-1/4 block h-0.5 bg-primary-normal absolute top-3.5 md:content-['']
+
 }
 
 .heading-separator::after {

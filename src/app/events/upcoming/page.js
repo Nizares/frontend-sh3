@@ -9,6 +9,7 @@ import { MapPinIcon } from "@heroicons/react/24/solid";
 import { concateDate } from "@/src/lib/utils";
 import { eventService } from "@/src/services/eventService";
 import SponsorSection from "@/src/components/SponsorSection";
+import BatikOverlay from "@/src/components/BatikOverlay";
 
 export default function UpcomingEvents() {
   const [event, setEvent] = useState(null);
@@ -147,21 +148,8 @@ export default function UpcomingEvents() {
   return (
     <Container className="flex flex-col gap-y-4 w-full">
       <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
-        <div
-          className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left mask-r-from-5%"
-          style={{
-            backgroundImage: `url('/assets/images/batik4.svg')`,
-            backgroundSize: "112px",
-          }}
-        />
-        <div
-          className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100 mask-r-from-5%"
-          style={{
-            backgroundImage: `url('/assets/images/batik4.svg')`,
-            backgroundSize: "112px",
-          }}
-        />
-        <div className="mt-8 max-w-306 mx-auto">
+        <BatikOverlay />
+        <div className="mt-8 max-w-306 mx-auto relative z-1">
           <Link href="/events" className="static md:absolute">
             <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
           </Link>

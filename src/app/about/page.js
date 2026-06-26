@@ -4,6 +4,7 @@ import { RevealSection } from "@/src/components/RevealSection";
 import TotalStatistic from "@/src/components/TotalStatistics";
 import Image from "next/image"
 import StructureProfileCard from "@/src/components/StructureProfileCard";
+import BatikOverlay from "@/src/components/BatikOverlay";
 
 const pimpinan = [
     { name: "Minardi Soetomo", position: "Hash Master (Ketua Umum)", images: "/assets/images/contohfotopejabat.png", periode: "2024-2027" },
@@ -17,20 +18,7 @@ export default function About() {
     return (
         <Container className="flex flex-col">
             <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
-                <div
-                    className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left mask-r-from-5%"
-                    style={{
-                        backgroundImage: `url('/assets/images/batik4.svg')`,
-                        backgroundSize: "112px",
-                    }}
-                />
-                <div
-                    className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100 mask-r-from-5%"
-                    style={{
-                        backgroundImage: `url('/assets/images/batik4.svg')`,
-                        backgroundSize: "112px",
-                    }}
-                />
+                <BatikOverlay />
 
                 {/* Header */}
                 <div className="flex flex-col flex-1 items-center justify-center text-primary-dark-active p-8 mt-16">
@@ -39,7 +27,7 @@ export default function About() {
 
                 {/* Logo & Deskripsi */}
                 <RevealSection direction="up">
-                    <div className="flex flex-col align-middle md:flex-row max-w-306 mx-auto mb-16">
+                    <div className="flex flex-col align-middle md:flex-row max-w-306 mx-auto mb-16 px-4 md:px-0">
                         <div className="w-full md:w-1/2 flex items-center justify-center">
                             <Image
                                 src="/assets/images/sh3logo.png"
@@ -64,23 +52,23 @@ export default function About() {
 
                 {/* Highlight Cards */}
                 <RevealSection direction="up">
-                    <div className="flex flex-col gap-4">
-                        <div className="flex flex-row w-full justify-center gap-4">
-                            <div className="flex flex-col w-lg border-4 border-emerald-600 text-emerald-600 rounded-sm p-8">
+                    <div className="flex flex-col gap-4 max-w-306 mx-auto px-4 md:px-0">
+                        <div className="flex flex-col md:flex-row w-full justify-center gap-4">
+                            <div className="flex flex-col flex-1 border-4 border-emerald-600 text-emerald-600 rounded-sm p-8">
                                 <div className="font-bold font-young text-2xl">Weekly Runs</div>
                                 <div className="text-xl">Setiap Senin & Sabtu, lokasi berbeda setiap minggu</div>
                             </div>
-                            <div className="flex flex-col w-lg border-4 border-emerald-600 text-emerald-600 rounded-sm p-8">
+                            <div className="flex flex-col flex-1 border-4 border-emerald-600 text-emerald-600 rounded-sm p-8">
                                 <div className="font-bold font-young text-2xl">Down Down</div>
                                 <div className="text-xl">Tradisi Hash yang meriah setelah setiap lari</div>
                             </div>
                         </div>
-                        <div className="flex flex-row w-full justify-center gap-4">
-                            <div className="flex flex-col w-lg border-4 border-emerald-600 text-emerald-600 rounded-sm p-8">
+                        <div className="flex flex-col md:flex-row  w-full justify-center gap-4">
+                            <div className="flex flex-col flex-1 border-4 border-emerald-600 text-emerald-600 rounded-sm p-8">
                                 <div className="font-bold font-young text-2xl">Alam Borneo</div>
                                 <div className="text-xl">Trail di hutan, sungai, dan bukit Kalimantan</div>
                             </div>
-                            <div className="flex flex-col w-lg border-4 border-emerald-600 text-emerald-600 rounded-sm p-8">
+                            <div className="flex flex-col flex-1 border-4 border-emerald-600 text-emerald-600 rounded-sm p-8">
                                 <div className="font-bold font-young text-2xl">Komunitas</div>
                                 <div className="text-xl">Inklusif, ramah, dan penuh tawa</div>
                             </div>

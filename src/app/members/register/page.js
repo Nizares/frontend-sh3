@@ -7,6 +7,7 @@ import { memberService } from "@/src/services/memberService";
 import ImageUpload from "@/src/components/ImageUpload";
 import Swal from "sweetalert2";
 import { RevealSection } from "@/src/components/RevealSection";
+import BatikOverlay from "@/src/components/BatikOverlay";
 
 const genderOptions = [
     { value: "male", label: "Laki-laki" },
@@ -138,20 +139,7 @@ export default function Members() {
     return (
         <Container className="flex flex-col  w-full ">
             <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
-                <div
-                    className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left mask-r-from-5%"
-                    style={{
-                        backgroundImage: `url('/assets/images/batik4.svg')`,
-                        backgroundSize: "112px",
-                    }}
-                />
-                <div
-                    className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100 mask-r-from-5%"
-                    style={{
-                        backgroundImage: `url('/assets/images/batik4.svg')`,
-                        backgroundSize: "112px",
-                    }}
-                />
+                <BatikOverlay />
                 <div className="gap-y-8 px-4 md:px-0 max-w-306 mx-auto">
                     <RevealSection direction="up">
                         <div className="flex flex-col flex-1 items-center justify-center p-8">

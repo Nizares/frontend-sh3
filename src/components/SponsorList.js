@@ -54,8 +54,11 @@ export function SponsorList() {
         acc[year].push(sponsor);
         return acc;
     }, {});
+    // descending (terbaru dulu)
+    // const sortedYears = Object.keys(groupedByYear).sort((a, b) => b - a);
 
-    const sortedYears = Object.keys(groupedByYear).sort((a, b) => b - a);
+    // ascending (terlama dulu)
+    const sortedYears = Object.keys(groupedByYear).sort((a, b) => a - b);
 
     return (
         <section className="py-10 px-6 min-h-screen">

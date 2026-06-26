@@ -4,9 +4,9 @@ import { formatRupiah } from "@/src/lib/utils"
 
 export default function MerchandiseCard({ id, name, price, image_url, stock, sizes }) {
     return (
-        <div className="flex flex-col h-full bg-primary-light border-2 border-neutral-normal hover:border-emerald-600 transition-colors">
+        <div className="flex flex-col h-full bg-primary-light border-2 border-neutral-normal hover:border-emerald-600 transition-colors rounded-md">
             {/* Gambar */}
-            <div className="relative w-full h-[250px] overflow-hidden bg-neutral-bg">
+            <div className="relative w-full h-62.5 overflow-hidden bg-neutral-bg rounded-t-md">
                 {image_url ? (
                     <img
                         src={image_url}
@@ -45,7 +45,7 @@ export default function MerchandiseCard({ id, name, price, image_url, stock, siz
                 </div>
                 <Link
                     href={`/merchandise/order?id=${id}`}
-                    className={`mt-2 text-white text-center px-5 py-2.5 text-sm font-medium transition-colors font-young shadow-md
+                    className={`mt-2 text-white text-center px-5 py-2.5 text-sm font-medium transition-colors font-young shadow-md rounded-md
             ${stock === 0
                             ? "bg-neutral-normal pointer-events-none opacity-60"
                             : "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active"

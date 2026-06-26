@@ -40,8 +40,8 @@ function SponsorCard({ sponsor }) {
 export function SponsorMarquee() {
     const { sponsors, loading, error } = useSponsor();
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Gagal memuat sponsor.</p>;
+    if (loading) return <p className="min-h-screen text-center text-2xl p-16">Loading...</p>;
+    if (error) return <p className="min-h-screen text-center text-2xl p-16">Gagal memuat sponsor.</p>;
     if (!sponsors) return null;
 
     const allSponsors = Object.values(sponsors).flat().filter(s => s.is_active);

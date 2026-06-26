@@ -5,6 +5,7 @@ import Container from "@/src/components/Container"
 import { RevealSection } from "@/src/components/RevealSection"
 import { merchandiseService } from "@/src/services/merchandiseService"
 import MerchandiseCard from "@/src/components/MerchandiseCard"
+import BatikOverlay from "@/src/components/BatikOverlay"
 
 export default function MerchandisePage() {
     const [items, setItems] = useState([])
@@ -32,20 +33,7 @@ export default function MerchandisePage() {
     return (
         <Container className="flex flex-col gap-y-8 w-full">
             <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
-                <div
-                    className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left mask-r-from-5%"
-                    style={{
-                        backgroundImage: `url('/assets/images/batik4.svg')`,
-                        backgroundSize: "112px",
-                    }}
-                />
-                <div
-                    className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100 mask-r-from-5%"
-                    style={{
-                        backgroundImage: `url('/assets/images/batik4.svg')`,
-                        backgroundSize: "112px",
-                    }}
-                />
+                <BatikOverlay />
                 <div className="max-w-306 mx-auto w-full p-4 md:p-0">
                     <RevealSection direction="up">
                         <div className="mt-8">

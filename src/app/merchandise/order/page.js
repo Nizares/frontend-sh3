@@ -15,6 +15,7 @@ import { formatRupiah } from "@/src/lib/utils"
 import { useRouter } from "next/navigation"
 import ImageUpload from "@/src/components/ImageUpload"
 import Swal from "sweetalert2"
+import BatikOverlay from "@/src/components/BatikOverlay"
 
 export default function MerchandiseOrderPage() {
     const paymentMethodOptions = [
@@ -163,210 +164,215 @@ export default function MerchandiseOrderPage() {
     const hasDiscount = eventPrice !== null && eventPrice < item.price
 
     return (
-        <Container className="flex flex-col gap-y-4 w-full px-4 md:px-0 max-w-306 mx-auto">
-            <RevealSection direction="up">
-                <div className="flex flex-col gap-y-4 mt-24">
-                    <Link href={eventId ? `/events/upcoming?id=${eventId}` : "/merchandise"} className="static md:absolute">
-                        <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
-                    </Link>
-                    <div className="flex items-center justify-center w-full">
-                        <h1 className="text-4xl font-bold font-young">{item.name}</h1>
-                    </div>
-                </div>
-            </RevealSection>
-
-            <RevealSection direction="up">
-                {item.image_url ? (
-                    <img src={item.image_url} alt={item.name} className="h-80 w-full object-cover" />
-                ) : (
-                    <div className="h-80 w-full bg-neutral-bg flex items-center justify-center text-5xl font-bold font-young border-1">
-                        {item.name.slice(0, 2).toUpperCase()}
-                    </div>
-                )}
-            </RevealSection>
-
-            <RevealSection direction="up">
-                <div className="flex justify-center gap-8 flex-col md:flex-row">
-                    <div className="bg-primary-light border-2 border-neutral-normal p-4 w-full rounded-md">
-                        <h3 className="text-2xl font-bold font-young mb-2">{item.name}</h3>
-                        <div className="text-sm text-neutral-dark mb-4">{item.description}</div>
-
-                        {/* Harga — tampilkan diskon kalau ada */}
-                        {hasDiscount ? (
-                            <div className="flex flex-col gap-1">
-                                <div className="text-sm text-neutral-dark line-through">
-                                    Rp. {formatRupiah(item.price)} / pcs
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="text-lg font-bold text-secondary-bg">
-                                        Rp. {formatRupiah(eventPrice)} / pcs
-                                    </div>
-                                    {discountPercentage && (
-                                        <div className="bg-secondary-bg text-white text-xs font-bold px-2 py-1">
-                                            -{discountPercentage}%
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="text-xs text-secondary-bg font-medium">
-                                    Harga spesial peserta event
-                                </div>
+        <Container className="flex flex-col gap-y-4 w-full px-4 md:px-0 ">
+            <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover p-8">
+                <BatikOverlay />
+                <div className="max-w-306 mx-auto">
+                    <RevealSection direction="up">
+                        <div className="flex flex-col gap-y-4 mt-24">
+                            <Link href={eventId ? `/events/upcoming?id=${eventId}` : "/merchandise"} className="static md:absolute">
+                                <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
+                            </Link>
+                            <div className="flex items-center justify-center w-full">
+                                <h1 className="text-4xl font-bold font-young">{item.name}</h1>
                             </div>
+                        </div>
+                    </RevealSection>
+
+                    <RevealSection direction="up">
+                        {item.image_url ? (
+                            <img src={item.image_url} alt={item.name} className="h-80 w-full object-cover" />
                         ) : (
-                            <div className="text-lg font-bold text-secondary-bg">
-                                Rp. {formatRupiah(item.price)} / pcs
+                            <div className="h-80 w-full bg-neutral-bg flex items-center justify-center text-5xl font-bold font-young border-1">
+                                {item.name.slice(0, 2).toUpperCase()}
                             </div>
                         )}
+                    </RevealSection>
 
-                        {item.category && (
-                            <div className="text-sm mt-1">Kategori: <span className="font-medium">{item.category}</span></div>
-                        )}
-                    </div>
-                    <div className="flex flex-col items-center justify-center bg-primary-light border-neutral-normal border-2 p-4 w-full rounded-md" >
-                        <div className="font-bold text-3xl">Stok Tersisa</div>
-                        <div className={`font-bold text-5xl font-young ${item.stock === 0 ? "text-red-500" : ""}`}>
-                            {item.stock === 0 ? "Habis" : item.stock}
-                        </div>
-                    </div>
-                </div>
-            </RevealSection>
-
-            {item.stock === 0 ? (
-                <div className="flex justify-center items-center h-32 bg-neutral-bg text-white font-bold text-2xl font-young">
-                    Stok Habis
-                </div>
-            ) : (
-                <form onSubmit={submitOrder} className="flex flex-col gap-8">
                     <RevealSection direction="up">
-                        <div className="flex flex-col bg-primary-light p-4 gap-4 border-neutral-normal border-2 rounded-md">
-                            <div className="flex justify-between">
-                                <div className="text-2xl font-bold font-young">Detail Order</div>
-                                <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
+                        <div className="flex justify-center gap-8 flex-col md:flex-row">
+                            <div className="bg-primary-light border-2 border-neutral-normal p-4 w-full rounded-md">
+                                <h3 className="text-2xl font-bold font-young mb-2">{item.name}</h3>
+                                <div className="text-sm text-neutral-dark mb-4">{item.description}</div>
+
+                                {/* Harga — tampilkan diskon kalau ada */}
+                                {hasDiscount ? (
+                                    <div className="flex flex-col gap-1">
+                                        <div className="text-sm text-neutral-dark line-through">
+                                            Rp. {formatRupiah(item.price)} / pcs
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="text-lg font-bold text-secondary-bg">
+                                                Rp. {formatRupiah(eventPrice)} / pcs
+                                            </div>
+                                            {discountPercentage && (
+                                                <div className="bg-secondary-bg text-white text-xs font-bold px-2 py-1">
+                                                    -{discountPercentage}%
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="text-xs text-secondary-bg font-medium">
+                                            Harga spesial peserta event
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="text-lg font-bold text-secondary-bg">
+                                        Rp. {formatRupiah(item.price)} / pcs
+                                    </div>
+                                )}
+
+                                {item.category && (
+                                    <div className="text-sm mt-1">Kategori: <span className="font-medium">{item.category}</span></div>
+                                )}
                             </div>
-                            <hr className="border-t-2 border-text-colors" />
-                            <div className="flex flex-col gap-2">
-                                <label className="font-medium text-xl">
-                                    Jumlah <span className="text-red-500">*</span>
-                                </label>
-                                <div className="flex items-center gap-4">
-                                    <button type="button" onClick={() => setQty(q => Math.max(1, q - 1))}
-                                        className="w-10 h-10 bg-neutral-normal text-white font-bold text-xl hover:bg-neutral-dark transition-colors">−</button>
-                                    <span className="text-2xl font-bold w-8 text-center">{qty}</span>
-                                    <button type="button" onClick={() => setQty(q => Math.min(item.stock, q + 1))}
-                                        className="w-10 h-10 bg-secondary-bg text-white font-bold text-xl hover:bg-secondary-bg-hover transition-colors">+</button>
+                            <div className="flex flex-col items-center justify-center bg-primary-light border-neutral-normal border-2 p-4 w-full rounded-md" >
+                                <div className="font-bold text-3xl">Stok Tersisa</div>
+                                <div className={`font-bold text-5xl font-young ${item.stock === 0 ? "text-red-500" : ""}`}>
+                                    {item.stock === 0 ? "Habis" : item.stock}
                                 </div>
                             </div>
-                            {sizeOptions.length > 0 && (
-                                <SelectInput id="size" name="size" label="Ukuran" required placehold="Pilih ukuran..."
-                                    options={sizeOptions} value={selectedSize} onChange={e => setSelectedSize(e.target.value)} />
-                            )}
-                            {colorOptions.length > 0 && (
-                                <SelectInput id="color" name="color" label="Warna" required placehold="Pilih warna..."
-                                    options={colorOptions} value={selectedColor} onChange={e => setSelectedColor(e.target.value)} />
-                            )}
                         </div>
                     </RevealSection>
 
-                    <RevealSection direction="up">
-                        <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md">
-                            <div className="flex justify-between">
-                                <div className="text-2xl font-bold font-young">Shipping Info</div>
-                                <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
-                            </div>
-                            <hr className="border-t-2 border-text-colors" />
-                            <InputType label="Shipping Address" id="shippingaddress" required type="text"
-                                name="shippingaddress" placeholder="Jl. Contoh No. 1, Kota"
-                                className="flex flex-col gap-2" value={shippingAddress}
-                                onChange={e => setShippingAddress(e.target.value)} />
-                            <InputType label="Shipping Phone" id="shippingphone" required type="text"
-                                name="shippingphone" placeholder="08123456789"
-                                className="flex flex-col gap-2" value={shippingPhone}
-                                onChange={e => setShippingPhone(e.target.value)} />
+                    {item.stock === 0 ? (
+                        <div className="flex justify-center items-center h-32 bg-neutral-bg text-white font-bold text-2xl font-young">
+                            Stok Habis
                         </div>
-                    </RevealSection>
-
-                    <RevealSection direction="up">
-                        <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4">
-                            <div className="flex justify-between">
-                                <div className="text-2xl font-bold font-young">Payment Details</div>
-                                <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
-                            </div>
-                            <hr className="border-t-2 border-text-colors" />
-                            <div className="flex justify-between">
-                                <div className="text-xl font-medium">Merchandise</div>
-                                <div className="text-xl font-medium">{item.name}</div>
-                            </div>
-                            <div className="flex justify-between">
-                                <div className="text-xl font-medium">Harga Satuan</div>
-                                <div className="flex flex-col items-end">
-                                    {hasDiscount && (
-                                        <div className="text-sm text-neutral-dark line-through">
-                                            Rp. {formatRupiah(item.price)}
+                    ) : (
+                        <form onSubmit={submitOrder} className="flex flex-col gap-8">
+                            <RevealSection direction="up">
+                                <div className="flex flex-col bg-primary-light p-4 gap-4 border-neutral-normal border-2 rounded-md">
+                                    <div className="flex justify-between">
+                                        <div className="text-2xl font-bold font-young">Detail Order</div>
+                                        <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
+                                    </div>
+                                    <hr className="border-t-2 border-text-colors" />
+                                    <div className="flex flex-col gap-2">
+                                        <label className="font-medium text-xl">
+                                            Jumlah <span className="text-red-500">*</span>
+                                        </label>
+                                        <div className="flex items-center gap-4">
+                                            <button type="button" onClick={() => setQty(q => Math.max(1, q - 1))}
+                                                className="w-10 h-10 bg-neutral-normal text-white font-bold text-xl hover:bg-neutral-dark transition-colors">−</button>
+                                            <span className="text-2xl font-bold w-8 text-center">{qty}</span>
+                                            <button type="button" onClick={() => setQty(q => Math.min(item.stock, q + 1))}
+                                                className="w-10 h-10 bg-secondary-bg text-white font-bold text-xl hover:bg-secondary-bg-hover transition-colors">+</button>
                                         </div>
+                                    </div>
+                                    {sizeOptions.length > 0 && (
+                                        <SelectInput id="size" name="size" label="Ukuran" required placehold="Pilih ukuran..."
+                                            options={sizeOptions} value={selectedSize} onChange={e => setSelectedSize(e.target.value)} />
                                     )}
-                                    <div className="text-xl font-medium">
-                                        Rp. {formatRupiah(activePrice)}
+                                    {colorOptions.length > 0 && (
+                                        <SelectInput id="color" name="color" label="Warna" required placehold="Pilih warna..."
+                                            options={colorOptions} value={selectedColor} onChange={e => setSelectedColor(e.target.value)} />
+                                    )}
+                                </div>
+                            </RevealSection>
+
+                            <RevealSection direction="up">
+                                <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md">
+                                    <div className="flex justify-between">
+                                        <div className="text-2xl font-bold font-young">Shipping Info</div>
+                                        <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
+                                    </div>
+                                    <hr className="border-t-2 border-text-colors" />
+                                    <InputType label="Shipping Address" id="shippingaddress" required type="text"
+                                        name="shippingaddress" placeholder="Jl. Contoh No. 1, Kota"
+                                        className="flex flex-col gap-2" value={shippingAddress}
+                                        onChange={e => setShippingAddress(e.target.value)} />
+                                    <InputType label="Shipping Phone" id="shippingphone" required type="text"
+                                        name="shippingphone" placeholder="08123456789"
+                                        className="flex flex-col gap-2" value={shippingPhone}
+                                        onChange={e => setShippingPhone(e.target.value)} />
+                                </div>
+                            </RevealSection>
+
+                            <RevealSection direction="up">
+                                <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4">
+                                    <div className="flex justify-between">
+                                        <div className="text-2xl font-bold font-young">Payment Details</div>
+                                        <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
+                                    </div>
+                                    <hr className="border-t-2 border-text-colors" />
+                                    <div className="flex justify-between">
+                                        <div className="text-xl font-medium">Merchandise</div>
+                                        <div className="text-xl font-medium">{item.name}</div>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <div className="text-xl font-medium">Harga Satuan</div>
+                                        <div className="flex flex-col items-end">
+                                            {hasDiscount && (
+                                                <div className="text-sm text-neutral-dark line-through">
+                                                    Rp. {formatRupiah(item.price)}
+                                                </div>
+                                            )}
+                                            <div className="text-xl font-medium">
+                                                Rp. {formatRupiah(activePrice)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <div className="text-xl font-medium">Jumlah</div>
+                                        <div className="text-xl font-medium">{qty} pcs</div>
+                                    </div>
+                                    <hr className="border-t border-neutral-normal" />
+                                    <div className="flex justify-between">
+                                        <div className="text-xl font-bold">Total</div>
+                                        <div className="text-2xl font-bold">Rp. {formatRupiah(totalPrice)}</div>
+                                    </div>
+
+                                    <SelectInput id="paymentmethod" name="paymentmethod" label="Metode Pembayaran" required
+                                        placehold="Pilih metode pembayaran..." options={paymentMethodOptions}
+                                        value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} />
+
+                                    <div className="bg-primary-light-active border border-neutral-normal p-4 text-sm text-neutral-dark">
+                                        <div className="flex flex-col items-center">
+                                            <div className="font-bold mb-1">Cara Pembayaran:</div>
+                                            <div>Setelah order dikonfirmasi, silakan transfer ke rekening berikut:</div>
+                                            <div className="mt-2 font-semibold">BCA 1234567890 a.n SH3 Event</div>
+                                            <div className="mt-1">Atau scan QRIS di bawah ini:</div>
+                                            <Image src="/assets/images/qris.jpeg" alt="QRIS" width={300} height={300} className="mt-2 object-contain" />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col gap-2 mt-4">
+                                        <div className="font-bold text-xl">Upload Bukti Pembayaran</div>
+                                        <ImageUpload id="paymentproof" label="Bukti Transfer" required onChange={file => setPaymentFile(file)} />
                                     </div>
                                 </div>
-                            </div>
-                            <div className="flex justify-between">
-                                <div className="text-xl font-medium">Jumlah</div>
-                                <div className="text-xl font-medium">{qty} pcs</div>
-                            </div>
-                            <hr className="border-t border-neutral-normal" />
-                            <div className="flex justify-between">
-                                <div className="text-xl font-bold">Total</div>
-                                <div className="text-2xl font-bold">Rp. {formatRupiah(totalPrice)}</div>
-                            </div>
+                            </RevealSection>
 
-                            <SelectInput id="paymentmethod" name="paymentmethod" label="Metode Pembayaran" required
-                                placehold="Pilih metode pembayaran..." options={paymentMethodOptions}
-                                value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} />
+                            <RevealSection direction="up">
+                                <button
+                                    className={`flex justify-center font-young items-center ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"} h-16 font-bold text-xl text-white md:text-3xl w-full`}
+                                    type="submit" disabled={submitLoading}>
+                                    {submitLoading ? "Memproses..." : "Confirm Order"}
+                                </button>
+                            </RevealSection>
+                        </form>
+                    )}
 
-                            <div className="bg-primary-light-active border border-neutral-normal p-4 text-sm text-neutral-dark">
-                                <div className="flex flex-col items-center">
-                                    <div className="font-bold mb-1">Cara Pembayaran:</div>
-                                    <div>Setelah order dikonfirmasi, silakan transfer ke rekening berikut:</div>
-                                    <div className="mt-2 font-semibold">BCA 1234567890 a.n SH3 Event</div>
-                                    <div className="mt-1">Atau scan QRIS di bawah ini:</div>
-                                    <Image src="/assets/images/qris.jpeg" alt="QRIS" width={300} height={300} className="mt-2 object-contain" />
-                                </div>
+                    {orderResult && userData && (
+                        <RevealSection direction="up">
+                            <div id="invoice-section">
+                                <InvoiceMerch
+                                    name={userData.name}
+                                    email={userData.email}
+                                    hash_id={userData.id}
+                                    invoice_id={orderResult.invoice_number}
+                                    merch_name={item.name}
+                                    merch_price={formatRupiah(activePrice)}
+                                    merch_qty={qty}
+                                    merch_size={selectedSize}
+                                    merch_color={selectedColor}
+                                    total_price={formatRupiah(totalPrice)}
+                                />
                             </div>
-
-                            <div className="flex flex-col gap-2 mt-4">
-                                <div className="font-bold text-xl">Upload Bukti Pembayaran</div>
-                                <ImageUpload id="paymentproof" label="Bukti Transfer" required onChange={file => setPaymentFile(file)} />
-                            </div>
-                        </div>
-                    </RevealSection>
-
-                    <RevealSection direction="up">
-                        <button
-                            className={`flex justify-center font-young items-center ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"} h-16 font-bold text-xl text-white md:text-3xl w-full`}
-                            type="submit" disabled={submitLoading}>
-                            {submitLoading ? "Memproses..." : "Confirm Order"}
-                        </button>
-                    </RevealSection>
-                </form>
-            )}
-
-            {orderResult && userData && (
-                <RevealSection direction="up">
-                    <div id="invoice-section">
-                        <InvoiceMerch
-                            name={userData.name}
-                            email={userData.email}
-                            hash_id={userData.id}
-                            invoice_id={orderResult.invoice_number}
-                            merch_name={item.name}
-                            merch_price={formatRupiah(activePrice)}
-                            merch_qty={qty}
-                            merch_size={selectedSize}
-                            merch_color={selectedColor}
-                            total_price={formatRupiah(totalPrice)}
-                        />
-                    </div>
-                </RevealSection>
-            )}
+                        </RevealSection>
+                    )}
+                </div>
+            </div>
         </Container>
     )
 }

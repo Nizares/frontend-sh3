@@ -8,6 +8,7 @@ import { RevealSection } from "@/src/components/RevealSection";
 import { useState, useEffect } from "react";
 import { profileService } from "@/src/services/profileService";
 import Swal from "sweetalert2";
+import BatikOverlay from "@/src/components/BatikOverlay";
 
 const genderOptions = [
     { value: "male", label: "Laki-laki" },
@@ -112,20 +113,7 @@ export default function DetailMember() {
     return (
         <Container className="flex flex-col w-full">
             <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
-                <div
-                    className="absolute top-0 left-0 h-full w-28 bg-repeat-y bg-left mask-r-from-5%"
-                    style={{
-                        backgroundImage: `url('/assets/images/batik4.svg')`,
-                        backgroundSize: "112px",
-                    }}
-                />
-                <div
-                    className="absolute top-0 right-0 h-full w-28 bg-repeat-y bg-left -scale-x-100 mask-r-from-5%"
-                    style={{
-                        backgroundImage: `url('/assets/images/batik4.svg')`,
-                        backgroundSize: "112px",
-                    }}
-                />
+                <BatikOverlay />
                 <div className="gap-y-8 px-4 md:px-0 max-w-306 mx-auto min-h-screen">
 
                     {/* Section Cek Hash ID */}

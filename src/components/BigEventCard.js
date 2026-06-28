@@ -13,7 +13,6 @@ export default function BigEventCard({
 }) {
 
   const isOngoing = status == "upcoming"
-  console.log(status);
 
   return (
     <div className="flex flex-col md:flex-row flex-1 shrink-0 basis-1/2 items-center bg-white h-full w-full max-w-3xl rounded-md">

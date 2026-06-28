@@ -39,7 +39,6 @@ export default function UpcomingEvents() {
         .then((res) => {
           const myEvents = res.data.data;
           const joined = myEvents.find((e) => e.id === Number(eventId));
-          console.log("My Order:", joined?.order);
           if (joined) setMyOrder(joined.order);
         })
         .catch(() => { });
@@ -47,8 +46,6 @@ export default function UpcomingEvents() {
       eventService
         .getById(eventId)
         .then((res) => {
-          console.log("Full event response:", res.data.data);
-          console.log("Sponsors:", res.data.data.sponsors);
           setEvent(res.data.data);
         })
         .catch((err) => console.error(err));
@@ -355,8 +352,6 @@ export default function UpcomingEvents() {
               </div>
             </div>
           )}
-
-          {event.sponsors && <SponsorSection sponsors={event.sponsors} />}
 
           {event.sponsors && <SponsorSection sponsors={event.sponsors} />}
         </div>

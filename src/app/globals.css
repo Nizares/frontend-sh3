@@ -31,11 +31,6 @@
   --color-secondary-dark-active: #00bf00;
   --color-secondary-darker:      #001a00;
 
-
-  /* TERTIARY — Deep Brown (Dark Surfaces & Headings)
-     Dari: heading "SAMARINDA" (hitam pekat), card border, dark overlay
-     Range: coklat muda (#c4a882) → coklat mid (#5c3a10) → hitam kecoklatan (#1a1508)
-  */
   --color-tertiary-light:        #f7efe4;
   --color-tertiary-light-hover:  #eddec8;
   --color-tertiary-light-active: #ddc8a8;
@@ -49,11 +44,6 @@
   --color-tertiary-dark-active: #140c02;
   --color-tertiary-darker:      #1a1508;
 
-
-  /* NEUTRAL — White & Near-black
-     Dari: teks putih di atas card amber, background putih footer
-     Range: putih murni (#ffffff) → abu warm (#d4cfc6) → gelap (#1c1a14)
-  */
   --color-neutral-lighter:       #ffffff;
   --color-neutral-light-hover:   #f5f0e8;
   --color-neutral-light-active:  #e8e2d6;

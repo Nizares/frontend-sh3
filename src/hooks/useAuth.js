@@ -11,9 +11,7 @@ export default function useAuth() {
         try {
 
             const res = await authService.login(hash_id);
-            console.log("Full response:", res.data);
             const { token, participant } = res.data.data;
-            console.log("participant:", participant);
 
             // Simpan token & data user ke localStorage
             localStorage.setItem("token", token);

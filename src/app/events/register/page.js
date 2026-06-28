@@ -56,11 +56,6 @@ export default function RegisterEvent() {
 
   async function submitPembayaran(e) {
     e.preventDefault();
-
-    console.log("Token:", localStorage.getItem("token"));
-    console.log("userData:", userData);
-    console.log("userData.id:", userData?.id);
-    console.log("event.id:", event?.id);
     if (!userData) {
       Swal.fire({
         icon: "warning",
@@ -106,8 +101,6 @@ export default function RegisterEvent() {
       setOrderResult({ order_id: orderId, invoice_number, ticket_code });
     } catch (err) {
       setOrderResult(null);
-
-      console.log("Error detail:", err.response?.data?.errors);
       Swal.fire({
         icon: "error",
         title: "Gagal!",

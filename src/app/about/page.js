@@ -97,8 +97,6 @@ export default function About() {
     organisationService
       .getTree(selectedYear)
       .then((res) => {
-        console.log("Tree response:", res.data); // ← tambah ini
-        console.log("Tree data:", res.data.data.tree); // ← tambah ini
         setTree(res.data.data.tree);
       })
       .catch((err) => console.error("Error:", err)) // ← tambah ini

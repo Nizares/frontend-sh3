@@ -20,7 +20,6 @@ export default function useSearchMembers() {
         if (!searchId) return;
 
         const user = await login(searchId);
-        console.log(user);
 
         if (user) {
             setUserData(user); // ← simpan user ke state

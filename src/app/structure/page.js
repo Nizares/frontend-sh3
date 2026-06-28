@@ -97,8 +97,6 @@ export default function About() {
     organisationService
       .getTree(selectedYear)
       .then((res) => {
-        console.log("Tree response:", res.data); // ← tambah ini
-        console.log("Tree data:", res.data.data.tree); // ← tambah ini
         setTree(res.data.data.tree);
       })
       .catch((err) => console.error("Error:", err)) // ← tambah ini
@@ -140,19 +138,13 @@ export default function About() {
               {loading ? (
                 <div className="flex justify-center p-8 text-xl">Loading...</div>
               ) : tree.length === 0 ? (
-                <div className="flex justify-center p-8 text-xl text-neutral-dark">
+                <div className="flex justify-center p-8 text-xl text-neutral-dark h-screen">
                   Tidak ada data struktur organisasi.
                 </div>
               ) : (
                 <OrgTree nodes={tree} />
               )}
             </div>
-          </div>
-        </RevealSection>
-
-        <RevealSection direction="up">
-          <div className="w-full">
-            <TotalStatistic />
           </div>
         </RevealSection>
       </div>

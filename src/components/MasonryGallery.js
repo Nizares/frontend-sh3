@@ -26,7 +26,7 @@ export default function MasonryGallery({ images = [] }) {
   }
 
   return (
-    <div className="flex flex-col gap-4 md:p-4">
+    <div className="flex flex-col gap-4 md:p-4 min-h-screen">
       {sections.map((section, sectionIdx) => (
         <RevealSection key={`${currentPage}-${sectionIdx}`} direction="up" delay={sectionIdx * 100}>
           <Section images={section} sectionIndex={sectionIdx} />

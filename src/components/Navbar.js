@@ -71,7 +71,8 @@ export default function Navbar() {
             { href: "/events", label: "Events" },
             { href: "/merchandise", label: "Merchandise" },
             { href: "/gallery", label: "Gallery" },
-            { href: "/sponsor", label: "Sponsorship" }
+            { href: "/sponsor", label: "Sponsorship" },
+            { href: "/structure", label: "Structure" }
           ].map((item) => (
             <li key={item.href}>
               <Link
@@ -124,7 +125,8 @@ export default function Navbar() {
             { href: "/events", label: "Events" },
             { href: "/merchandise", label: "Merchandise" },
             { href: "/gallery", label: "Gallery" },
-            { href: "/sponsor", label: "Sponsorship" }
+            { href: "/sponsor", label: "Sponsorship" },
+            { href: "/structure", label: "Structure" }
           ].map((item) => (
             <li key={item.href}>
               <Link

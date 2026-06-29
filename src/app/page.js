@@ -26,7 +26,6 @@ export default function Home() {
       .getAll()
       .then((res) => {
         const data = res.data.data ?? res.data ?? [];
-        console.log(data);
         setEvents(Array.isArray(data) ? data : []);
       })
       .catch((err) => console.error(err))

@@ -28,10 +28,10 @@ export function dateConvertedWITA(dateString) {
     // Output: "24 Mei 2026, 14:30 WITA" ✅
 }
 
-export function concateDate(start, end) {
+export function concateDate(start, end, isOngoing) {
     const startDate = new Date(start);
 
-    if (startDate > now) {
+    if (startDate > now || isOngoing == true) {
         return `${dateConvertedWITA(start)} - ${dateConvertedWITA(end)}`
     } else {
         return dateConvertedWITA(start);

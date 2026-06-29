@@ -7,6 +7,8 @@ import ImageUpload from "@/src/components/ImageUpload";
 import { RevealSection } from "@/src/components/RevealSection";
 import { useState, useEffect } from "react";
 import { profileService } from "@/src/services/profileService";
+import { eventService } from "@/src/services/eventService";
+import Link from "next/link";
 import Swal from "sweetalert2";
 import BatikOverlay from "@/src/components/BatikOverlay";
 
@@ -28,6 +30,7 @@ export default function DetailMember() {
     const [submitLoading, setSubmitLoading] = useState(false);
     const [photo, setPhoto] = useState(null);
     const [identityPhoto, setIdentityPhoto] = useState(null);
+    const [myEvents, setMyEvents] = useState([]);
     const [formData, setFormData] = useState({
         name: "",
         phone: "",
@@ -55,6 +58,15 @@ export default function DetailMember() {
                 allergy_history: userData.allergy_history ?? "",
                 identity_number: userData.identity_number ?? "",
             });
+        }
+    }, [userData]);
+
+
+    useEffect(() => {
+        if (userData) {
+            eventService.getMyEvents()
+                .then(res => setMyEvents(res.data.data))
+                .catch(() => { });
         }
     }, [userData]);
 
@@ -146,7 +158,7 @@ export default function DetailMember() {
                     {/* Data User — muncul setelah ditemukan */}
                     {userData && (
                         <RevealSection direction="up">
-                            <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 bg-primary-light border-neutral-normal">
+                            <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 bg-primary-light border-neutral-normal rounded-md">
                                 <h2 className="text-3xl font-bold font-young text-neutral-normal">Data Member</h2>
                                 <hr className="border-t-2 border-neutral-normal" />
 
@@ -176,7 +188,7 @@ export default function DetailMember() {
                                 {!showEditForm && (
                                     <button
                                         onClick={() => setShowEditForm(true)}
-                                        className="flex justify-center items-center bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-2xl font-young"
+                                        className="flex justify-center items-center rounded-md bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-2xl font-young"
                                     >
                                         Edit Profil
                                     </button>
@@ -185,15 +197,60 @@ export default function DetailMember() {
                         </RevealSection>
                     )}
 
+                    {/* History Order Event */}
+                    {userData && myEvents.length > 0 && (
+                        <RevealSection direction="up">
+                            <div className="flex flex-col gap-4 bg-primary-light border-2 border-neutral-normal p-8 my-4 rounded-md">
+                                <h2 className="text-3xl font-bold font-young text-neutral-normal">Riwayat Event</h2>
+                                <hr className="border-t-2 border-neutral-normal" />
+                                <div className="flex flex-col gap-4">
+                                    {myEvents.map((event, i) => (
+                                        <div key={i} className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-neutral-normal pb-4 gap-2">
+                                            <div className="flex flex-col gap-1">
+                                                <div className="font-bold text-lg text-neutral-normal">{event.title}</div>
+                                                <div className="text-sm text-neutral-dark">{event.location}</div>
+                                            </div>
+                                            <div className="flex flex-col items-end gap-1">
+                                                <span className={`text-sm font-bold px-3 py-1 rounded-md ${event.order?.status === "paid" ? "bg-secondary-bg text-white" :
+                                                    event.order?.status === "free" ? "bg-secondary-bg text-white" :
+                                                        event.order?.status === "pending" ? "bg-primary-normal text-white" :
+                                                            event.order?.status === "cancelled" ? "bg-red-500 text-white" :
+                                                                "bg-neutral-bg text-white"
+                                                    }`}>
+                                                    {event.order?.status === "paid" ? "Lunas" :
+                                                        event.order?.status === "free" ? "Gratis" :
+                                                            event.order?.status === "pending" ? "Menunggu" :
+                                                                event.order?.status === "cancelled" ? "Dibatalkan" :
+                                                                    event.order?.status}
+                                                </span>
+                                                
+                                                <Link
+                                                    href={event.status === "ongoing" || event.status === "upcoming"  ? `/events/upcoming?id=${event.id}` : `/events/finished?id=${event.id}`}
+                                                    className={`text-white text-center px-5 py-2.5 font-medium transition-colors font-young shadow-md rounded-md
+                                                    ${event.status === "ongoing" || event.status === "upcoming"  ? "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active" : "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-400  "}`}
+                                                >
+                                                    Detail
+                                                </Link>
+                                                <div className="text-xs font-mono text-neutral-dark">
+                                                    {event.order?.invoice_number}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </RevealSection>
+                    )}
+
                     {/* Form Edit Profile — muncul setelah klik tombol */}
                     {userData && showEditForm && (
                         <RevealSection direction="up">
-                            <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 border-neutral-normal bg-primary-light">
+                            <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 border-neutral-normal bg-primary-light rounded-md">
                                 <div className="flex justify-between items-center">
                                     <h2 className="text-3xl font-bold font-young text-neutral-normal">Edit Profil</h2>
                                     <button
                                         onClick={() => setShowEditForm(false)}
-                                        className="font-medium px-8 py-2  text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all"
+                                        className="font-medium px-8 py-2 rounded-md text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all"
                                     >
                                         Batal
                                     </button>
@@ -238,7 +295,7 @@ export default function DetailMember() {
                                         <textarea
                                             name="allergy_history"
                                             placeholder="Contoh: alergi debu, makanan laut, dll"
-                                            className="border-tertiary-normal p-3 text-lg bg-white border-2"
+                                            className="border-tertiary-normal p-3 text-lg bg-white border-2 rounded-md"
                                             rows={3}
                                             value={formData.allergy_history}
                                             onChange={handleFormChange}
@@ -262,7 +319,7 @@ export default function DetailMember() {
                                         <button
                                             type="button"
                                             onClick={() => setShowEditForm(false)}
-                                            className="flex-1 flex justify-center items-center h-16 font-bold text-xl font-young text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all"
+                                            className="flex-1 flex justify-center items-center rounded-md h-16 font-bold text-xl font-young text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all"
                                         >
                                             Batal
                                         </button>

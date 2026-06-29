@@ -26,7 +26,7 @@ export default function EventCard({
       <div className="flex flex-col gap-4 p-8 justify-between h-full">
 
         <div className="text-2xl font-bold font-young">{title}</div>
-        <div className="text-lg">{concateDate(start_date, end_date)}</div>
+        <div className="text-lg">{concateDate(start_date, end_date, isOngoing)}</div>
         <div className="text-xl font-semibold">{category}</div>
         <Link
           href={isOngoing ? `/events/upcoming?id=${id}` : `/events/finished?id=${id}`}

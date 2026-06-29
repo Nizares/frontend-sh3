@@ -146,7 +146,6 @@ export default function MerchandiseOrderPage() {
             }, 300)
 
         } catch (err) {
-            console.error("Error detail:", err.response?.data)
             Swal.fire({
                 icon: "error",
                 title: "Gagal!",
@@ -330,7 +329,8 @@ export default function MerchandiseOrderPage() {
                                         <div className="flex flex-col items-center">
                                             <div className="font-bold mb-1">Cara Pembayaran:</div>
                                             <div>Setelah order dikonfirmasi, silakan transfer ke rekening berikut:</div>
-                                            <div className="mt-2 font-semibold">BCA 1234567890 a.n SH3 Event</div>
+                                            <div className="mt-2 font-semibold text-xl">Mandiri 1480087846666</div>
+                                            <div className="mt-2 font-semibold">An. Samarinda Hidup Hutan Hijau</div>
                                             <div className="mt-1">Atau scan QRIS di bawah ini:</div>
                                             <Image src="/assets/images/qris.jpeg" alt="QRIS" width={300} height={300} className="mt-2 object-contain" />
                                         </div>

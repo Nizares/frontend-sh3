@@ -12,7 +12,7 @@ export default function EventCard({
   status
 }) {
 
-  const isOngoing = status == "upcoming"
+  const isOngoing = status == "upcoming" || status == "ongoing"
 
   return (
     <div className="flex flex-col flex-1 shrink-0 basis-1/4 items-center bg-white h-full w-full max-w-sm rounded-md">

@@ -26,6 +26,7 @@ export default function Home() {
       .getAll()
       .then((res) => {
         const data = res.data.data ?? res.data ?? [];
+        console.log(data);
         setEvents(Array.isArray(data) ? data : []);
       })
       .catch((err) => console.error(err))
@@ -156,6 +157,50 @@ export default function Home() {
                     className="flex justify-center w-full"
                   >
                     <BigEventCard
+                      key={item.id}
+                      id={item.id}
+                      title={item.title}
+                      start_date={item.start_date}
+                      end_date={item.end_date}
+                      category={item.category?.name}
+                      img={item.image_url}
+                      status={item.status}
+                    />
+                  </RevealSection>
+                ))
+              );
+            })()
+          )}
+        </div>
+                <h2
+          className="text-4xl font-bold justify-center font-young text-primary-dark-active my-16 relative heading-separator after:content-[''] w-3/4 mx-auto text-center"
+          id="upcomingRun"
+        >
+          Event yang sedang berlangsung
+        </h2>
+        <div className="flex md:flex-row justify-center gap-8 flex-col">
+          {loading ? (
+            <p className="text-xl w-full text-center">Loading...</p>
+          ) : (
+            (() => {
+              const ongoingEvents = events
+                  .filter((item) => new Date(item.start_date) <= now && new Date(item.end_date) >= now && item.category?.name !== "Big Events")
+                  .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
+                  .slice(0, 4);
+
+              return ongoingEvents.length === 0 ? (
+                <p className="text-xl text-neutral-dark py-12 w-full text-center">
+                  Belum ada event yang sedang berlangsung. Pantau terus ya!
+                </p>
+              ) : (
+                ongoingEvents.map((item, i) => (
+                  <RevealSection
+                    key={i}
+                    direction="up"
+                    delay={i * 100}
+                    className="flex justify-center"
+                  >
+                    <EventCard
                       key={item.id}
                       id={item.id}
                       title={item.title}

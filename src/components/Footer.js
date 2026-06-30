@@ -53,22 +53,22 @@ export default function Footer() {
                     <ol className="list-none flex flex-col gap-1 text-white">
                         <li>
                             <Link href="mailto:samarindahash@gmail.com" className="hover:text-white">
-                                Email
+                                Email - samarindahash@gmail.com
                             </Link>
                         </li>
                         <li>
                             <Link href="http://wa.me/+62811588338" className="hover:text-white">
-                                Phone
+                                Phone - <span>0811588338</span>
                             </Link>
                         </li>
                         <li>
                             <Link href="https://www.instagram.com/samarinda_hashhouseharriers/" className="hover:text-white">
-                                Instagram
+                                Instagram - <span>@samarinda_hashhouseharriers</span>
                             </Link>
                         </li>
                         <li>
                             <Link href="https://www.facebook.com/samarinda.hash.house.harriers.2025" className="hover:text-white">
-                                Facebook
+                                Facebook - <span>Samarinda Hash House Harriers</span>
                             </Link>
                         </li>
                     </ol>

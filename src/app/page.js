@@ -69,7 +69,7 @@ export default function Home() {
               <HeroAnimate animation="fadeUp" delay={500}>
                 <h2 className="text-3xl font-semibold font-young my-4 text-center">
                   On On! -{" "}
-                  <span className="text-primary-text">Adventure </span>
+                  <span className="text-primary-text">#Adventure </span>
                   in <span className="text-emerald-400">Nature</span>
                 </h2>
               </HeroAnimate>
@@ -131,7 +131,7 @@ export default function Home() {
         <BatikOverlay />
 
         <h2 className="text-4xl font-bold font-young text-primary-dark-active my-16 relative heading-separator w-3/4 mx-auto text-center">
-          Event yang besar!
+          Ma!
         </h2>
         <div className="flex md:flex-row justify-center gap-8 flex-col">
           {loading ? (

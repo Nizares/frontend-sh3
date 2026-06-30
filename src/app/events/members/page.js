@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+
 
 import Container from "@/src/components/Container";
 import Image from "next/image";
@@ -14,13 +14,19 @@ import InputType from "@/src/components/Inputs";
 export default function EventMembers() {
     const [data, setData] = useState(null);
     const [search, setSearch] = useState("");
-    const searchParams = useSearchParams();
+    const [eventId, setEventId] = useState(null);
 
     useEffect(() => {
-        const eventId = searchParams.get("id") ?? 1;
-        eventService.getParticipants(eventId)
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id") ?? 1;
+
+        setEventId(id);
+
+        eventService
+            .getParticipants(id)
             .then(res => setData(res.data.data))
-            .catch(err => console.error(err));
+            .catch(console.error);
+
     }, []);
 
     const formatDate = (iso) =>
@@ -57,7 +63,7 @@ export default function EventMembers() {
                 <div className="max-w-306 mx-auto h-screen z-1 relative">
                     {/* Header */}
                     <div className="flex flex-col gap-y-4 ">
-                        <Link href={`/events/upcoming?id=${searchParams.get("id")}`} className="static md:absolute">
+                        <Link href={`/events/upcoming?id=${eventId}`} className="static md:absolute">
                             <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
                         </Link>
 

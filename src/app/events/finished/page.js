@@ -1,6 +1,5 @@
 "use client"
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 
 import Container from "@/src/components/Container";
 import Image from "next/image";
@@ -17,13 +16,15 @@ import EventGallery from "@/src/components/EventGallery";
 // ============ MAIN PAGE ============
 export default function PastEvents({ }) {
   const [event, setEvent] = useState(null);
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const eventId = searchParams.get("id") ?? 1;
-    eventService.getById(eventId)
-      .then(res => setEvent(res.data.data))
-      .catch(err => console.error(err));
+    const params = new URLSearchParams(window.location.search);
+    const eventId = params.get("id") ?? 1;
+
+    eventService
+      .getById(eventId)
+      .then((res) => setEvent(res.data.data))
+      .catch(console.error);
   }, []);
 
   if (!event) return <div className="flex justify-center p-16 text-2xl mt-16 h-screen">Loading...</div>;

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+
 import Container from "@/src/components/Container";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,39 +18,40 @@ export default function UpcomingEvents() {
   const [showQR, setShowQR] = useState(false);
   const [qrLoading, setQrLoading] = useState(false);
   const [attendanceCode, setAttendanceCode] = useState(null);
-  const searchParams = useSearchParams();
+  const [eventId, setEventId] = useState(null);
 
   const formatRupiah = (angka) => new Intl.NumberFormat("id-ID").format(angka);
 
   useEffect(() => {
-    const eventId = searchParams.get("id") ?? 1;
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id") ?? 1;
 
-    // 1. Ambil detail event
+    setEventId(id);
+
+    // Ambil detail event
     eventService
-      .getById(eventId)
+      .getById(id)
       .then((res) => setEvent(res.data.data))
-      .catch((err) => console.error(err));
+      .catch(console.error);
 
-    // 2. Cek apakah user sudah join event ini
+    // Cek apakah user sudah join
     const token = localStorage.getItem("token");
+
     if (token) {
       eventService
         .getMyEvents()
         .then((res) => {
-          const myEvents = res.data.data;
-          const joined = myEvents.find((e) => e.id === Number(eventId));
-          if (joined) setMyOrder(joined.order);
-        })
-        .catch(() => { });
+          const joined = res.data.data.find(
+            (e) => e.id === Number(id)
+          );
 
-      eventService
-        .getById(eventId)
-        .then((res) => {
-          setEvent(res.data.data);
+          if (joined) {
+            setMyOrder(joined.order);
+          }
         })
-        .catch((err) => console.error(err));
+        .catch(() => {});
     }
-  }, [searchParams]);
+  }, []);
 
   async function handleLihatQR() {
     if (qrCode) {

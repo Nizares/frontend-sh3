@@ -40,14 +40,14 @@ export default function InvoiceMerch({
                     fileName={`Invoice-${invoice_id}.pdf`}
                 >
                     {({ loading }) => (
-                        <button className="bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold py-2 px-6 transition-colors">
+                        <button className=" rounded-md  bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold py-2 px-6 transition-colors">
                             {loading ? "Menyiapkan PDF..." : "Download PDF"}
                         </button>
                     )}
                 </PDFDownloadLink>
             </div>
 
-            <div className="flex flex-col bg-primary-light p-8 border-2 border-neutral-normal">
+            <div className="flex flex-col bg-primary-light p-8 border-2 border-neutral-normal rounded-md">
                 <div className="flex flex-col items-center p-8">
                     <img
                         src="/assets/images/sh3logo.png"

@@ -48,7 +48,7 @@ export default function Events() {
           ) : (
             (() => {
               const bigEvents = events
-                .filter((item) => item.category?.name === "Big Events")
+                .filter((item) => new Date(item.start_date) <= now && new Date(item.end_date) >= now && item.category?.name === "Big Events")
                 .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
                 .slice(0, 4);
 

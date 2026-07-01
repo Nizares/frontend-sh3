@@ -106,7 +106,7 @@ export default function Home() {
 
       <div className="bg-linear-to-b from-primary-light to-primary-light-hover">
         <div className="text-center text-3xl text-primary-dark-active mt-8 font-bold font-young relative heading-separator w-3/4 mx-auto">
-          Sponsor
+          Sponsor Advertisement
         </div>
         <RevealSection direction="up">
           <SponsorMarquee />
@@ -139,7 +139,7 @@ export default function Home() {
           ) : (
             (() => {
               const bigEvents = events
-                .filter((item) => item.category?.name === "Big Events")
+                .filter((item) => new Date(item.start_date) <= now && new Date(item.end_date) >= now && item.category?.name === "Big Events")
                 .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
                 .slice(0, 4);
 

@@ -29,7 +29,7 @@ const paymentOptions = [
     value: "Transfer Bank Mandiri",
     label: "Bank Transfer Mandiri",
     NoRek: "1480087846666",
-    nama: "An. Samarinda Hidup Hutan Hijau",
+    nama: "An. Perkumpulan Samarinda Hidup Hutan Hijau",
     image: "/assets/icon/mandiri.png",
   }
 ];

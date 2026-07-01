@@ -34,6 +34,7 @@ export default function MerchandiseOrderPage() {
     const [userData, setUserData] = useState(null)
     const [paymentFile, setPaymentFile] = useState(null)
     const [paymentMethod, setPaymentMethod] = useState("")
+    const [confirmOrder, setConfirmedOrder] = useState(null)
 
     // State untuk diskon event
     const [eventId, setEventId] = useState(null)
@@ -140,12 +141,13 @@ export default function MerchandiseOrderPage() {
                 invoice_number: order.invoice_number,
                 payment_instructions: order.payment_instructions,
             })
-
+            setConfirmedOrder(true);
             setTimeout(() => {
                 document.getElementById("invoice-section")?.scrollIntoView({ behavior: "smooth" })
             }, 300)
 
         } catch (err) {
+            setConfirmedOrder(false);
             Swal.fire({
                 icon: "error",
                 title: "Gagal!",
@@ -180,7 +182,7 @@ export default function MerchandiseOrderPage() {
 
                     <RevealSection direction="up">
                         {item.image_url ? (
-                            <img src={item.image_url} alt={item.name} className="h-80 w-full object-cover" />
+                            <img src={item.image_url} alt={item.name} className="h-80 w-full object-cover mt-4" />
                         ) : (
                             <div className="h-80 w-full bg-neutral-bg flex items-center justify-center text-5xl font-bold font-young border-1">
                                 {item.name.slice(0, 2).toUpperCase()}
@@ -190,8 +192,14 @@ export default function MerchandiseOrderPage() {
 
                     <RevealSection direction="up">
                         <div className="flex justify-center gap-8 flex-col md:flex-row">
-                            <div className="bg-primary-light border-2 border-neutral-normal p-4 w-full rounded-md">
-                                <h3 className="text-2xl font-bold font-young mb-2">{item.name}</h3>
+                            <div className="flex flex-col items-center justify-center my-4 bg-primary-light border-neutral-normal border-2 p-4 w-full rounded-md" >
+                                <div className="font-bold text-2xl">Stok Tersisa</div>
+                                <div className={`font-bold text-3xl font-young ${item.stock === 0 ? "text-red-500" : ""}`}>
+                                    {item.stock === 0 ? "Habis" : item.stock}
+                                </div>
+                            </div>
+                            <div className="bg-primary-light border-2 border-neutral-normal my-4 p-4 w-full rounded-md">
+                                <h3 className="text-4xl font-bold font-young mb-2">{item.name}</h3>
                                 <div className="text-sm text-neutral-dark mb-4">{item.description}</div>
 
                                 {/* Harga — tampilkan diskon kalau ada */}
@@ -224,12 +232,7 @@ export default function MerchandiseOrderPage() {
                                     <div className="text-sm mt-1">Kategori: <span className="font-medium">{item.category}</span></div>
                                 )}
                             </div>
-                            <div className="flex flex-col items-center justify-center bg-primary-light border-neutral-normal border-2 p-4 w-full rounded-md" >
-                                <div className="font-bold text-3xl">Stok Tersisa</div>
-                                <div className={`font-bold text-5xl font-young ${item.stock === 0 ? "text-red-500" : ""}`}>
-                                    {item.stock === 0 ? "Habis" : item.stock}
-                                </div>
-                            </div>
+                            
                         </div>
                     </RevealSection>
 
@@ -288,7 +291,7 @@ export default function MerchandiseOrderPage() {
                             </RevealSection>
 
                             <RevealSection direction="up">
-                                <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4">
+                                <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md">
                                     <div className="flex justify-between">
                                         <div className="text-2xl font-bold font-young">Payment Details</div>
                                         <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
@@ -345,7 +348,7 @@ export default function MerchandiseOrderPage() {
 
                             <RevealSection direction="up">
                                 <button
-                                    className={`flex justify-center font-young items-center ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"} h-16 font-bold text-xl text-white md:text-3xl w-full`}
+                                    className={`flex justify-center font-young items-center rounded-md my-8 ${submitLoading ? "bg-primary-bg disabled" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"} h-16 font-bold text-xl text-white md:text-3xl w-full ${confirmOrder ? "hidden" : ""}`}
                                     type="submit" disabled={submitLoading}>
                                     {submitLoading ? "Memproses..." : "Confirm Order"}
                                 </button>

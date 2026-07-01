@@ -134,15 +134,16 @@ export default function About() {
                 Harriers
               </h2>
               <p className="text-neutral-text leading-relaxed font-medium">
-                Samarinda Hash House Harriers (SH3) adalah komunitas lari sosial
-                yang berdiri di Samarinda, Kalimantan Timur. Kami mengadakan
-                lari mingguan di berbagai sudut kota dan alam Kalimantan,
-                dilanjutkan dengan sesi down-down yang penuh keceriaan.
+                SH3 (Samarinda Hash House Harriers) adalah komunitas olahraga lari berbasis di Kota
+                Samarinda, Kalimantan Timur. Komunitas ini merupakan bagian dari jaringan Hash House
+                Harriers (H3) yang telah dikenal secara internasional sebagai gerakan olahraga sosial yang
+                menggabungkan aktivitas lari trail dengan semangat kebersamaan dan persahabatan.
               </p>
               <p className="text-neutral-text leading-relaxed font-medium">
-                Dengan 4.200+ member terdaftar dan rata-rata 250 pelari aktif
-                setiap minggunya, SH3 adalah salah satu Hash chapter terbesar di
-                Kalimantan. Terbuka untuk semua kalangan — On On!
+                SH3 secara rutin menyelenggarakan kegiatan lari mingguan yang diikuti oleh peserta dari
+                berbagai latar belakang, mulai dari pelari pemula hingga atlet berpengalaman, dengan
+                jumlah rata-rata 200 peserta setiap minggunya. Kegiatan ini menjadi wadah komunitas yang
+                aktif, sehat, dan berdampak positif bagi lingkungan serta masyarakat sekitar.
               </p>
             </div>
           </div>
@@ -206,7 +207,25 @@ export default function About() {
           </div>
         </RevealSection>
 
-        {/* Struktur Organisasi dari API */}
+        <RevealSection direction="up">
+          <div className="flex flex-col gap-4 max-w-306 mx-auto px-4 md:px-0">
+            <div className="font-bold text-4xl font-young md:p-4 text-primary-dark-active">
+              Surat Keterangan Pengesahan Pendirian SH3
+            </div>
+            <iframe src="/assets/files/cetaksk.pdf" height={600}></iframe>
+          </div>
+        </RevealSection>
+
+        <RevealSection direction="up">
+          <div className="flex flex-col gap-4 max-w-306 mx-auto px-4 md:px-0">
+            <div className="font-bold text-4xl font-young md:p-4 text-primary-dark-active">
+              NPWP SH3
+            </div>
+            <iframe src="/assets/files/npwpsh3.pdf" height={600}></iframe>
+          </div>
+        </RevealSection>
+
+
         {/* Struktur Organisasi dari API */}
         <RevealSection direction="up">
           <div className="p-8">

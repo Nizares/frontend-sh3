@@ -50,6 +50,20 @@ export default function Navbar() {
     return "bg-neutral-dark";
   }
 
+  const getNavActive = () => {
+    if (isHome && !isScrolled && !isOpen) {
+      return "border-primary-text text-primary-text";
+    }
+    return "border-secondary-text text-secondary-text";
+  }
+
+  const getNavHover = () => {
+    if (isHome && !isScrolled && !isOpen) {
+      return "hover:text-primary-text";
+    }
+    return "hover:text-secondary-text";
+  }
+
   return (
     <nav className={` px-8 py-4 shadow-sm fixed top-0 left-0 w-full z-50 transition-all ${getNavBg()} `}>
       <div className="flex items-center justify-between">
@@ -76,8 +90,8 @@ export default function Navbar() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className={`transition-colors hover:text-secondary-text ${isActive(item.href)
-                  ? "text-secondary-text border-b-2 border-secondary-text pb-0.5"
+                className={`transition-colors ${getNavHover()} ${isActive(item.href)
+                  ? `border-b-2 ${getNavActive()}  pb-0.5`
                   : getNavColor()
                   }`}
               >

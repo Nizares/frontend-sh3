@@ -89,7 +89,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
             onClick={() => onPageChange(page)}
             className={`w-9 h-9 text-sm font-medium transition-colors 
               ${currentPage === page
-                ? "bg-primary text-neutral-dark shadow-sm border-2 border-neutral-normal"
+                ? "bg-primary text-neutral-dark shadow-sm border-2 border-neutral-normal "
                 : "hover:bg-neutral-bg-active active:bg-neutral-200 text-neutral-lighter"
               }`}
           >
@@ -120,7 +120,7 @@ function ImageCard({ img, className }) {
       <img
         src={img?.url}
         alt={img?.title}
-        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 rounded-md"
       />
       <Caption title={img?.title} subtitle={img?.subtitle} />
     </Link>
@@ -192,7 +192,7 @@ function Section({ images, sectionIndex }) {
 function Caption({ title, subtitle }) {
   if (!title) return null
   return (
-    <div className="absolute bottom-0 left-0 right-0 p-3 bg-linear-to-t from-black/60 to-transparent">
+    <div className="absolute bottom-0 left-0 right-0 p-3 bg-linear-to-t from-black/60 to-transparent rounded-md">
       <p className="text-white text-sm font-semibold leading-tight">{title}</p>
       {subtitle && <p className="text-neutral-bg text-xs">{subtitle}</p>}
     </div>

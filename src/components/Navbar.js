@@ -28,7 +28,11 @@ export default function Navbar() {
     }
 
   }, [isHome]);
-  
+
+  useEffect(() => {
+    setIsOpen(false)
+  }, [pathname])
+
   const getNavBg = () => {
     if (isHome && !isScrolled && !isOpen) {
       return "bg-transparent";
@@ -42,7 +46,7 @@ export default function Navbar() {
     }
     return "text-neutral-dark";
   }
-  
+
   const getBurgColor = () => {
     if (isHome && !isScrolled && !isOpen) {
       return "bg-neutral-lighter";
@@ -113,7 +117,7 @@ export default function Navbar() {
             href="/members/detail"
             className="bg-emerald-600 text-white rounded-sm px-6 py-2.5 font-medium hover:bg-emerald-500 active:bg-emerald-400 "
           >
-            Sudah jadi Member?
+            Login Member
           </Link>
         </div>
 
@@ -165,7 +169,7 @@ export default function Navbar() {
               href="/members/detail"
               className="bg-emerald-600 text-white px-6 py-2.5 font-medium rounded-sm hover:bg-emerald-500 active:bg-emerald-400  text-center"
             >
-              Sudah jadi Member?
+              Login Member
             </Link>
           </li>
         </ul>

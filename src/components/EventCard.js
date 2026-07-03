@@ -15,15 +15,22 @@ export default function EventCard({
   const isOngoing = status == "upcoming" || status == "ongoing"
 
   return (
-    <div className="flex flex-col flex-1 shrink-0 basis-1/4 items-center bg-white h-full w-full max-w-sm rounded-md">
-      <Image
-        src={img}
-        alt="image"
-        width={250}
-        height={250}
-        className="w-full object-cover rounded-t-md"
-      />
-      <div className="flex flex-col gap-4 p-8 justify-between h-full">
+    <div className="flex flex-col flex-1 basis-1/4 items-center bg-white h-full w-full max-w-sm rounded-md">
+
+      {img ? (
+        <Image
+          src={img}
+          alt={title}
+          width={250}
+          height={250}
+          className="w-full object-cover rounded-t-md aspect-square"
+        />
+      ) : (
+        <div className="w-full h-full object-cover flex items-center justify-center bg-neutral-bg text-neutral-dark text-5xl font-bold font-young rounded-t-md aspect-square">
+          {title.slice(0, 2).toUpperCase()}
+        </div>
+      )}
+      <div className="flex flex-col gap-4 p-8 justify-between h-full w-full">
 
         <div className="text-2xl font-bold font-young">{title}</div>
         <div className="text-lg">{concateDate(start_date, end_date, isOngoing)}</div>

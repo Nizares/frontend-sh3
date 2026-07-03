@@ -263,7 +263,7 @@ export default function Home() {
         <h2 className="text-4xl font-bold font-young text-primary-dark-active my-16 relative heading-separator w-3/4 mx-auto text-center">
           Past Events!
         </h2>
-        <div className="flex md:flex-row justify-center gap-8 flex-col">
+        <div className="flex md:flex-row justify-center gap-8 px-8 flex-col">
           {loading ? (
             <p className="text-xl w-full text-center">Loading...</p>
           ) : (
@@ -283,7 +283,7 @@ export default function Home() {
                     key={i}
                     direction="up"
                     delay={i * 100}
-                    className="flex justify-center"
+                    className="flex justify-center flex-1"
                   >
                     <EventCard
                       key={item.id}

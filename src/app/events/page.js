@@ -40,7 +40,7 @@ export default function Events() {
         </div>
 
         <h2 className="text-4xl font-bold font-young text-primary-dark-active my-16 relative heading-separator w-3/4 mx-auto text-center">
-          Event yang besar!
+          Major Events!
         </h2>
         <div className="flex md:flex-row justify-center gap-8 flex-col">
           {loading ? (
@@ -54,7 +54,7 @@ export default function Events() {
 
               return bigEvents.length === 0 ? (
                 <p className="text-xl text-center text-neutral-dark py-12 w-full">
-                  Belum ada Big Events. Pantau terus ya!
+                  Belum ada Major Events. Pantau terus ya!
                 </p>
               ) : (
                 bigEvents.map((item, i) => (
@@ -84,7 +84,7 @@ export default function Events() {
           className="text-4xl font-bold justify-center font-young text-primary-dark-active my-16 relative heading-separator after:content-[''] w-3/4 mx-auto text-center"
           id="upcomingRun"
         >
-          Event yang sedang berlangsung
+          Ongoing Events!
         </h2>
         <div className="flex md:flex-row justify-center gap-8 flex-col">
           {loading ? (
@@ -133,7 +133,7 @@ export default function Events() {
           className="text-4xl font-bold justify-center font-young text-primary-dark-active my-16 relative heading-separator after:content-[''] w-3/4 mx-auto text-center"
           id="upcomingRun"
         >
-          Event yang Akan Datang
+          Upcoming Events!
         </h2>
         <div className="flex md:flex-row justify-center gap-8 flex-col">
           {loading ? (
@@ -179,7 +179,7 @@ export default function Events() {
         </div>
 
         <h2 className="text-4xl font-bold font-young text-primary-dark-active my-16 relative heading-separator w-3/4 mx-auto text-center">
-          Event yang Sudah Selesai
+          Past Events!
         </h2>
         <div className="flex md:flex-row justify-center gap-8 flex-col">
           {loading ? (
@@ -188,7 +188,7 @@ export default function Events() {
             (() => {
               const upcomingEvents = events
                 .filter((item) => new Date(item.start_date) < now)
-                .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
+                .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
                 .slice(0, 4);
 
               return upcomingEvents.length === 0 ? (

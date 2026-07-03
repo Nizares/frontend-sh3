@@ -52,8 +52,8 @@ export default function Footer() {
                     </div>
                     <ol className="list-none flex flex-col gap-1 text-white">
                         <li>
-                            <Link href="mailto:samarindahash@gmail.com" className="hover:text-white">
-                                Email - samarindahash@gmail.com
+                            <Link href="mailto:hutanhijausamarindahidup@gmail.com" className="hover:text-white">
+                                Email - <span>hutanhijausamarindahidup@gmail.com</span>
                             </Link>
                         </li>
                         <li>

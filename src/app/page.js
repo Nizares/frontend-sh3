@@ -131,7 +131,7 @@ export default function Home() {
         <BatikOverlay />
 
         <h2 className="text-4xl font-bold font-young text-primary-dark-active my-16 relative heading-separator w-3/4 mx-auto text-center">
-          Ma!
+          Major Events!
         </h2>
         <div className="flex md:flex-row justify-center gap-8 flex-col">
           {loading ? (
@@ -175,7 +175,7 @@ export default function Home() {
           className="text-4xl font-bold justify-center font-young text-primary-dark-active my-16 relative heading-separator after:content-[''] w-3/4 mx-auto text-center"
           id="upcomingRun"
         >
-          Event yang sedang berlangsung
+          Ongoing Events!
         </h2>
         <div className="flex md:flex-row justify-center gap-8 flex-col">
           {loading ? (
@@ -219,7 +219,7 @@ export default function Home() {
           className="text-4xl font-bold justify-center font-young text-primary-dark-active my-16 relative heading-separator after:content-[''] w-3/4 mx-auto text-center"
           id="upcomingRun"
         >
-          Event yang Akan Datang
+          Upcoming Events
         </h2>
         <div className="flex md:flex-row justify-center gap-8 flex-col">
           {loading ? (
@@ -261,7 +261,7 @@ export default function Home() {
         </div>
 
         <h2 className="text-4xl font-bold font-young text-primary-dark-active my-16 relative heading-separator w-3/4 mx-auto text-center">
-          Event yang Sudah Selesai
+          Past Events!
         </h2>
         <div className="flex md:flex-row justify-center gap-8 flex-col">
           {loading ? (
@@ -270,7 +270,7 @@ export default function Home() {
             (() => {
               const upcomingEvents = events
                 .filter((item) => new Date(item.start_date) < now)
-                .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
+                .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
                 .slice(0, 4);
 
               return upcomingEvents.length === 0 ? (

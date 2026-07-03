@@ -210,6 +210,15 @@ export default function About() {
         <RevealSection direction="up">
           <div className="flex flex-col gap-4 max-w-306 mx-auto px-4 md:px-0">
             <div className="font-bold text-4xl font-young md:p-4 text-primary-dark-active">
+              Akta Pendirian Perkumpulan SH3
+            </div>
+            <iframe src="/assets/files/aktapendiriansh3.pdf" height={600}></iframe>
+          </div>
+        </RevealSection>
+
+        <RevealSection direction="up">
+          <div className="flex flex-col gap-4 max-w-306 mx-auto px-4 md:px-0">
+            <div className="font-bold text-4xl font-young md:p-4 text-primary-dark-active">
               Surat Keterangan Pengesahan Pendirian SH3
             </div>
             <iframe src="/assets/files/cetaksk.pdf" height={600}></iframe>
@@ -224,6 +233,8 @@ export default function About() {
             <iframe src="/assets/files/npwpsh3.pdf" height={600}></iframe>
           </div>
         </RevealSection>
+
+        
 
 
         {/* Struktur Organisasi dari API */}

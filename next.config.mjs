@@ -17,11 +17,11 @@ const nextConfig = {
         pathname: '/storage/**',
       },
       // ← tambah ini sesuai domain backend production
-      {
-        protocol: 'https',
-        hostname: 'server-sh3.cloud', // ← ganti dengan domain backend
-        pathname: '/storage/**',
-      },
+      // {
+      //   protocol: 'https',
+      //   hostname: 'server-sh3.cloud', // ← ganti dengan domain backend
+      //   pathname: '/storage/**',
+      // },
     ],
   },
 };

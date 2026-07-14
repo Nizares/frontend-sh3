@@ -5,21 +5,17 @@ export default function useAuth() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    async function login(hash_id) {
+    async function login(username, password) { // ← tambah parameter password
         setLoading(true);
         setError(null);
         try {
-
-            const res = await authService.login(hash_id);
+            const res = await authService.login(username, password);
             const { token, participant } = res.data.data;
-
-            // Simpan token & data user ke localStorage
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(participant));
-
-            return participant; // kembalikan data user
+            return participant;
         } catch (err) {
-            setError("Hash ID tidak ditemukan. Pastikan ID kamu benar.");
+            setError("Username atau password salah.");
             return null;
         } finally {
             setLoading(false);
@@ -27,7 +23,7 @@ export default function useAuth() {
     }
 
     function logout() {
-        authService.logout().catch(() => {}); // tetap logout meski gagal
+        authService.logout().catch(() => { }); // tetap logout meski gagal
         localStorage.removeItem("token");
         localStorage.removeItem("user");
     }

@@ -5,7 +5,8 @@ import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 
 export default function useSearchDataMembers() {
-    const [id, setId] = useState("");
+    const [id, setId] = useState(""); // ini untuk username
+    const [password, setPassword] = useState("");
     const [userData, setUserData] = useState(null);
     const [error, setError] = useState(null);
     const { loading, login } = useAuth();
@@ -21,20 +22,29 @@ export default function useSearchDataMembers() {
 
     async function checkTheID(e) {
         e.preventDefault();
-        if (!id) return;
+        
+        // Validasi
+        if (!id || !password) {
+            Swal.fire({
+                icon: "warning",
+                title: "Data Kurang",
+                text: "Masukkan Username dan Password dulu!",
+            });
+            return;
+        }
 
         setError(null);
         setUserData(null);
 
-        // Step 1: Login dulu dapat token
-        const user = await login(id);
+        // Login dengan username dan password
+        const user = await login(id, password);
 
         if (user) {
-            // Step 2: Ambil data lengkap dari GET /profile
+            // Ambil profile lengkap
             const profileRes = await authService.getProfile();
             const profile = profileRes.data.data;
 
-            // Step 3: Cek kelengkapan data
+            // Cek field yang wajib diisi
             const missingFields = requiredFields
                 .filter(field => !profile[field.key])
                 .map(field => field.label);
@@ -48,33 +58,40 @@ export default function useSearchDataMembers() {
                         <ul style="text-align:left; margin-top:8px">
                             ${missingFields.map(f => `<li>❌ ${f}</li>`).join("")}
                         </ul>
-                        <p style="margin-top:8px; font-size:0.9rem; color:gray">
-                            Lengkapi di halaman <b>Member → Cek Member</b>
-                        </p>
                     `,
                     confirmButtonText: "Lengkapi Sekarang",
                     showCancelButton: true,
                     cancelButtonText: "Nanti",
                 }).then(result => {
-                    if (result.isConfirmed) {
-                        router.push("/members/detail");
-                    }
+                    if (result.isConfirmed) router.push("/members/detail");
                 });
                 return;
             }
 
-            // Step 4: Data lengkap, isi form
             setUserData({
                 id: user.hash_id,
-                name: profile.name,
-                email: profile.email,
-                telp_number: profile.phone ?? "-",
+                name: user.name,
+                email: user.email,
+                telp_number: user.phone ?? "-",
             });
-
         } else {
-            setError("Hash ID tidak ditemukan. Pastikan ID kamu benar.");
+            setError("Username atau password salah.");
+            Swal.fire({
+                icon: "error",
+                title: "Login Gagal",
+                text: "Username atau password salah.",
+            });
         }
     }
 
-    return { loading, id, setId, userData, error, checkTheID };
+    return { 
+        loading, 
+        id, 
+        setId, 
+        password, 
+        setPassword, 
+        userData, 
+        error, 
+        checkTheID 
+    };
 }

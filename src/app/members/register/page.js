@@ -7,6 +7,7 @@ import { memberService } from "@/src/services/memberService";
 import ImageUpload from "@/src/components/ImageUpload";
 import Swal from "sweetalert2";
 import { RevealSection } from "@/src/components/RevealSection";
+import PasswordInput from "@/src/components/passwordInput";
 import BatikOverlay from "@/src/components/BatikOverlay";
 
 const genderOptions = [
@@ -27,6 +28,8 @@ export default function Members() {
     const [photo, setPhoto] = useState(null);
     const [identityPhoto, setIdentityPhoto] = useState(null);
     const [submitLoading, setSubmitLoading] = useState(false);
+    const [passwordConfirm, setPasswordConfirm] = useState("");
+    const [password, setPassword] = useState("");
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -57,6 +60,15 @@ export default function Members() {
             return;
         }
 
+        if (password !== passwordConfirm) {
+            Swal.fire({ icon: "warning", title: "Password tidak cocok!" });
+            return;
+        }
+        if (password.length < 6) {
+            Swal.fire({ icon: "warning", title: "Password minimal 6 karakter!" });
+            return;
+        }
+
         setSubmitLoading(true);
         try {
             const form = new FormData();
@@ -64,6 +76,8 @@ export default function Members() {
             form.append("email", formData.email);
             form.append("phone", formData.phone);
             form.append("birthdate", formData.birthdate);
+            form.append("password", password);
+            form.append("password_confirmation", passwordConfirm);
             form.append("gender", gender);
             if (bloodType) form.append("blood_type", bloodType);
             if (formData.emergency_contact) form.append("emergency_contact", formData.emergency_contact);
@@ -159,6 +173,27 @@ export default function Members() {
                                 <InputType label="Email" id="email" required type="email" name="email"
                                     placeholder="you@example.com" className="flex flex-col gap-2"
                                     value={formData.email} onChange={handleFormChange} />
+                                <PasswordInput
+                                    label="Password"
+                                    id="password"
+                                    required
+                                    name="password"
+                                    placeholder="••••••••"
+                                    className="flex flex-col gap-2"
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                />
+
+                                <PasswordInput
+                                    label="Konfirmasi Password"
+                                    id="password_confirmation"
+                                    required
+                                    name="password_confirmation"
+                                    placeholder="••••••••"
+                                    className="flex flex-col gap-2"
+                                    value={passwordConfirm}
+                                    onChange={e => setPasswordConfirm(e.target.value)}
+                                />
                                 <InputType label="Nomor Telepon/WA" type="text" id="phone" required name="phone"
                                     placeholder="08123456789" className="flex flex-col gap-2"
                                     value={formData.phone} onChange={handleFormChange} />

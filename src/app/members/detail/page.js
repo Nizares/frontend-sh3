@@ -1,9 +1,11 @@
-"use client"
+'use client';
+
 import useSearchMembers from "@/src/hooks/useSearchMembers";
 import InputType from "@/src/components/Inputs";
 import SelectInput from "@/src/components/SelectInput";
 import Container from "@/src/components/Container";
 import ImageUpload from "@/src/components/ImageUpload";
+import PasswordInput from "@/src/components/passwordInput";
 import { RevealSection } from "@/src/components/RevealSection";
 import { useState, useEffect } from "react";
 import { profileService } from "@/src/services/profileService";
@@ -11,6 +13,7 @@ import { eventService } from "@/src/services/eventService";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import BatikOverlay from "@/src/components/BatikOverlay";
+import { useAuth } from "@/src/contexts/AuthContext";
 
 const genderOptions = [
     { value: "male", label: "Laki-laki" },
@@ -25,7 +28,20 @@ const bloodTypeOptions = [
 ];
 
 export default function DetailMember() {
-    const { loading, searchId, handleChange, handleSearch, userData } = useSearchMembers();
+    const { user, logout, isLoggedIn } = useAuth();
+    const [isMounted, setIsMounted] = useState(false); // ← TAMBAHKAN INI
+    const { 
+        loading, 
+        searchId, 
+        setSearchId, 
+        password, 
+        handlePasswordChange, 
+        handleSearch, 
+        handleChange, 
+        userData, 
+        setUserData 
+    } = useSearchMembers();
+
     const [showEditForm, setShowEditForm] = useState(false);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [photo, setPhoto] = useState(null);
@@ -43,10 +59,15 @@ export default function DetailMember() {
         identity_number: "",
     });
 
+    // Set mounted setelah render client
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     // Auto isi form ketika userData berhasil didapat
     useEffect(() => {
         if (userData) {
-            setShowEditForm(false); // reset form kalau cek ID baru
+            setShowEditForm(false);
             setFormData({
                 name: userData.name ?? "",
                 phone: userData.phone ?? "",
@@ -61,6 +82,23 @@ export default function DetailMember() {
         }
     }, [userData]);
 
+    // Auto isi form ketika user dari AuthContext berubah (setelah login)
+    useEffect(() => {
+        if (user) {
+            setUserData(user);
+            setFormData({
+                name: user.name ?? "",
+                phone: user.phone ?? "",
+                gender: user.gender ?? "",
+                birthdate: user.birthdate ?? "",
+                blood_type: user.blood_type ?? "",
+                emergency_contact: user.emergency_contact ?? "",
+                emergency_phone: user.emergency_phone ?? "",
+                allergy_history: user.allergy_history ?? "",
+                identity_number: user.identity_number ?? "",
+            });
+        }
+    }, [user, setUserData]);
 
     useEffect(() => {
         if (userData) {
@@ -81,7 +119,6 @@ export default function DetailMember() {
         e.preventDefault();
         setSubmitLoading(true);
         try {
-            // Hanya kirim field yang terisi saja
             const payload = {};
             if (formData.name) payload.name = formData.name;
             if (formData.phone) payload.phone = formData.phone;
@@ -95,12 +132,19 @@ export default function DetailMember() {
 
             await profileService.update(payload);
 
-            // Upload foto profil kalau ada
             if (photo) {
                 const photoForm = new FormData();
                 photoForm.append("photo", photo);
                 await profileService.uploadPhoto(photoForm);
             }
+
+            // Update userData setelah update
+            const profileRes = await profileService.getProfile();
+            const updatedUser = profileRes.data.data;
+            setUserData(updatedUser);
+            
+            // Update juga di localStorage
+            localStorage.setItem("user", JSON.stringify(updatedUser));
 
             Swal.fire({
                 icon: "success",
@@ -108,6 +152,8 @@ export default function DetailMember() {
                 text: "Data kamu sudah tersimpan.",
             });
             setShowEditForm(false);
+            setPhoto(null);
+            setIdentityPhoto(null);
 
         } catch (err) {
             const message = err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
@@ -122,47 +168,115 @@ export default function DetailMember() {
         }
     }
 
+    const handleLogout = async () => {
+        const result = await Swal.fire({
+            title: "Yakin mau logout?",
+            text: "Kamu akan keluar dari sesi ini.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Ya, Logout!",
+            cancelButtonText: "Batal",
+        });
+
+        if (result.isConfirmed) {
+            logout();
+            setSearchId("");
+            setUserData(null);
+            setShowEditForm(false);
+            Swal.fire({
+                icon: "success",
+                title: "Logout Berhasil!",
+                text: "Sampai jumpa lagi!",
+            });
+        }
+    };
+
+    // Cek apakah user sudah login (dari AuthContext) atau sudah cek member (userData)
+    const isUserLoggedIn = isLoggedIn || userData;
+
+    // ====== RENDER ======
     return (
         <Container className="flex flex-col w-full">
             <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
                 <BatikOverlay />
                 <div className="gap-y-8 px-4 md:px-0 max-w-306 mx-auto min-h-screen">
 
-                    {/* Section Cek Hash ID */}
-                    <RevealSection direction="up">
-                        <div className="flex items-center justify-center w-full mt-8">
-                            <h1 className="text-4xl font-bold m-2 font-young mt-24">Kamu sudah jadi Member?</h1>
-                        </div>
-                        <div className="flex flex-col justify-center items-center gap-4">
-                            <InputType
-                                label="Masukkan ID Hash Kamu"
-                                id="hashid"
-                                type="text"
-                                name="cariid"
-                                placeholder="0001"
-                                className="flex flex-col gap-2"
-                                value={searchId}
-                                onChange={handleChange}
-                            />
-                            <button
-                                className={`flex justify-center items-center p-8 rounded-md ${loading ? "bg-neutral-bg-active" : "bg-secondary-bg"} hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl`}
-                                type="button"
-                                disabled={loading}
-                                onClick={handleSearch}
-                            >
-                                {loading ? "Mencari..." : "Cek Member"}
-                            </button>
-                        </div>
-                    </RevealSection>
+                    {/* ====== Cek Login Status ====== */}
+                    {isMounted && isUserLoggedIn ? (
+                        // ====== SUDAH LOGIN ======
+                        <RevealSection direction="up">
+                            <div className="flex flex-col items-center justify-center mt-24 mb-8">
+                                <div className="bg-white p-8 rounded-lg shadow-lg text-center max-w-2xl w-full border-2 border-primary-normal">
+                                    <h1 className="text-4xl font-bold font-young text-primary-darker">
+                                        Selamat Datang! 👋
+                                    </h1>
+                                    <p className="text-2xl font-semibold text-secondary-bg mt-4">
+                                        {userData?.name || user?.name}
+                                    </p>
+                                    <p className="text-gray-600 mt-2">
+                                        {userData?.email || user?.email}
+                                    </p>
+                                    <div className="mt-6 flex gap-4 justify-center">
+                                        <button
+                                            onClick={handleLogout}
+                                            className="px-8 py-3 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-bold rounded-md transition-all"
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </RevealSection>
+                    ) : (
+                        // ====== BELUM LOGIN ======
+                        <RevealSection direction="up">
+                            <div className="flex items-center justify-center w-full mt-8">
+                                <h1 className="text-4xl font-bold m-2 font-young mt-24">Kamu sudah jadi Member?</h1>
+                            </div>
+                            <div className="flex flex-col justify-center items-center gap-4">
+                                <InputType
+                                    label="Masukkan Username / Hash ID"
+                                    id="username"
+                                    type="text"
+                                    name="username"
+                                    placeholder="NM04 atau HASH_ID"
+                                    className="flex flex-col gap-2"
+                                    value={searchId}
+                                    onChange={handleChange}
+                                />
+                                <PasswordInput
+                                    label="Password"
+                                    id="password"
+                                    type="password"
+                                    name="password"
+                                    required
+                                    placeholder="••••••••"
+                                    className="flex flex-col gap-2"
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                />
+
+                                <button
+                                    className={`flex justify-center items-center p-8 rounded-md ${loading ? "bg-neutral-bg-active" : "bg-secondary-bg"} hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+                                    type="button"
+                                    disabled={loading}
+                                    onClick={handleSearch}
+                                >
+                                    {loading ? "Mencari..." : "Cek Member"}
+                                </button>
+                            </div>
+                        </RevealSection>
+                    )}
 
                     {/* Data User — muncul setelah ditemukan */}
-                    {userData && (
+                    {isMounted && userData && (
                         <RevealSection direction="up">
                             <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 bg-primary-light border-neutral-normal rounded-md">
                                 <h2 className="text-3xl font-bold font-young text-neutral-normal">Data Member</h2>
                                 <hr className="border-t-2 border-neutral-normal" />
 
-                                {/* Tampilan data user */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg">
                                     <div>
                                         <span className="font-semibold">Hash ID: </span>
@@ -184,7 +298,6 @@ export default function DetailMember() {
                                     </div>
                                 </div>
 
-                                {/* Tombol Edit Profil */}
                                 {!showEditForm && (
                                     <button
                                         onClick={() => setShowEditForm(true)}
@@ -198,7 +311,7 @@ export default function DetailMember() {
                     )}
 
                     {/* History Order Event */}
-                    {userData && myEvents.length > 0 && (
+                    {isMounted && userData && myEvents.length > 0 && (
                         <RevealSection direction="up">
                             <div className="flex flex-col gap-4 bg-primary-light border-2 border-neutral-normal p-8 my-4 rounded-md">
                                 <h2 className="text-3xl font-bold font-young text-neutral-normal">Riwayat Event</h2>
@@ -223,11 +336,11 @@ export default function DetailMember() {
                                                                 event.order?.status === "cancelled" ? "Dibatalkan" :
                                                                     event.order?.status}
                                                 </span>
-                                                
+
                                                 <Link
-                                                    href={event.status === "ongoing" || event.status === "upcoming"  ? `/events/upcoming?id=${event.id}` : `/events/finished?id=${event.id}`}
+                                                    href={event.status === "ongoing" || event.status === "upcoming" ? `/events/upcoming?id=${event.id}` : `/events/finished?id=${event.id}`}
                                                     className={`text-white text-center px-5 py-2.5 font-medium transition-colors font-young shadow-md rounded-md
-                                                    ${event.status === "ongoing" || event.status === "upcoming"  ? "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active" : "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-400  "}`}
+                                                    ${event.status === "ongoing" || event.status === "upcoming" ? "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active" : "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-400  "}`}
                                                 >
                                                     Detail
                                                 </Link>
@@ -242,8 +355,8 @@ export default function DetailMember() {
                         </RevealSection>
                     )}
 
-                    {/* Form Edit Profile — muncul setelah klik tombol */}
-                    {userData && showEditForm && (
+                    {/* Form Edit Profile */}
+                    {isMounted && userData && showEditForm && (
                         <RevealSection direction="up">
                             <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 border-neutral-normal bg-primary-light rounded-md">
                                 <div className="flex justify-between items-center">
@@ -258,7 +371,6 @@ export default function DetailMember() {
                                 <hr className="border-t-2 border-neutral-normal" />
 
                                 <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4">
-
                                     <h3 className="text-xl font-bold font-young">Data Diri</h3>
                                     <InputType label="Nama Lengkap" id="name" type="text" name="name"
                                         placeholder="John Doe" className="flex flex-col gap-2"

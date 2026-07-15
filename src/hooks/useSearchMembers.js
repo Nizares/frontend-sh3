@@ -1,46 +1,71 @@
 import Swal from "sweetalert2";
 import { useState } from "react";
 import useAuth from "./useAuth";
+import { useAuth as useAuthContext } from "@/src/contexts/AuthContext"; // ← TAMBAHKAN
 
 export default function useSearchMembers() {
     const [searchId, setSearchId] = useState("");
-    const [userData, setUserData] = useState(null); // ← tambah ini
+    const [password, setPassword] = useState("");
+    const [userData, setUserData] = useState(null);
     const { loading, error, login } = useAuth();
+    const { setAuthUser } = useAuthContext(); // ← AMBIL setAuthUser
 
     function handleChange(e) {
         setSearchId(e.target.value);
     }
 
-    function hidePhone(number, shownNumber = 2) {
-        return '*'.repeat(number.length - shownNumber) + number.slice(-shownNumber);
+    function handlePasswordChange(e) {
+        setPassword(e.target.value);
     }
 
     async function handleSearch(e) {
         e.preventDefault();
-        if (!searchId) return;
+        
+        if (!searchId || !password) {
+            Swal.fire({
+                icon: "warning",
+                title: "Data Kurang",
+                text: "Masukkan Username dan Password dulu!",
+            });
+            return;
+        }
 
-        const user = await login(searchId);
+        const user = await login(searchId, password);
 
         if (user) {
-            setUserData(user); // ← simpan user ke state
+            setUserData(user);
+            
+            // 🔥 UPDATE AUTH CONTEXT - biar navbar berubah!
+            setAuthUser(user);
+            
             Swal.fire({
                 icon: "success",
-                title: "Data ditemukan!",
+                title: "Login Berhasil!",
                 html: `
-                    <p>ID: ${user.hash_id}</p>
                     <p>Nama: ${user.name}</p>
-                    <p>Telp: ${user.phone ? hidePhone(user.phone, 2) : "-"}</p>
+                    <p>Email: ${user.email}</p>
+                    <p>Tipe: ${user.participant_type}</p>
                 `,
             });
         } else {
-            setUserData(null); // ← reset kalau tidak ditemukan
+            setUserData(null);
             Swal.fire({
                 icon: "error",
-                title: "Data tidak ditemukan",
-                text: "Pastikan ID yang kamu masukkan sudah benar.",
+                title: "Login Gagal",
+                text: "Username atau password salah.",
             });
         }
     }
 
-    return { loading, searchId, setSearchId, handleSearch, handleChange, userData }; // ← tambah userData
+    return { 
+        loading, 
+        searchId, 
+        setSearchId, 
+        password, 
+        handlePasswordChange, 
+        handleSearch, 
+        handleChange, 
+        userData,
+        setUserData,
+    };
 }

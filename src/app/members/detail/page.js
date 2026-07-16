@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import useSearchMembers from "@/src/hooks/useSearchMembers";
@@ -29,17 +30,17 @@ const bloodTypeOptions = [
 
 export default function DetailMember() {
     const { user, logout, isLoggedIn } = useAuth();
-    const [isMounted, setIsMounted] = useState(false); // ← TAMBAHKAN INI
-    const { 
-        loading, 
-        searchId, 
-        setSearchId, 
-        password, 
-        handlePasswordChange, 
-        handleSearch, 
-        handleChange, 
-        userData, 
-        setUserData 
+    const [isMounted, setIsMounted] = useState(false);
+    const {
+        loading,
+        searchId,
+        setSearchId,
+        password,
+        handlePasswordChange,
+        handleSearch,
+        handleChange,
+        userData,
+        setUserData
     } = useSearchMembers();
 
     const [showEditForm, setShowEditForm] = useState(false);
@@ -142,7 +143,7 @@ export default function DetailMember() {
             const profileRes = await profileService.getProfile();
             const updatedUser = profileRes.data.data;
             setUserData(updatedUser);
-            
+
             // Update juga di localStorage
             localStorage.setItem("user", JSON.stringify(updatedUser));
 
@@ -185,6 +186,19 @@ export default function DetailMember() {
             setSearchId("");
             setUserData(null);
             setShowEditForm(false);
+            setFormData({
+                name: "",
+                phone: "",
+                gender: "",
+                birthdate: "",
+                blood_type: "",
+                emergency_contact: "",
+                emergency_phone: "",
+                allergy_history: "",
+                identity_number: "",
+            });
+            setMyEvents([]);
+
             Swal.fire({
                 icon: "success",
                 title: "Logout Berhasil!",
@@ -193,10 +207,13 @@ export default function DetailMember() {
         }
     };
 
-    // Cek apakah user sudah login (dari AuthContext) atau sudah cek member (userData)
+    // Cek apakah user sudah login
     const isUserLoggedIn = isLoggedIn || userData;
 
-    // ====== RENDER ======
+    // Ambil foto profil langsung dari response
+    const profilePhoto = userData?.photo || "";
+    const name = userData?.name || user?.name || "";
+
     return (
         <Container className="flex flex-col w-full">
             <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
@@ -208,12 +225,38 @@ export default function DetailMember() {
                         // ====== SUDAH LOGIN ======
                         <RevealSection direction="up">
                             <div className="flex flex-col items-center justify-center mt-24 mb-8">
-                                <div className="bg-white p-8 rounded-lg shadow-lg text-center max-w-2xl w-full border-2 border-primary-normal">
-                                    <h1 className="text-4xl font-bold font-young text-primary-darker">
-                                        Selamat Datang! 👋
-                                    </h1>
+                                <div className="bg-primary-light p-8 rounded-lg shadow-lg text-center w-full border-2 border-neutral-normal">
+                                    {/* Foto Profil */}
+                                    <div className="flex flex-col items-center gap-4">
+                                        <h1 className="text-4xl font-bold font-young text-primary-darker">
+                                            Selamat Datang!
+                                        </h1>
+                                        <div className="w-32 h-32 rounded-full bg-secondary-bg flex items-center justify-center overflow-hidden border-4 border-secondary-bg mx-auto mb-4">
+                                            {profilePhoto ? (
+                                                // eslint-disable-next-line @next/next/no-img-element
+                                                <img
+                                                    src={profilePhoto}
+                                                    alt={name}
+                                                    className="object-cover w-full h-full"
+                                                    onError={(e) => {
+                                                        e.target.style.display = 'none';
+                                                        e.target.parentElement.innerHTML = `
+                                                            <span class="text-white font-bold text-4xl">
+                                                                ${name ? name.charAt(0).toUpperCase() : "?"}
+                                                            </span>
+                                                        `;
+                                                    }}
+                                                />
+                                            ) : (
+                                                <span className="text-white font-bold text-4xl">
+                                                    {name ? name.charAt(0).toUpperCase() : "?"}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                    </div>
                                     <p className="text-2xl font-semibold text-secondary-bg mt-4">
-                                        {userData?.name || user?.name}
+                                        {name}
                                     </p>
                                     <p className="text-gray-600 mt-2">
                                         {userData?.email || user?.email}
@@ -235,14 +278,15 @@ export default function DetailMember() {
                             <div className="flex items-center justify-center w-full mt-8">
                                 <h1 className="text-4xl font-bold m-2 font-young mt-24">Kamu sudah jadi Member?</h1>
                             </div>
-                            <div className="flex flex-col justify-center items-center gap-4">
+                            <div className="flex flex-col justify-center items-center gap-4 max-w-md mx-auto">
                                 <InputType
                                     label="Masukkan Username / Hash ID"
                                     id="username"
                                     type="text"
                                     name="username"
                                     placeholder="NM04 atau HASH_ID"
-                                    className="flex flex-col gap-2"
+                                    required
+                                    className="flex flex-col gap-2 w-full"
                                     value={searchId}
                                     onChange={handleChange}
                                 />
@@ -253,13 +297,12 @@ export default function DetailMember() {
                                     name="password"
                                     required
                                     placeholder="••••••••"
-                                    className="flex flex-col gap-2"
+                                    className="flex flex-col gap-2 w-full"  // ← pastikan ada w-full
                                     value={password}
                                     onChange={handlePasswordChange}
                                 />
-
                                 <button
-                                    className={`flex justify-center items-center p-8 rounded-md ${loading ? "bg-neutral-bg-active" : "bg-secondary-bg"} hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+                                    className={`flex justify-center items-center p-8 rounded-md w-full ${loading ? "bg-neutral-bg-active" : "bg-secondary-bg"} hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl`}
                                     type="button"
                                     disabled={loading}
                                     onClick={handleSearch}
@@ -370,6 +413,19 @@ export default function DetailMember() {
                                 </div>
                                 <hr className="border-t-2 border-neutral-normal" />
 
+                                {/* Foto Profil Saat Ini */}
+                                {userData.photo && (
+                                    <div className="flex flex-col items-center gap-2">
+                                        <label className="text-lg font-medium">Foto Profil Saat Ini</label>
+
+                                        <img
+                                            src={userData.photo}
+                                            alt="Foto Profil"
+                                            className="w-32 h-32 rounded-full object-cover border-2 border-gray-300"
+                                        />
+                                    </div>
+                                )}
+
                                 <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4">
                                     <h3 className="text-xl font-bold font-young">Data Diri</h3>
                                     <InputType label="Nama Lengkap" id="name" type="text" name="name"
@@ -424,7 +480,7 @@ export default function DetailMember() {
 
                                     <hr className="border-t-2 border-neutral-normal" />
                                     <h3 className="text-xl font-bold mt-4 font-young">Foto Profil</h3>
-                                    <ImageUpload id="photo" label="Foto Profil"
+                                    <ImageUpload id="photo" label="Upload Foto Profil Baru"
                                         onChange={file => setPhoto(file)} />
 
                                     <div className="flex gap-4 mt-4">

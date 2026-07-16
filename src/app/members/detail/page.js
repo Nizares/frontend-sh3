@@ -264,7 +264,7 @@ export default function DetailMember() {
                                     <div className="mt-6 flex gap-4 justify-center">
                                         <button
                                             onClick={handleLogout}
-                                            className="px-8 py-3 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-bold rounded-md transition-all"
+                                            className="px-8 py-3 border-red-500 hover:bg-red-600/10 active:bg-red-700/10 text-red-600 font-bold border-2 rounded-md transition-all"
                                         >
                                             Logout
                                         </button>

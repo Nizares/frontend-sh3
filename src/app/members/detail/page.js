@@ -16,6 +16,8 @@ import Swal from "sweetalert2";
 import BatikOverlay from "@/src/components/BatikOverlay";
 import { useAuth } from "@/src/contexts/AuthContext";
 
+import { PencilIcon } from "@heroicons/react/24/outline";
+
 const genderOptions = [
     { value: "male", label: "Laki-laki" },
     { value: "female", label: "Perempuan" },
@@ -342,12 +344,14 @@ export default function DetailMember() {
                                 </div>
 
                                 {!showEditForm && (
-                                    <button
-                                        onClick={() => setShowEditForm(true)}
-                                        className="flex justify-center items-center rounded-md bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-2xl font-young"
-                                    >
-                                        Edit Profil
-                                    </button>
+                                    <div className="flex items-center">
+                                        <button
+                                            onClick={() => setShowEditForm(true)}
+                                            className="flex justify-center items-center rounded-md bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-2xl font-young w-1/4"
+                                        >
+                                            <PencilIcon className="m-2" width={24} height={24} /> Edit Profil
+                                        </button>
+                                    </div>
                                 )}
                             </div>
                         </RevealSection>

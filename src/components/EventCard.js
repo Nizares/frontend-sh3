@@ -8,6 +8,8 @@ export default function EventCard({
   start_date,
   end_date,
   category,
+  description,
+  location,
   img,
   status
 }) {
@@ -15,7 +17,7 @@ export default function EventCard({
   const isOngoing = status == "upcoming" || status == "ongoing"
 
   return (
-    <div className="flex flex-col flex-1 basis-1/4 items-center bg-white h-full w-full max-w-sm rounded-md">
+    <div className="flex flex-col flex-1 basis-1/4 items-center bg-white h-full w-full max-w-xl max-h-sm rounded-md">
 
       {img ? (
         <Image
@@ -23,7 +25,7 @@ export default function EventCard({
           alt={title}
           width={250}
           height={250}
-          className="w-full object-cover rounded-t-md aspect-square"
+          className="w-full h-full object-cover rounded-t-md aspect-2/1"
         />
       ) : (
         <div className="w-full h-full object-cover flex items-center justify-center bg-neutral-bg text-neutral-dark text-5xl font-bold font-young rounded-t-md aspect-square">
@@ -31,10 +33,18 @@ export default function EventCard({
         </div>
       )}
       <div className="flex flex-col gap-4 p-8 justify-between h-full w-full">
-
-        <div className="text-2xl font-bold font-young">{title}</div>
         <div className="text-lg">{concateDate(start_date, end_date, isOngoing)}</div>
-        <div className="text-xl font-semibold">{category}</div>
+        <div className="text-2xl font-bold font-young">{title}</div>
+        <div className="text-ellipsis">{description}</div>
+        <div className="flex flex-row">
+          <div className="text-md truncate basis-1/2">
+            {location}
+          </div>
+          <div className="text-xl font-semibold text-right basis-1/2">
+            {category}
+            </div>
+        </div>
+
         <Link
           href={isOngoing ? `/events/upcoming?id=${id}` : `/events/finished?id=${id}`}
           className={`text-white text-center px-5 py-2.5 font-medium transition-colors font-young shadow-md rounded-md

@@ -145,17 +145,17 @@ export default function UpcomingEvents() {
 
   return (
     <Container className="flex flex-col gap-y-4 w-full">
-      <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
+      <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
         <BatikOverlay />
         <div className="mt-8 max-w-306 mx-auto relative z-1">
           <Link href="/events" className="static md:absolute">
             <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
           </Link>
           <div className="flex items-center justify-center w-full">
-            <h1 className="text-4xl font-bold text-primary-darker mt-16">{event.title}</h1>
+            <h1 className="text-4xl font-bold  mt-16">{event.title}</h1>
           </div>
 
-          <div className="flex flex-row justify-between gap-x-2 mt-8 text-primary-darker">
+          <div className="flex flex-row justify-between gap-x-2 mt-8 ">
             <div className="flex flex-row justify-center gap-x-2 w-1/2">
               <MapPinIcon className="w-8 h-8 " />
               <div className="text-lg font-bold">{event.location}</div>
@@ -175,7 +175,7 @@ export default function UpcomingEvents() {
 
           <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3 my-8">
             <div className="col-span-1 flex flex-col md:col-span-2">
-              <h2 className="text-2xl font-bold text-primary-darker">Tentang Event</h2>
+              <h2 className="text-2xl font-bold ">Tentang Event</h2>
               <div className="text-sm">{event.description}</div>
 
               {/* Belum join → Daftar Sekarang */}

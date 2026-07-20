@@ -32,7 +32,7 @@ export default function MerchandisePage() {
 
     return (
         <Container className="flex flex-col gap-y-8 w-full">
-            <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
+            <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
                 <BatikOverlay />
                 <div className="max-w-306 mx-auto w-full p-4 md:p-0">
                     <RevealSection direction="up">
@@ -47,9 +47,9 @@ export default function MerchandisePage() {
                         <div className="flex flex-wrap gap-2 mt-8">
                             <button
                                 onClick={() => setSelectedCategory("")}
-                                className={`px-4 py-2 font-medium transition-colors border-2 rounded-md ${selectedCategory === ""
+                                className={`px-4 py-2 font-medium transition-colors border-2 rounded-md cursor-pointer ${selectedCategory === ""
                                     ? "bg-emerald-600 text-white border-emerald-600"
-                                    : "bg-transparent text-neutral-dark border-neutral-normal hover:border-emerald-600"
+                                    : "bg-transparent text-neutral-dark border-neutral-normal hover:border-emerald-600 hover:text-emerald-600"
                                     }`}
                             >
                                 Semua
@@ -58,9 +58,9 @@ export default function MerchandisePage() {
                                 <button
                                     key={cat.id}
                                     onClick={() => setSelectedCategory(cat.id)}
-                                    className={`px-4 py-2 font-medium transition-colors border-2 rounded-md ${selectedCategory === cat.id
+                                    className={`px-4 py-2 font-medium transition-colors border-2 rounded-md cursor-pointer ${selectedCategory === cat.id
                                         ? "bg-secondary-bg text-white border-secondary-bg"
-                                        : "bg-transparent text-neutral-dark border-neutral-normal-active hover:border-secondary-bg"
+                                        : "bg-transparent text-neutral-dark border-neutral-normal hover:border-emerald-600 hover:text-emerald-600"
                                         }`}
                                 >
                                     {cat.name}

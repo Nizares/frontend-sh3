@@ -17,7 +17,7 @@ export default function EventCard({
   const isOngoing = status == "upcoming" || status == "ongoing"
 
   return (
-    <div className="flex flex-col flex-1 basis-1/4 items-center bg-white h-full w-full max-w-xl max-h-sm rounded-md">
+    <div className="flex flex-col flex-1 basis-1/4 items-center bg-white h-full w-full max-w-xl max-h-sm rounded-md border-2 border-neutral-normal">
 
       {img ? (
         <Image

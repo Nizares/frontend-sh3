@@ -105,11 +105,11 @@ export default function About() {
 
   return (
     <Container className="flex flex-col">
-      <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
+      <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
         <BatikOverlay />
 
         {/* Header */}
-        <div className="flex flex-col flex-1 items-center justify-center text-primary-dark-active p-8 mt-16">
+        <div className="flex flex-col flex-1 items-center justify-center  p-8 mt-16">
           <h1 className="text-5xl font-bold font-young">About</h1>
         </div>
 
@@ -126,10 +126,10 @@ export default function About() {
               />
             </div>
             <div className="w-full p-auto md:w-1/2 flex flex-col gap-4">
-              <p className="text-4xl font-bold font-young text-primary-dark-active">
+              <p className="text-4xl font-bold font-young ">
                 A Drinking Club With a Running Problem
               </p>
-              <h2 className="text-3xl font-bold font-young text-primary-dark-active">
+              <h2 className="text-3xl font-bold font-young ">
                 Samarinda <span className="text-primary-text">Hash</span> House
                 Harriers
               </h2>
@@ -184,7 +184,7 @@ export default function About() {
         {/* Sejarah */}
         <RevealSection direction="up">
           <div className="flex flex-col max-w-306 mx-auto gap-4 p-8">
-            <div className="font-bold text-4xl font-young md:p-4 text-primary-dark-active">
+            <div className="font-bold text-4xl font-young md:p-4 ">
               Sejarah
             </div>
             <div className="indent-32 text-justify">
@@ -209,7 +209,7 @@ export default function About() {
 
         <RevealSection direction="up">
           <div className="flex flex-col gap-4 max-w-306 mx-auto px-4 md:px-0">
-            <div className="font-bold text-4xl font-young md:p-4 text-primary-dark-active">
+            <div className="font-bold text-4xl font-young md:p-4 ">
               Akta Pendirian Perkumpulan SH3
             </div>
             <iframe src="/assets/files/aktapendiriansh3.pdf" height={600}></iframe>
@@ -218,7 +218,7 @@ export default function About() {
 
         <RevealSection direction="up">
           <div className="flex flex-col gap-4 max-w-306 mx-auto px-4 md:px-0">
-            <div className="font-bold text-4xl font-young md:p-4 text-primary-dark-active">
+            <div className="font-bold text-4xl font-young md:p-4 ">
               Surat Keterangan Pengesahan Pendirian SH3
             </div>
             <iframe src="/assets/files/cetaksk.pdf" height={600}></iframe>
@@ -227,7 +227,7 @@ export default function About() {
 
         <RevealSection direction="up">
           <div className="flex flex-col gap-4 max-w-306 mx-auto px-4 md:px-0">
-            <div className="font-bold text-4xl font-young md:p-4 text-primary-dark-active">
+            <div className="font-bold text-4xl font-young md:p-4 ">
               NPWP SH3
             </div>
             <iframe src="/assets/files/npwpsh3.pdf" height={600}></iframe>
@@ -242,7 +242,7 @@ export default function About() {
           <div className="p-8">
             <div className="flex flex-col max-w-306 mx-auto w-full gap-8">
               <div className="flex flex-col md:flex-row justify-between items-center">
-                <div className="font-bold text-4xl font-young md:p-4 text-primary-dark-active">
+                <div className="font-bold text-4xl font-young md:p-4 ">
                   Struktur Organisasi
                 </div>
                 {years.length > 0 && (

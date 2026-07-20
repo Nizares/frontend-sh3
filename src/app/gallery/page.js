@@ -35,13 +35,13 @@ export default function Gallery() {
 
     return (
         <Container className="flex flex-col  w-full ">
-            <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
+            <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
                 <BatikOverlay />
                 <div className="gap-y-4 max-w-306 mx-auto">
-                    <h1 className="text-5xl font-bold text-center p-8 font-young text-primary-dark mt-16">Cerita Kami saat Berlari!</h1>
+                    <h1 className="text-5xl font-bold text-center p-8 font-young mt-16">Cerita Kami saat Berlari!</h1>
 
                     {images.length === 0 ? (
-                        <p className="text-center text-xl py-16 min-h-screen">Belum ada foto event.</p>
+                        <p className="text-center text-2xl py-16 min-h-screen">Belum ada foto event.</p>
                     ) : (
                         <MasonryGallery images={images} />
                     )}

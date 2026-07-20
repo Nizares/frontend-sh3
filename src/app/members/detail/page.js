@@ -218,7 +218,7 @@ export default function DetailMember() {
 
     return (
         <Container className="flex flex-col w-full">
-            <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
+            <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
                 <BatikOverlay />
                 <div className="gap-y-8 px-4 md:px-0 max-w-306 mx-auto min-h-screen">
 
@@ -295,7 +295,7 @@ export default function DetailMember() {
                                 <PasswordInput
                                     label="Password"
                                     id="password"
-                                    type="password"
+                                    type="text"
                                     name="password"
                                     required
                                     placeholder="••••••••"

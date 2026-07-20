@@ -137,6 +137,7 @@ export default function Members() {
             setPhoto(null);
             setIdentityPhoto(null);
 
+
         } catch (err) {
             const message = err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
             const errors = err.response?.data?.errors;
@@ -152,7 +153,7 @@ export default function Members() {
 
     return (
         <Container className="flex flex-col  w-full ">
-            <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
+            <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
                 <BatikOverlay />
                 <div className="gap-y-8 px-4 md:px-0 max-w-306 mx-auto">
                     <RevealSection direction="up">
@@ -251,7 +252,7 @@ export default function Members() {
                                     onChange={(file) => setPhoto(file)} />
 
                                 <button
-                                    className={`flex justify-center items-center mb-8 rounded-md ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-3xl font-young`}
+                                    className={`flex justify-center items-center mb-8 rounded-md ${submitLoading ? "bg-neutral-normal " : "bg-secondary-bg hover:bg-secondary-bg-hover"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-3xl font-young`}
                                     type="submit"
                                     disabled={submitLoading}
                                 >

@@ -4,7 +4,7 @@ import { formatRupiah } from "@/src/lib/utils"
 
 export default function MerchandiseCard({ id, name, price, image_url, stock, sizes }) {
     return (
-        <div className="flex flex-col h-full bg-primary-light border-2 border-neutral-normal hover:border-emerald-600 transition-colors rounded-md">
+        <div className="flex flex-col h-full bg-white border-2 border-neutral-normal hover:border-emerald-600 transition-colors rounded-md">
             {/* Gambar */}
             <div className="relative w-full h-62.5 overflow-hidden bg-neutral-bg rounded-t-md">
                 {image_url ? (

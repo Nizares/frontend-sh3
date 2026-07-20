@@ -166,7 +166,7 @@ export default function MerchandiseOrderPage() {
 
     return (
         <Container className="flex flex-col gap-y-4 w-full px-4 md:px-0 ">
-            <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover p-8">
+            <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light p-8">
                 <BatikOverlay />
                 <div className="max-w-306 mx-auto">
                     <RevealSection direction="up">

@@ -1,404 +1,414 @@
-"use client"
-import useSearchMembers from "@/src/hooks/useSearchMembers";
-import InputType from "@/src/components/Inputs";
-import SelectInput from "@/src/components/SelectInput";
-import Container from "@/src/components/Container";
-import ImageUpload from "@/src/components/ImageUpload";
-import PasswordInput from "@/src/components/passwordInput";
-import { RevealSection } from "@/src/components/RevealSection";
-import { useState, useEffect } from "react";
-import { profileService } from "@/src/services/profileService";
-import { eventService } from "@/src/services/eventService";
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
-import Swal from "sweetalert2";
+import Form from "next/form";
+
+import Container from "@/src/components/Container";
+import SelectInput from "@/src/components/SelectInput";
+import InputType from "@/src/components/Inputs";
+import ImageUpload from "@/src/components/ImageUpload";
+import InvoiceEvent from "@/src/components/InvoiceEvent";
 import BatikOverlay from "@/src/components/BatikOverlay";
-import { useAuth } from "@/src/contexts/AuthContext"; // ← tambah ini
+import { RevealSection } from "@/src/components/RevealSection";
 
-const genderOptions = [
-    { value: "male", label: "Laki-laki" },
-    { value: "female", label: "Perempuan" },
-];
+import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
+import { MapPinIcon } from "@heroicons/react/24/solid";
+import { ChevronUpIcon } from "@heroicons/react/24/solid";
+import { useState, useEffect } from "react";
 
-const bloodTypeOptions = [
-    { value: "A", label: "A" },
-    { value: "B", label: "B" },
-    { value: "AB", label: "AB" },
-    { value: "O", label: "O" },
-];
+import { useAuth } from "@/src/contexts/AuthContext"; // ← pakai AuthContext
+import { eventService } from "@/src/services/eventService";
+import { orderService } from "@/src/services/orderService";
 
-export default function DetailMember() {
-    const { loading, searchId, setSearchId, password, handlePasswordChange, handleSearch, handleChange, userData } = useSearchMembers();
-    const { user, logout, isLoggedIn } = useAuth(); // ← tambah ini
+import { concateDate, formatRupiah } from "@/src/lib/utils";
+import Swal from "sweetalert2";
 
-    const [showEditForm, setShowEditForm] = useState(false);
-    const [submitLoading, setSubmitLoading] = useState(false);
-    const [photo, setPhoto] = useState(null);
-    const [identityPhoto, setIdentityPhoto] = useState(null);
-    const [myEvents, setMyEvents] = useState([]);
-    const [formData, setFormData] = useState({
-        name: "",
-        phone: "",
-        gender: "",
-        birthdate: "",
-        blood_type: "",
-        emergency_contact: "",
-        emergency_phone: "",
-        allergy_history: "",
-        identity_number: "",
-    });
-
-    // Auto isi form ketika userData berhasil didapat
-    useEffect(() => {
-        if (userData) {
-            setShowEditForm(false);
-            setFormData({
-                name: userData.name ?? "",
-                phone: userData.phone ?? "",
-                gender: userData.gender ?? "",
-                birthdate: userData.birthdate ?? "",
-                blood_type: userData.blood_type ?? "",
-                emergency_contact: userData.emergency_contact ?? "",
-                emergency_phone: userData.emergency_phone ?? "",
-                allergy_history: userData.allergy_history ?? "",
-                identity_number: userData.identity_number ?? "",
-            });
-        }
-    }, [userData]);
-
-    useEffect(() => {
-        if (userData) {
-            eventService.getMyEvents()
-                .then(res => setMyEvents(res.data.data))
-                .catch(() => { });
-        }
-    }, [userData]);
-
-    function handleFormChange(e) {
-        setFormData(prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
+const paymentOptions = [
+    {
+        value: "Transfer Bank Mandiri",
+        label: "Bank Transfer Mandiri",
+        NoRek: "1480087846666",
+        nama: "An. Perkumpulan Samarinda Hidup Hutan Hijau",
+        image: "/assets/icon/mandiri.png",
     }
+];
 
-    async function handleUpdateProfile(e) {
+export default function RegisterEvent() {
+    const { user, isLoggedIn, loading: authLoading } = useAuth(); // ← dari AuthContext
+    const [event, setEvent] = useState(null);
+    const [payOptions, setPayOptions] = useState("");
+    const [paymentFile, setPaymentFile] = useState(null);
+    const [submitLoading, setSubmitLoading] = useState(false);
+    const [orderResult, setOrderResult] = useState(null);
+
+    const selectedBank = paymentOptions.find((p) => p.value === payOptions);
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const eventId = params.get("id") || 1;
+        eventService
+            .getById(eventId)
+            .then((res) => setEvent(res.data.data))
+            .catch((err) => console.error(err));
+    }, []);
+
+    async function submitPembayaran(e) {
         e.preventDefault();
-        setSubmitLoading(true);
-        try {
-            const payload = {};
-            if (formData.name) payload.name = formData.name;
-            if (formData.phone) payload.phone = formData.phone;
-            if (formData.gender) payload.gender = formData.gender;
-            if (formData.birthdate) payload.birthdate = formData.birthdate;
-            if (formData.blood_type) payload.blood_type = formData.blood_type;
-            if (formData.emergency_contact) payload.emergency_contact = formData.emergency_contact;
-            if (formData.emergency_phone) payload.emergency_phone = formData.emergency_phone;
-            if (formData.allergy_history) payload.allergy_history = formData.allergy_history;
-            if (formData.identity_number) payload.identity_number = formData.identity_number;
 
-            await profileService.update(payload);
-
-            if (photo) {
-                const photoForm = new FormData();
-                photoForm.append("photo", photo);
-                await profileService.uploadPhoto(photoForm);
-            }
-
+        if (!isLoggedIn || !user) {
             Swal.fire({
-                icon: "success",
-                title: "Profil Berhasil Diupdate!",
-                text: "Data kamu sudah tersimpan.",
+                icon: "warning",
+                title: "Belum Login!",
+                text: "Silakan login dulu sebelum mendaftar event.",
+                confirmButtonText: "Login Sekarang",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/members/detail";
+                }
             });
-            setShowEditForm(false);
+            return;
+        }
 
-        } catch (err) {
-            const message = err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
-            const errors = err.response?.data?.errors;
+        if (!paymentFile) {
+            Swal.fire({ icon: "warning", title: "Upload bukti bayar dulu!" });
+            return;
+        }
+
+        // 🔥 PAKAI HASH_ID sebagai participant_id
+        const participantId = user?.hash_id;
+        console.log("🔵 Participant ID (hash_id):", participantId);
+
+        if (!participantId) {
             Swal.fire({
                 icon: "error",
-                title: "Gagal Update!",
-                text: errors ? Object.values(errors).flat().join(", ") : message,
+                title: "Error!",
+                text: "Data participant tidak ditemukan. Silakan login ulang.",
+            });
+            return;
+        }
+
+        setSubmitLoading(true);
+        try {
+            const orderRes = await orderService.create(event.id, participantId);
+            const { order, attendance } = orderRes.data.data;
+            const orderId = order.id;
+            const invoice_number = order.invoice_number;
+            const ticket_code = order.ticket_code;
+
+            if (order.status === "free") {
+                setOrderResult({ order_id: orderId, invoice_number, ticket_code });
+                Swal.fire({
+                    icon: "success",
+                    title: "Pendaftaran Berhasil!",
+                    text: "Event ini gratis! Tiket kamu sudah aktif.",
+                });
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("payment_proof", paymentFile);
+            formData.append("payment_method", payOptions || "transfer");
+            formData.append("amount", event.price);
+            formData.append(
+                "paid_at",
+                new Date().toISOString().slice(0, 19).replace("T", " ")
+            );
+
+            await orderService.uploadPayment(orderId, formData);
+
+            setOrderResult({ order_id: orderId, invoice_number, ticket_code });
+        } catch (err) {
+            console.error("🔴 Order error:", err.response?.data);
+            setOrderResult(null);
+            Swal.fire({
+                icon: "error",
+                title: "Gagal!",
+                text: err.response?.data?.message || "Terjadi kesalahan, coba lagi.",
             });
         } finally {
             setSubmitLoading(false);
         }
     }
 
-    // Handle logout
-    const handleLogout = async () => {
-        const result = await Swal.fire({
-            title: "Yakin mau logout?",
-            text: "Kamu akan keluar dari sesi ini.",
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Ya, Logout!",
-            cancelButtonText: "Batal",
-        });
-
-        if (result.isConfirmed) {
-            logout();
-            // Reset state
-            setSearchId("");
-            setUserData(null);
-            setShowEditForm(false);
-            Swal.fire({
-                icon: "success",
-                title: "Logout Berhasil!",
-                text: "Sampai jumpa lagi!",
-            });
+    function higherPrice(event_price) {
+        if (event_price > 0) {
+            return event_price * 2;
+        } else {
+            return 1000000;
         }
-    };
+    }
+
+    if (!event)
+        return <div className="flex justify-center p-16 text-2xl">Loading...</div>;
 
     return (
         <Container className="flex flex-col w-full">
             <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
                 <BatikOverlay />
-                <div className="gap-y-8 px-4 md:px-0 max-w-306 mx-auto min-h-screen">
+                <div className="px-4 md:px-0 max-w-306 mx-auto relative">
+                    <RevealSection direction="up">
+                        <div className="flex flex-col gap-y-4 mt-8">
+                            <Link href="/events" className="static md:absolute">
+                                <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
+                            </Link>
+                            <div className="flex items-center justify-center w-full">
+                                <h1 className="text-4xl font-bold mt-16 text-center md:text-7xl">{event.title}</h1>
+                            </div>
 
-                    {/* ====== Cek Login Status ====== */}
-                    {isLoggedIn && user ? (
-                        // ====== SUDAH LOGIN ======
+                            <div className="flex flex-row justify-between gap-x-2 mt-8">
+                                <div className="flex flex-row justify-center gap-x-2 w-1/2">
+                                    <MapPinIcon className="w-8 h-8" />
+                                    <div className="text-lg font-bold">{event.location}</div>
+                                </div>
+                                <div className="text-lg font-bold">
+                                    {concateDate(event.start_date, event.end_date)}
+                                </div>
+                            </div>
+                        </div>
+                    </RevealSection>
+
+                    <RevealSection direction="up">
+                        <Image
+                            src={event.image_url}
+                            alt={event.title}
+                            width={600}
+                            height={450}
+                            className="h-128 w-full flex object-cover rounded-lg"
+                        />
+                    </RevealSection>
+
+                    <RevealSection direction="up">
+                        <div className="text-3xl font-bold p-8 font-young">Register Detail</div>
+
+                        <div className="flex justify-center gap-8 flex-col md:flex-row mb-8">
+                            <div className="bg-primary-light border-2 border-neutral-normal p-4 w-full rounded-md">
+                                <div className="flex flex-col">
+                                    <h3 className="text-2xl font-bold">Early Bid</h3>
+                                    <div className="text-sm line-through">
+                                        Rp. {formatRupiah(higherPrice(event.price))}
+                                    </div>
+                                    <div className="text-lg font-bold">
+                                        Rp. {formatRupiah(event.price)}/person
+                                    </div>
+                                </div>
+                                <div className="flex flex-col">
+                                    <ol className="list-decimal list-inside p-2">
+                                        {event.key_points?.map((point, i) => (
+                                            <li key={i}>{point}</li>
+                                        ))}
+                                    </ol>
+                                    <div className="text-xl font-bold">Event Organizer</div>
+                                    <div className="text-lg font-semibold">{event.creator?.name}</div>
+                                </div>
+                            </div>
+                            <div className="flex flex-col items-center justify-center bg-primary-light border-neutral-normal border-2 p-4 w-full rounded-md">
+                                <div className="font-bold text-3xl">Slot Tersisa:</div>
+                                <div className="font-bold text-5xl font-young">
+                                    {event.remaining_quota}
+                                </div>
+                            </div>
+                        </div>
+                    </RevealSection>
+
+                    <Form onSubmit={submitPembayaran} className="flex flex-col gap-8">
                         <RevealSection direction="up">
-                            <div className="flex flex-col items-center justify-center mt-24 mb-8">
-                                <div className="bg-white p-8 rounded-lg shadow-lg text-center max-w-2xl w-full border-2 border-primary-normal">
-                                    <h1 className="text-4xl font-bold font-young text-primary-darker">
-                                        Selamat Datang! 👋
-                                    </h1>
-                                    <p className="text-2xl font-semibold text-secondary-bg mt-4">
-                                        {user.name}
-                                    </p>
-                                    <p className="text-gray-600 mt-2">
-                                        {user.email}
-                                    </p>
-                                    <div className="mt-6 flex gap-4 justify-center">
-                                        <button
-                                            onClick={handleLogout}
-                                            className="px-8 py-3 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-bold rounded-md transition-all"
+                            <div className="flex flex-col bg-primary-light p-4 gap-4 border-neutral-normal border-2 rounded-md">
+                                <div className="flex justify-between">
+                                    <div className="text-2xl font-bold font-young">
+                                        Customer Information
+                                    </div>
+                                    <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
+                                </div>
+                                <hr className="border-t-2 border-text-colors" />
+
+                                {/* 🔥 CEK STATUS LOGIN */}
+                                {authLoading ? (
+                                    <div className="text-center py-8 text-xl">Loading...</div>
+                                ) : isLoggedIn && user ? (
+                                    // ✅ SUDAH LOGIN - Tampilkan data user
+                                    <RevealSection direction="up">
+                                        <div className="flex flex-col gap-2">
+                                            <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-4">
+                                                <p className="text-green-700 font-medium">
+                                                    Login sebagai: <span className="font-bold">{user.name}</span>
+                                                </p>
+                                            </div>
+                                            <InputType
+                                                label="Full Name"
+                                                id="name"
+                                                required
+                                                type="text"
+                                                name="fullname"
+                                                placeholder="John Doe"
+                                                className="flex flex-col gap-2"
+                                                value={user.name || ""}
+                                                readOnly
+                                            />
+                                            <InputType
+                                                label="Email"
+                                                id="email"
+                                                required
+                                                type="email"
+                                                name="email"
+                                                placeholder="you@example.com"
+                                                className="flex flex-col gap-2"
+                                                value={user.email || ""}
+                                                readOnly
+                                            />
+                                            <InputType
+                                                label="Nomor Telepon/WA"
+                                                type="text"
+                                                id="telpnumber"
+                                                required
+                                                name="telpnumber"
+                                                placeholder="08123456789"
+                                                className="flex flex-col gap-2"
+                                                value={user.phone || "-"}
+                                                readOnly
+                                            />
+                                        </div>
+                                    </RevealSection>
+                                ) : (
+                                    // ❌ BELUM LOGIN - Tampilkan pesan login
+                                    <div className="flex flex-col items-center justify-center py-8 gap-4">
+                                        <p className="text-xl text-neutral-dark">
+                                            Silakan login terlebih dahulu untuk mendaftar event.
+                                        </p>
+                                        <Link
+                                            href="/members/detail"
+                                            className="bg-secondary-bg hover:bg-secondary-bg-hover text-white font-bold py-3 px-8 rounded-md transition-colors"
                                         >
-                                            Logout
-                                        </button>
+                                            Login Sekarang
+                                        </Link>
                                     </div>
-                                </div>
-                            </div>
-                        </RevealSection>
-                    ) : (
-                        // ====== BELUM LOGIN ======
-                        <RevealSection direction="up">
-                            <div className="flex items-center justify-center w-full mt-8">
-                                <h1 className="text-4xl font-bold m-2 font-young mt-24">Kamu sudah jadi Member?</h1>
-                            </div>
-                            <div className="flex flex-col justify-center items-center gap-4">
-                                <InputType
-                                    label="Masukkan Username / Hash ID"
-                                    id="username"
-                                    type="text"
-                                    name="username"
-                                    placeholder="NM04 atau HASH_ID"
-                                    className="flex flex-col gap-2"
-                                    value={searchId}
-                                    onChange={handleChange}
-                                />
-                                <PasswordInput
-                                    label="Password"
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    required
-                                    placeholder="••••••••"
-                                    className="flex flex-col gap-2"
-                                    value={password}
-                                    onChange={handlePasswordChange}
-                                />
-
-                                <button
-                                    className={`flex justify-center items-center p-8 rounded-md ${loading ? "bg-neutral-bg-active" : "bg-secondary-bg"} hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl`}
-                                    type="button"
-                                    disabled={loading}
-                                    onClick={handleSearch}
-                                >
-                                    {loading ? "Mencari..." : "Cek Member"}
-                                </button>
-                            </div>
-                        </RevealSection>
-                    )}
-
-                    {/* Data User — muncul setelah ditemukan (untuk yang sudah login) */}
-                    {userData && (
-                        <RevealSection direction="up">
-                            <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 bg-primary-light border-neutral-normal rounded-md">
-                                <h2 className="text-3xl font-bold font-young text-neutral-normal">Data Member</h2>
-                                <hr className="border-t-2 border-neutral-normal" />
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg">
-                                    <div>
-                                        <span className="font-semibold">Hash ID: </span>
-                                        <span className="font-mono">{userData.hash_id}</span>
-                                    </div>
-                                    <div>
-                                        <span className="font-semibold">Nama: </span>
-                                        <span>{userData.name}</span>
-                                    </div>
-                                    <div>
-                                        <span className="font-semibold">Email: </span>
-                                        <span>{userData.email}</span>
-                                    </div>
-                                    <div>
-                                        <span className="font-semibold">Tipe: </span>
-                                        <span className={`font-bold ${userData.participant_type === 'member' ? 'text-secondary-dark' : 'text-tertiary-bg'}`}>
-                                            {userData.participant_type === 'member' ? 'Member' : 'Non Member'}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {!showEditForm && (
-                                    <button
-                                        onClick={() => setShowEditForm(true)}
-                                        className="flex justify-center items-center rounded-md bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-2xl font-young"
-                                    >
-                                        Edit Profil
-                                    </button>
                                 )}
                             </div>
                         </RevealSection>
-                    )}
 
-                    {/* History Order Event */}
-                    {userData && myEvents.length > 0 && (
                         <RevealSection direction="up">
-                            <div className="flex flex-col gap-4 bg-primary-light border-2 border-neutral-normal p-8 my-4 rounded-md">
-                                <h2 className="text-3xl font-bold font-young text-neutral-normal">Riwayat Event</h2>
-                                <hr className="border-t-2 border-neutral-normal" />
-                                <div className="flex flex-col gap-4">
-                                    {myEvents.map((event, i) => (
-                                        <div key={i} className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-neutral-normal pb-4 gap-2">
-                                            <div className="flex flex-col gap-1">
-                                                <div className="font-bold text-lg text-neutral-normal">{event.title}</div>
-                                                <div className="text-sm text-neutral-dark">{event.location}</div>
-                                            </div>
-                                            <div className="flex flex-col items-end gap-1">
-                                                <span className={`text-sm font-bold px-3 py-1 rounded-md ${event.order?.status === "paid" ? "bg-secondary-bg text-white" :
-                                                    event.order?.status === "free" ? "bg-secondary-bg text-white" :
-                                                        event.order?.status === "pending" ? "bg-primary-normal text-white" :
-                                                            event.order?.status === "cancelled" ? "bg-red-500 text-white" :
-                                                                "bg-neutral-bg text-white"
-                                                    }`}>
-                                                    {event.order?.status === "paid" ? "Lunas" :
-                                                        event.order?.status === "free" ? "Gratis" :
-                                                            event.order?.status === "pending" ? "Menunggu" :
-                                                                event.order?.status === "cancelled" ? "Dibatalkan" :
-                                                                    event.order?.status}
-                                                </span>
-
-                                                <Link
-                                                    href={event.status === "ongoing" || event.status === "upcoming" ? `/events/upcoming?id=${event.id}` : `/events/finished?id=${event.id}`}
-                                                    className={`text-white text-center px-5 py-2.5 font-medium transition-colors font-young shadow-md rounded-md
-                                                    ${event.status === "ongoing" || event.status === "upcoming" ? "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active" : "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-400  "}`}
-                                                >
-                                                    Detail
-                                                </Link>
-                                                <div className="text-xs font-mono text-neutral-dark">
-                                                    {event.order?.invoice_number}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
+                            <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md">
+                                <div className="flex justify-between">
+                                    <div className="text-2xl font-bold font-young">
+                                        Payment Details
+                                    </div>
+                                    <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
+                                </div>
+                                <hr className="border-t-2 border-text-colors" />
+                                <div className="flex justify-between">
+                                    <div className="text-xl font-medium">Event Name</div>
+                                    <div className="text-xl font-medium">{event.title}</div>
+                                </div>
+                                <div className="flex justify-between">
+                                    <div className="text-xl font-medium">Event Price</div>
+                                    <div className="text-xl font-medium">
+                                        Rp. {formatRupiah(event.price)}
+                                    </div>
+                                </div>
+                                <div className="flex justify-between">
+                                    <div className="text-xl font-bold">Total</div>
+                                    <div className="text-2xl font-bold">
+                                        Rp. {formatRupiah(event.price)}
+                                    </div>
                                 </div>
                             </div>
                         </RevealSection>
-                    )}
 
-                    {/* Form Edit Profile */}
-                    {userData && showEditForm && (
-                        <RevealSection direction="up">
-                            <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 border-neutral-normal bg-primary-light rounded-md">
-                                <div className="flex justify-between items-center">
-                                    <h2 className="text-3xl font-bold font-young text-neutral-normal">Edit Profil</h2>
-                                    <button
-                                        onClick={() => setShowEditForm(false)}
-                                        className="font-medium px-8 py-2 rounded-md text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all"
-                                    >
-                                        Batal
-                                    </button>
-                                </div>
-                                <hr className="border-t-2 border-neutral-normal" />
-
-                                <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4">
-                                    {/* ... form tetap sama ... */}
-                                    <h3 className="text-xl font-bold font-young">Data Diri</h3>
-                                    <InputType label="Nama Lengkap" id="name" type="text" name="name"
-                                        placeholder="John Doe" className="flex flex-col gap-2"
-                                        value={formData.name} onChange={handleFormChange} />
-                                    <InputType label="Nomor Telepon/WA" id="phone" type="text" name="phone"
-                                        placeholder="08123456789" className="flex flex-col gap-2"
-                                        value={formData.phone} onChange={handleFormChange} />
-                                    <SelectInput id="gender" name="gender" label="Gender"
-                                        options={genderOptions} value={formData.gender}
-                                        placehold="Pilih Gender..."
-                                        onChange={e => setFormData(prev => ({ ...prev, gender: e.target.value }))} />
-                                    <InputType label="Tanggal Lahir" id="birthdate" type="date" name="birthdate"
-                                        className="flex flex-col gap-2"
-                                        value={formData.birthdate} onChange={handleFormChange} />
-                                    <SelectInput id="blood_type" name="blood_type" label="Golongan Darah"
-                                        options={bloodTypeOptions} value={formData.blood_type}
-                                        placehold="Pilih Golongan Darah..."
-                                        onChange={e => setFormData(prev => ({ ...prev, blood_type: e.target.value }))} />
-                                    <hr className="border-t-2 border-neutral-normal" />
-                                    <h3 className="text-xl font-bold font-young">Kontak Darurat</h3>
-                                    <InputType label="Nama Kontak Darurat" id="emergency_contact" type="text"
-                                        name="emergency_contact" placeholder="Nama keluarga/teman"
-                                        className="flex flex-col gap-2"
-                                        value={formData.emergency_contact} onChange={handleFormChange} />
-                                    <InputType label="Nomor Kontak Darurat" id="emergency_phone" type="text"
-                                        name="emergency_phone" placeholder="08123456789"
-                                        className="flex flex-col gap-2"
-                                        value={formData.emergency_phone} onChange={handleFormChange} />
-
-                                    <hr className="border-t-2 border-neutral-normal" />
-                                    <h3 className="text-xl font-bold font-young">Info Kesehatan</h3>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-xl font-medium">Riwayat Alergi</label>
-                                        <textarea
-                                            name="allergy_history"
-                                            placeholder="Contoh: alergi debu, makanan laut, dll"
-                                            className="border-tertiary-normal p-3 text-lg bg-white border-2 rounded-md"
-                                            rows={3}
-                                            value={formData.allergy_history}
-                                            onChange={handleFormChange}
+                        <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md z-1 mb-4">
+                            <RevealSection direction="up">
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex justify-between">
+                                        <div className="text-2xl font-bold font-young">
+                                            Payment Process
+                                        </div>
+                                        <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
+                                    </div>
+                                    <hr className="border-t-2 border-text-colors" />
+                                    <SelectInput
+                                        id="payoptions"
+                                        name="payOptions"
+                                        label="Payment Options"
+                                        options={paymentOptions}
+                                        value={payOptions}
+                                        placehold="Pilih Pembayaran..."
+                                        onChange={(e) => setPayOptions(e.target.value)}
+                                    />
+                                    <div className="flex flex-col items-center justify-center p-8">
+                                        {selectedBank && (
+                                            <div className="flex flex-row gap-8">
+                                                <Image
+                                                    src={selectedBank.image}
+                                                    alt={selectedBank.nama}
+                                                    width={150}
+                                                    height={100}
+                                                    className="flex object-contain"
+                                                />
+                                                <div className="flex flex-col">
+                                                    <div className="font-semibold text-lg">
+                                                        {selectedBank.nama}
+                                                    </div>
+                                                    <div className="font-semibold text-lg">
+                                                        {selectedBank.NoRek}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className="text-2xl font-bold m-8">atau</div>
+                                        <Image
+                                            src="/assets/images/qris.jpeg"
+                                            alt="QRIS"
+                                            width={450}
+                                            height={600}
+                                            className="w-full max-w-sm flex object-cover items-center justify-center"
                                         />
                                     </div>
-                                    <hr className="border-t-2 border-neutral-normal" />
-                                    <h3 className="text-xl font-bold font-young">Identitas</h3>
-                                    <InputType label="Nomor KTP/Passport" id="identity_number" type="text"
-                                        name="identity_number" placeholder="3201234567890001"
-                                        className="flex flex-col gap-2"
-                                        value={formData.identity_number} onChange={handleFormChange} />
-                                    <ImageUpload id="identity_photo" label="Foto KTP/Passport"
-                                        onChange={file => setIdentityPhoto(file)} />
+                                </div>
+                            </RevealSection>
 
-                                    <hr className="border-t-2 border-neutral-normal" />
-                                    <h3 className="text-xl font-bold mt-4 font-young">Foto Profil</h3>
-                                    <ImageUpload id="photo" label="Foto Profil"
-                                        onChange={file => setPhoto(file)} />
-
-                                    <div className="flex gap-4 mt-4">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowEditForm(false)}
-                                            className="flex-1 flex justify-center items-center rounded-md h-16 font-bold text-xl font-young text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all"
-                                        >
-                                            Batal
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            disabled={submitLoading}
-                                            className={`flex-1 flex justify-center items-center ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white font-young`}
-                                        >
-                                            {submitLoading ? "Menyimpan..." : "Simpan Perubahan"}
-                                        </button>
+                            <RevealSection direction="up">
+                                <div className="flex flex-col gap-4">
+                                    <div className="text-2xl font-bold font-young">
+                                        Upload Proof of Payment
                                     </div>
-                                </form>
-                            </div>
+                                    <ImageUpload
+                                        id="paymentproof"
+                                        label="Payment Proof"
+                                        required
+                                        onChange={(file) => setPaymentFile(file)}
+                                    />
+                                </div>
+                            </RevealSection>
+
+                            <RevealSection direction="up">
+                                <div className="flex flex-col gap-4">
+                                    <button
+                                        className={`flex justify-center font-young rounded-md items-center ${submitLoading ? "bg-neutral-normal-active" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}  h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+                                        type="submit"
+                                        disabled={submitLoading || !isLoggedIn}
+                                    >
+                                        {submitLoading ? "Memproses..." : "Confirm Payment"}
+                                    </button>
+                                    {!isLoggedIn && (
+                                        <p className="text-center text-red-500 font-medium">
+                                            *Login terlebih dahulu untuk melanjutkan pembayaran
+                                        </p>
+                                    )}
+                                </div>
+                            </RevealSection>
+                        </div>
+                    </Form>
+
+                    {orderResult && (
+                        <RevealSection direction="up">
+                            <InvoiceEvent
+                                name={user?.name || ""}
+                                email={user?.email || ""}
+                                hash_id={user?.hash_id || ""}
+                                invoice_id={orderResult.invoice_number}
+                                event_title={event.title}
+                                event_price={formatRupiah(event.price)}
+                                event_qty="1"
+                            />
                         </RevealSection>
                     )}
                 </div>

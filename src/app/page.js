@@ -162,11 +162,6 @@ export default function Home() {
         <RevealSection direction="up">
           <SponsorMarquee />
         </RevealSection>
-        <RevealSection direction="up">
-          <div className="mt-8">
-            <Carousel />
-          </div>
-        </RevealSection>
       </div>
 
       <RevealSection direction="up">
@@ -192,7 +187,7 @@ export default function Home() {
           <div className="flex flex-row gap-4 border-b-2 border-neutral-normal mb-4">
             <button
               onClick={() => setActiveTab("upcoming")}
-              className={`pb-3 px-2 font-bold text-xl font-young transition-all ${activeTab === "upcoming"
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${activeTab === "upcoming"
                   ? "text-secondary-bg border-b-4 border-secondary-bg"
                   : "text-neutral-dark hover:text-secondary-bg"
                 }`}
@@ -201,7 +196,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => setActiveTab("ongoing")}
-              className={`pb-3 px-2 font-bold text-xl font-young transition-all ${activeTab === "ongoing"
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${activeTab === "ongoing"
                   ? "text-secondary-bg border-b-4 border-secondary-bg"
                   : "text-neutral-dark hover:text-secondary-bg"
                 }`}
@@ -215,7 +210,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => setActiveTab("past")}
-              className={`pb-3 px-2 font-bold text-xl font-young transition-all ${activeTab === "past"
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${activeTab === "past"
                   ? "text-secondary-bg border-b-4 border-secondary-bg"
                   : "text-neutral-dark hover:text-secondary-bg"
                 }`}

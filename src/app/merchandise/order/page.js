@@ -185,7 +185,9 @@ export default function MerchandiseOrderPage() {
 
     const sizeOptions = item.sizes?.map(s => ({ value: s, label: s })) ?? []
     const colorOptions = item.colors?.map(c => ({ value: c, label: c })) ?? []
-    const hasDiscount = eventPrice !== null && eventPrice < item.price
+    const originalPrice = Number(item?.price) || 0;
+    const eventPriceFromParams = Number(eventPrice) || 0;
+    const hasDiscount = eventPriceFromParams > 0 && eventPriceFromParams < originalPrice;
 
     return (
         <Container className="flex flex-col gap-y-4 w-full px-4 md:px-0 ">
@@ -228,11 +230,11 @@ export default function MerchandiseOrderPage() {
                                 {hasDiscount ? (
                                     <div className="flex flex-col gap-1">
                                         <div className="text-sm text-neutral-dark line-through">
-                                            Rp. {formatRupiah(item.price)} / pcs
+                                            Rp. {formatRupiah(originalPrice)} / pcs
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <div className="text-lg font-bold text-secondary-bg">
-                                                Rp. {formatRupiah(eventPrice)} / pcs
+                                                Rp. {formatRupiah(activePrice)} / pcs
                                             </div>
                                             {discountPercentage && (
                                                 <div className="bg-secondary-bg text-white text-xs font-bold px-2 py-1">
@@ -246,7 +248,7 @@ export default function MerchandiseOrderPage() {
                                     </div>
                                 ) : (
                                     <div className="text-lg font-bold text-secondary-bg">
-                                        Rp. {formatRupiah(item.price)} / pcs
+                                        Rp. {formatRupiah(originalPrice)} / pcs
                                     </div>
                                 )}
 
@@ -277,10 +279,10 @@ export default function MerchandiseOrderPage() {
                                         </label>
                                         <div className="flex items-center gap-4">
                                             <button type="button" onClick={() => setQty(q => Math.max(1, q - 1))}
-                                                className="w-10 h-10 bg-neutral-normal text-white font-bold text-xl hover:bg-neutral-dark transition-colors">−</button>
+                                                className="cursor-pointer w-10 h-10 bg-neutral-normal text-white font-bold text-xl hover:bg-neutral-dark transition-colors">−</button>
                                             <span className="text-2xl font-bold w-8 text-center">{qty}</span>
                                             <button type="button" onClick={() => setQty(q => Math.min(item.stock, q + 1))}
-                                                className="w-10 h-10 bg-secondary-bg text-white font-bold text-xl hover:bg-secondary-bg-hover transition-colors">+</button>
+                                                className="cursor-pointer w-10 h-10 bg-secondary-bg text-white font-bold text-xl hover:bg-secondary-bg-hover transition-colors">+</button>
                                         </div>
                                     </div>
                                     {sizeOptions.length > 0 && (

@@ -49,7 +49,7 @@ export default function UpcomingEvents() {
             setMyOrder(joined.order);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }, []);
 
@@ -142,6 +142,7 @@ export default function UpcomingEvents() {
 
   const isPaid = myOrder?.status === "paid" || myOrder?.status === "free";
   const isPending = myOrder?.status === "pending";
+  const isCancelled = myOrder?.status === "cancelled";
 
   return (
     <Container className="flex flex-col gap-y-4 w-full">
@@ -181,7 +182,7 @@ export default function UpcomingEvents() {
               {/* Belum join → Daftar Sekarang */}
               {!myOrder && (
                 <Link href={`/events/register?id=${event.id}`}>
-                  <div className="flex justify-center items-center rounded-md bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-10 md:text-5xl active:bg-secondary-bg-active">
+                  <div className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-10 md:text-5xl active:bg-secondary-bg-active">
                     Daftar Sekarang
                   </div>
                 </Link>
@@ -199,6 +200,24 @@ export default function UpcomingEvents() {
                 </div>
               )}
 
+              {isCancelled && (
+                <>
+                  <div className="flex flex-col gap-2 m-10">
+                    <div className="flex justify-center items-center bg-red-500 h-20 font-bold text-xl text-white cursor-not-allowed rounded-md">
+                      Ordermu Telah dibatalkan
+                    </div>
+                    <p className="text-center text-sm text-gray-500 rounded-md">
+                      Ordermu telah dibatalkan oleh Admin, silahkan menghubungi admin untuk informasi lebih lanjut
+                    </p>
+                  </div>
+                  <Link href={`/events/register?id=${event.id}`}>
+                    <div className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-10 md:text-5xl active:bg-secondary-bg-active">
+                      Daftar Sekarang
+                    </div>
+                  </Link>
+                </>
+              )}
+
               {/* Sudah dikonfirmasi → QR + Lihat Peserta */}
               {isPaid && (
                 <div className="flex flex-col gap-4 m-10">
@@ -206,7 +225,7 @@ export default function UpcomingEvents() {
                     onClick={handleLihatQR}
                     disabled={qrLoading}
                     className={`flex justify-center items-center h-20 font-bold text-2xl text-white transition-colors rounded-md
-                                    ${qrLoading ? "bg-neutral-normal-active" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}`}
+                                    ${qrLoading ? "bg-neutral-normal-active cursor-not-allowed" : " cursor-pointer bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}`}
                   >
                     {qrLoading
                       ? "Memuat..."
@@ -267,89 +286,116 @@ export default function UpcomingEvents() {
 
               <button
                 onClick={handleDownloadQR}
-                className="flex justify-center items-center gap-2 bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold px-8 py-3 font-young rounded-md"
+                className=" cursor-pointer flex justify-center items-center gap-2 bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold px-8 py-3 font-young rounded-md"
               >
                 Download QR
               </button>
             </div>
           )}
 
-          {isPaid && event.merchandise?.length > 0 && (
+          {/* 🔥 TAMPILKAN MERCHANDISE UNTUK SEMUA (tidak perlu isPaid) */}
+          {event.merchandise?.length > 0 && (
             <div className="mt-8 mb-10">
               <h2 className="text-2xl font-bold font-young mb-4 text-primary-darker">Merchandise Event</h2>
               <p className="text-sm text-neutral-dark mb-4">
-                Harga spesial khusus peserta event ini
+                {isPaid ? "Harga spesial khusus peserta event ini" : "Dapatkan harga spesial dengan mendaftar event!"}
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {event.merchandise.map(item => (
-                  <div key={item.id} className="flex flex-col bg-primary-light border-2 border-neutral-normal hover:border-secondary-bg transition-colors rounded-md">
-                    {/* Gambar */}
-                    <div className="relative w-full h-[250px] overflow-hidden bg-neutral-bg">
-                      {item.image_url ? (
-                        <img
-                          src={item.image_url}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-neutral-dark text-4xl font-bold font-young">
-                          {item.name.slice(0, 2).toUpperCase()}
-                        </div>
-                      )}
-                      {item.has_discount && (
-                        <div className="absolute top-2 left-2 bg-secondary-bg text-white text-xs font-bold px-2 py-1">
-                          -{item.discount_percentage}%
-                        </div>
-                      )}
-                      {item.stock === 0 && (
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                          <span className="text-white font-bold text-lg">Habis</span>
-                        </div>
-                      )}
-                      {item.stock_status === "limited" && (
-                        <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1">
-                          Sisa {item.stock}
-                        </div>
-                      )}
-                    </div>
+                {event.merchandise.map(item => {
+                  // 🔥 Ambil harga dari database
+                  const originalPrice = Number(item.price) || 0;
+                  const eventPrice = Number(item.event_price) || 0; // ← dari admin
+                  const hasDiscount = eventPrice > 0 && eventPrice < originalPrice;
+                  const finalPrice = isPaid && hasDiscount ? eventPrice : originalPrice;
 
-                    {/* Info */}
-                    <div className="p-3 flex flex-col gap-1 flex-1">
-                      <div className="flex flex-col gap-1 flex-1">
-                        <div className="font-semibold text-sm line-clamp-2">{item.name}</div>
-                        {item.has_discount ? (
-                          <div className="flex flex-col">
-                            <div className="text-xs text-neutral-dark line-through">
-                              {item.price_formatted}
-                            </div>
-                            <div className="font-bold text-secondary-bg">
-                              {item.event_price_formatted}
-                            </div>
-                          </div>
+                  // 🔥 Hitung diskon persen untuk badge
+                  const discountPercent = hasDiscount
+                    ? Math.round((1 - eventPrice / originalPrice) * 100)
+                    : 0;
+
+                  // 🔥 Build URL
+                  let orderUrl = `/merchandise/order?id=${item.id}`;
+                  if (isPaid && hasDiscount) {
+                    orderUrl += `&event_id=${event.id}&event_price=${finalPrice}&discount_percentage=${discountPercent}`;
+                  }
+
+                  return (
+                    <div key={item.id} className="flex flex-col bg-primary-light border-2 border-neutral-normal hover:border-secondary-bg transition-colors rounded-md">
+                      {/* Gambar */}
+                      <div className="relative w-full h-[250px] overflow-hidden bg-neutral-bg">
+                        {item.image_url ? (
+                          <img
+                            src={item.image_url}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
-                          <div className="font-bold text-secondary-bg">
-                            {item.price_formatted}
+                          <div className="w-full h-full flex items-center justify-center text-neutral-dark text-4xl font-bold font-young">
+                            {item.name.slice(0, 2).toUpperCase()}
                           </div>
                         )}
-                        {item.sizes?.length > 0 && (
-                          <div className="text-xs text-neutral-dark">
-                            Size: {item.sizes.join(", ")}
+                        {hasDiscount && (
+                          <div className="absolute top-2 left-2 bg-secondary-bg text-white text-xs font-bold px-2 py-1">
+                            -{discountPercent}%
+                          </div>
+                        )}
+                        {item.stock === 0 && (
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <span className="text-white font-bold text-lg">Habis</span>
+                          </div>
+                        )}
+                        {item.stock_status === "limited" && (
+                          <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1">
+                            Sisa {item.stock}
                           </div>
                         )}
                       </div>
-                      <Link
-                        href={`/merchandise/order?id=${item.id}`}
-                        className={`mt-2 text-white text-center px-5 py-2.5 text-sm font-medium transition-colors font-young shadow-md
-                                ${item.stock === 0
-                            ? "bg-neutral-normal pointer-events-none opacity-60"
-                            : "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active"
-                          }`}
-                      >
-                        {item.stock === 0 ? "Habis" : "Pesan"}
-                      </Link>
+
+                      {/* Info */}
+                      <div className="p-3 flex flex-col gap-1 flex-1">
+                        <div className="flex flex-col gap-1 flex-1">
+                          <div className="font-semibold text-sm line-clamp-2">{item.name}</div>
+                          {hasDiscount ? (
+                            <div className="flex flex-col">
+                              <div className="text-xs text-neutral-dark line-through">
+                                Rp {formatRupiah(originalPrice)}
+                              </div>
+                              <div className="font-bold text-secondary-bg">
+                                Rp {formatRupiah(eventPrice)}
+                              </div>
+                              {!isPaid && (
+                                <div className="text-xs text-secondary-bg font-medium mt-1">
+                                  🔒 Harga spesial untuk peserta event
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="font-bold text-secondary-bg">
+                              Rp {formatRupiah(originalPrice)}
+                            </div>
+                          )}
+                          {item.sizes?.length > 0 && (
+                            <div className="text-xs text-neutral-dark">
+                              Size: {item.sizes.join(", ")}
+                            </div>
+                          )}
+                        </div>
+                        <Link
+                          href={orderUrl}
+                          className={`mt-2 text-white text-center px-5 py-2.5 text-sm font-medium transition-colors font-young shadow-md
+                        ${item.stock === 0
+                              ? "bg-neutral-normal pointer-events-none opacity-60"
+                              : isPaid && hasDiscount
+                                ? "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"
+                                : "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active"
+                            }`}
+                        >
+                          {item.stock === 0 ? "Habis" : isPaid && hasDiscount ? "Pesan (Spesial)" : "Pesan"}
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

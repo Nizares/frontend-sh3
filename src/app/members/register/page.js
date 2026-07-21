@@ -41,11 +41,49 @@ export default function Members() {
         identity_number: "",
     });
 
+    // 🔥 State untuk validasi password
+    const [passwordError, setPasswordError] = useState("");
+    const [confirmError, setConfirmError] = useState("");
+
     function handleFormChange(e) {
         setFormData((prev) => ({
             ...prev,
             [e.target.name]: e.target.value,
         }));
+    }
+
+    // 🔥 Validasi password real-time
+    function handlePasswordChange(e) {
+        const newPassword = e.target.value;
+        setPassword(newPassword);
+        
+        // Cek panjang password
+        if (newPassword.length > 0 && newPassword.length < 6) {
+            setPasswordError("Password minimal 6 karakter!");
+        } else {
+            setPasswordError("");
+        }
+        
+        // Cek konfirmasi password
+        if (passwordConfirm.length > 0 && newPassword !== passwordConfirm) {
+            setConfirmError("Password tidak cocok!");
+        } else if (passwordConfirm.length > 0 && newPassword === passwordConfirm) {
+            setConfirmError("");
+        }
+    }
+
+    // 🔥 Validasi konfirmasi password real-time
+    function handleConfirmPasswordChange(e) {
+        const newConfirm = e.target.value;
+        setPasswordConfirm(newConfirm);
+        
+        if (newConfirm.length > 0 && password !== newConfirm) {
+            setConfirmError("Password tidak cocok!");
+        } else if (newConfirm.length > 0 && password === newConfirm) {
+            setConfirmError("");
+        } else {
+            setConfirmError("");
+        }
     }
 
     async function handleRegister(e) {
@@ -60,11 +98,14 @@ export default function Members() {
             return;
         }
 
+        // 🔥 Validasi password sebelum submit
         if (password !== passwordConfirm) {
+            setConfirmError("Password tidak cocok!");
             Swal.fire({ icon: "warning", title: "Password tidak cocok!" });
             return;
         }
         if (password.length < 6) {
+            setPasswordError("Password minimal 6 karakter!");
             Swal.fire({ icon: "warning", title: "Password minimal 6 karakter!" });
             return;
         }
@@ -136,7 +177,10 @@ export default function Members() {
             setBloodType("");
             setPhoto(null);
             setIdentityPhoto(null);
-
+            setPassword("");
+            setPasswordConfirm("");
+            setPasswordError("");
+            setConfirmError("");
 
         } catch (err) {
             const message = err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
@@ -174,27 +218,45 @@ export default function Members() {
                                 <InputType label="Email" id="email" required type="email" name="email"
                                     placeholder="you@example.com" className="flex flex-col gap-2"
                                     value={formData.email} onChange={handleFormChange} />
-                                <PasswordInput
-                                    label="Password"
-                                    id="password"
-                                    required
-                                    name="password"
-                                    placeholder="••••••••"
-                                    className="flex flex-col gap-2"
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                />
+                                
+                                {/* 🔥 PASSWORD dengan error */}
+                                <div className="relative">
+                                    <PasswordInput
+                                        label="Password"
+                                        id="password"
+                                        required
+                                        name="password"
+                                        placeholder="••••••••"
+                                        className="flex flex-col gap-2"
+                                        value={password}
+                                        onChange={handlePasswordChange}
+                                    />
+                                    {passwordError && (
+                                        <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                                            {passwordError}
+                                        </p>
+                                    )}
+                                </div>
 
-                                <PasswordInput
-                                    label="Konfirmasi Password"
-                                    id="password_confirmation"
-                                    required
-                                    name="password_confirmation"
-                                    placeholder="••••••••"
-                                    className="flex flex-col gap-2"
-                                    value={passwordConfirm}
-                                    onChange={e => setPasswordConfirm(e.target.value)}
-                                />
+                                {/* 🔥 KONFIRMASI PASSWORD dengan error */}
+                                <div className="relative">
+                                    <PasswordInput
+                                        label="Konfirmasi Password"
+                                        id="password_confirmation"
+                                        required
+                                        name="password_confirmation"
+                                        placeholder="••••••••"
+                                        className="flex flex-col gap-2"
+                                        value={passwordConfirm}
+                                        onChange={handleConfirmPasswordChange}
+                                    />
+                                    {confirmError && (
+                                        <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                                            {confirmError}
+                                        </p>
+                                    )}
+                                </div>
+
                                 <InputType label="Nomor Telepon/WA" type="text" id="phone" required name="phone"
                                     placeholder="08123456789" className="flex flex-col gap-2"
                                     value={formData.phone} onChange={handleFormChange} />

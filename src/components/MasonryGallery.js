@@ -112,15 +112,23 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 }
 
 function ImageCard({ img, className }) {
+  // 🔥 Skip jika img tidak valid
+  if (!img || !img.url || img.url === null || img.url === "") {
+    return null;
+  }
+
   return (
     <Link
       href={`/events/${img?.status}?id=${img?.id}`}
-      className={`relative  overflow-hidden group cursor-pointer ${className}`}
+      className={`relative overflow-hidden group cursor-pointer ${className}`}
     >
       <img
-        src={img?.url}
-        alt={img?.title}
+        src={img.url}
+        alt={img?.title || "Gallery image"}
         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 rounded-md"
+        onError={(e) => {
+          e.target.style.display = 'none'; // ← sembunyiin kalau gambar error
+        }}
       />
       <Caption title={img?.title} subtitle={img?.subtitle} />
     </Link>

@@ -17,7 +17,7 @@ import { MapPinIcon } from "@heroicons/react/24/solid";
 import { ChevronUpIcon } from "@heroicons/react/24/solid";
 import { useState, useEffect } from "react";
 
-import { useAuth } from "@/src/contexts/AuthContext"; // ← pakai AuthContext
+import { useAuth } from "@/src/contexts/AuthContext";
 import { eventService } from "@/src/services/eventService";
 import { orderService } from "@/src/services/orderService";
 
@@ -35,12 +35,15 @@ const paymentOptions = [
 ];
 
 export default function RegisterEvent() {
-    const { user, isLoggedIn, loading: authLoading } = useAuth(); // ← dari AuthContext
+    const { user, isLoggedIn, loading: authLoading } = useAuth();
     const [event, setEvent] = useState(null);
     const [payOptions, setPayOptions] = useState("");
     const [paymentFile, setPaymentFile] = useState(null);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [orderResult, setOrderResult] = useState(null);
+    const [showQR, setShowQR] = useState(false);
+    const [qrCode, setQrCode] = useState(null);
+    const [attendanceCode, setAttendanceCode] = useState(null);
 
     const selectedBank = paymentOptions.find((p) => p.value === payOptions);
 
@@ -70,12 +73,6 @@ export default function RegisterEvent() {
             return;
         }
 
-        if (!paymentFile) {
-            Swal.fire({ icon: "warning", title: "Upload bukti bayar dulu!" });
-            return;
-        }
-
-        // 🔥 PAKAI HASH_ID sebagai participant_id
         const participantId = user?.hash_id;
         console.log("🔵 Participant ID (hash_id):", participantId);
 
@@ -96,13 +93,33 @@ export default function RegisterEvent() {
             const invoice_number = order.invoice_number;
             const ticket_code = order.ticket_code;
 
+            // 🔥 CEK APAKAH EVENT GRATIS
             if (order.status === "free") {
-                setOrderResult({ order_id: orderId, invoice_number, ticket_code });
+                // 🔥 SET QR CODE
+                const qr = attendance?.qr_code_image;
+                const code = attendance?.qr_code || ticket_code;
+                
+                setQrCode(qr);
+                setAttendanceCode(code);
+                setShowQR(true);
+                
+                setOrderResult({ 
+                    order_id: orderId, 
+                    invoice_number, 
+                    ticket_code,
+                });
+                
                 Swal.fire({
                     icon: "success",
                     title: "Pendaftaran Berhasil!",
-                    text: "Event ini gratis! Tiket kamu sudah aktif.",
+                    text: "Event ini gratis! Tiket dan QR Code kamu sudah aktif.",
                 });
+                return;
+            }
+
+            // 🔥 EVENT BERBAYAR - butuh upload payment
+            if (!paymentFile) {
+                Swal.fire({ icon: "warning", title: "Upload bukti bayar dulu!" });
                 return;
             }
 
@@ -117,10 +134,49 @@ export default function RegisterEvent() {
 
             await orderService.uploadPayment(orderId, formData);
 
+            // 🔥 SET QR CODE setelah pembayaran
+            const updatedRes = await eventService.getMyEvents();
+            const joined = updatedRes.data.data.find(e => e.id === event.id);
+            if (joined?.order?.attendance?.qr_code_image) {
+                setQrCode(joined.order.attendance.qr_code_image);
+                setAttendanceCode(joined.order.attendance.qr_code || joined.order.ticket_code);
+                setShowQR(true);
+            }
+
             setOrderResult({ order_id: orderId, invoice_number, ticket_code });
+            
         } catch (err) {
             console.error("🔴 Order error:", err.response?.data);
             setOrderResult(null);
+            setShowQR(false);
+            
+            if (err.response?.data?.message === "You have already registered for this event") {
+                // 🔥 Coba ambil QR dari data yang sudah ada
+                const existingData = err.response?.data?.data;
+                if (existingData?.attendance?.qr_code_image) {
+                    setQrCode(existingData.attendance.qr_code_image);
+                    setAttendanceCode(existingData.attendance.qr_code || existingData.ticket_code);
+                    setShowQR(true);
+                    Swal.fire({
+                        icon: "info",
+                        title: "Sudah Terdaftar!",
+                        text: "Kamu sudah pernah mendaftar event ini. QR Code kamu tetap aktif.",
+                        confirmButtonText: "Lihat QR Code",
+                    });
+                    return;
+                }
+                
+                Swal.fire({
+                    icon: "info",
+                    title: "Sudah Terdaftar!",
+                    text: "Kamu sudah pernah mendaftar event ini. Cek di My Events.",
+                    confirmButtonText: "Lihat My Events",
+                }).then(() => {
+                    window.location.href = "/my-events";
+                });
+                return;
+            }
+            
             Swal.fire({
                 icon: "error",
                 title: "Gagal!",
@@ -139,8 +195,50 @@ export default function RegisterEvent() {
         }
     }
 
+    function handleDownloadQR() {
+        if (!qrCode) return;
+        
+        const img = new window.Image();
+        const svgString = atob(qrCode);
+        const svgBlob = new Blob([svgString], {
+            type: "image/svg+xml;charset=utf-8",
+        });
+        const url = URL.createObjectURL(svgBlob);
+
+        img.src = url;
+
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = 500;
+            canvas.height = 500;
+
+            const ctx = canvas.getContext("2d");
+
+            if (ctx) {
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                const pngUrl = canvas.toDataURL("image/png");
+
+                const link = document.createElement("a");
+                link.href = pngUrl;
+                link.download = `tiket-${attendanceCode}.png`;
+                link.click();
+            }
+
+            URL.revokeObjectURL(url);
+        };
+
+        img.onerror = (err) => {
+            console.error("Gagal memuat gambar SVG:", err);
+        };
+    }
+
     if (!event)
         return <div className="flex justify-center p-16 text-2xl">Loading...</div>;
+
+    const isFreeEvent = event.price === 0 || event.price === "0" || event.price === null;
 
     return (
         <Container className="flex flex-col w-full">
@@ -222,11 +320,9 @@ export default function RegisterEvent() {
                                 </div>
                                 <hr className="border-t-2 border-text-colors" />
 
-                                {/* 🔥 CEK STATUS LOGIN */}
                                 {authLoading ? (
                                     <div className="text-center py-8 text-xl">Loading...</div>
                                 ) : isLoggedIn && user ? (
-                                    // ✅ SUDAH LOGIN - Tampilkan data user
                                     <RevealSection direction="up">
                                         <div className="flex flex-col gap-2">
                                             <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-4">
@@ -270,7 +366,6 @@ export default function RegisterEvent() {
                                         </div>
                                     </RevealSection>
                                 ) : (
-                                    // ❌ BELUM LOGIN - Tampilkan pesan login
                                     <div className="flex flex-col items-center justify-center py-8 gap-4">
                                         <p className="text-xl text-neutral-dark">
                                             Silakan login terlebih dahulu untuk mendaftar event.
@@ -302,103 +397,134 @@ export default function RegisterEvent() {
                                 <div className="flex justify-between">
                                     <div className="text-xl font-medium">Event Price</div>
                                     <div className="text-xl font-medium">
-                                        Rp. {formatRupiah(event.price)}
+                                        {isFreeEvent ? "GRATIS" : `Rp. ${formatRupiah(event.price)}`}
                                     </div>
                                 </div>
                                 <div className="flex justify-between">
                                     <div className="text-xl font-bold">Total</div>
                                     <div className="text-2xl font-bold">
-                                        Rp. {formatRupiah(event.price)}
+                                        {isFreeEvent ? "GRATIS" : `Rp. ${formatRupiah(event.price)}`}
                                     </div>
                                 </div>
                             </div>
                         </RevealSection>
 
-                        <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md z-1 mb-4">
-                            <RevealSection direction="up">
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex justify-between">
-                                        <div className="text-2xl font-bold font-young">
-                                            Payment Process
+                        {/* TAMPILKAN PAYMENT PROCESS HANYA UNTUK EVENT BERBAYAR */}
+                        {!isFreeEvent && (
+                            <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md z-1 mb-4">
+                                <RevealSection direction="up">
+                                    <div className="flex flex-col gap-4">
+                                        <div className="flex justify-between">
+                                            <div className="text-2xl font-bold font-young">
+                                                Payment Process
+                                            </div>
+                                            <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
                                         </div>
-                                        <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
-                                    </div>
-                                    <hr className="border-t-2 border-text-colors" />
-                                    <SelectInput
-                                        id="payoptions"
-                                        name="payOptions"
-                                        label="Payment Options"
-                                        options={paymentOptions}
-                                        value={payOptions}
-                                        placehold="Pilih Pembayaran..."
-                                        onChange={(e) => setPayOptions(e.target.value)}
-                                    />
-                                    <div className="flex flex-col items-center justify-center p-8">
-                                        {selectedBank && (
-                                            <div className="flex flex-row gap-8">
-                                                <Image
-                                                    src={selectedBank.image}
-                                                    alt={selectedBank.nama}
-                                                    width={150}
-                                                    height={100}
-                                                    className="flex object-contain"
-                                                />
-                                                <div className="flex flex-col">
-                                                    <div className="font-semibold text-lg">
-                                                        {selectedBank.nama}
-                                                    </div>
-                                                    <div className="font-semibold text-lg">
-                                                        {selectedBank.NoRek}
+                                        <hr className="border-t-2 border-text-colors" />
+                                        <SelectInput
+                                            id="payoptions"
+                                            name="payOptions"
+                                            label="Payment Options"
+                                            options={paymentOptions}
+                                            value={payOptions}
+                                            placehold="Pilih Pembayaran..."
+                                            onChange={(e) => setPayOptions(e.target.value)}
+                                        />
+                                        <div className="flex flex-col items-center justify-center p-8">
+                                            {selectedBank && (
+                                                <div className="flex flex-row gap-8">
+                                                    <Image
+                                                        src={selectedBank.image}
+                                                        alt={selectedBank.nama}
+                                                        width={150}
+                                                        height={100}
+                                                        className="flex object-contain"
+                                                    />
+                                                    <div className="flex flex-col">
+                                                        <div className="font-semibold text-lg">
+                                                            {selectedBank.nama}
+                                                        </div>
+                                                        <div className="font-semibold text-lg">
+                                                            {selectedBank.NoRek}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                        <div className="text-2xl font-bold m-8">atau</div>
-                                        <Image
-                                            src="/assets/images/qris.jpeg"
-                                            alt="QRIS"
-                                            width={450}
-                                            height={600}
-                                            className="w-full max-w-sm flex object-cover items-center justify-center"
+                                            )}
+                                            <div className="text-2xl font-bold m-8">atau</div>
+                                            <Image
+                                                src="/assets/images/qris.jpeg"
+                                                alt="QRIS"
+                                                width={450}
+                                                height={600}
+                                                className="w-full max-w-sm flex object-cover items-center justify-center"
+                                            />
+                                        </div>
+                                    </div>
+                                </RevealSection>
+
+                                <RevealSection direction="up">
+                                    <div className="flex flex-col gap-4">
+                                        <div className="text-2xl font-bold font-young">
+                                            Upload Proof of Payment
+                                        </div>
+                                        <ImageUpload
+                                            id="paymentproof"
+                                            label="Payment Proof"
+                                            required
+                                            onChange={(file) => setPaymentFile(file)}
                                         />
                                     </div>
-                                </div>
-                            </RevealSection>
+                                </RevealSection>
+                            </div>
+                        )}
 
+                        {/* 🔥 QR CODE - SAMA SEPERTI DI UPCOMING */}
+                        {showQR && qrCode && (
                             <RevealSection direction="up">
-                                <div className="flex flex-col gap-4">
-                                    <div className="text-2xl font-bold font-young">
-                                        Upload Proof of Payment
+                                <div className="flex flex-col items-center gap-4 bg-primary-light border-2 border-neutral-normal rounded-lg p-6">
+                                    <div className="text-2xl font-bold">Tiket QR Kamu</div>
+                                    <div className="bg-white p-4 rounded-lg">
+                                        <img
+                                            src={`data:image/svg+xml;base64,${qrCode}`}
+                                            alt="QR Code Tiket"
+                                            className="w-48 h-48"
+                                        />
                                     </div>
-                                    <ImageUpload
-                                        id="paymentproof"
-                                        label="Payment Proof"
-                                        required
-                                        onChange={(file) => setPaymentFile(file)}
-                                    />
-                                </div>
-                            </RevealSection>
-
-                            <RevealSection direction="up">
-                                <div className="flex flex-col gap-4">
+                                    <div className="text-sm ">
+                                        Tunjukkan QR ini saat check-in di Acara
+                                    </div>
+                                    <div className="text-xl font-young px-4 py-2 bg-neutral-bg rounded-md font-mono">
+                                        {attendanceCode}
+                                    </div>
                                     <button
-                                        className={`flex justify-center font-young rounded-md items-center ${submitLoading ? "bg-neutral-normal-active" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}  h-16 font-bold text-xl text-white m-10 md:text-3xl`}
-                                        type="submit"
-                                        disabled={submitLoading || !isLoggedIn}
+                                        onClick={handleDownloadQR}
+                                        className="cursor-pointer flex justify-center items-center gap-2 bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold px-8 py-3 font-young rounded-md"
                                     >
-                                        {submitLoading ? "Memproses..." : "Confirm Payment"}
+                                        Download QR
                                     </button>
-                                    {!isLoggedIn && (
-                                        <p className="text-center text-red-500 font-medium">
-                                            *Login terlebih dahulu untuk melanjutkan pembayaran
-                                        </p>
-                                    )}
                                 </div>
                             </RevealSection>
-                        </div>
+                        )}
+
+                        <RevealSection direction="up">
+                            <div className="flex flex-col gap-4">
+                                <button
+                                    className={`flex justify-center font-young rounded-md items-center ${submitLoading ? "bg-neutral-normal-active" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}  h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+                                    type="submit"
+                                    disabled={submitLoading || !isLoggedIn}
+                                >
+                                    {submitLoading ? "Memproses..." : isFreeEvent ? "Daftar Gratis" : "Confirm Payment"}
+                                </button>
+                                {!isLoggedIn && (
+                                    <p className="text-center text-red-500 font-medium">
+                                        *Login terlebih dahulu untuk melanjutkan
+                                    </p>
+                                )}
+                            </div>
+                        </RevealSection>
                     </Form>
 
-                    {orderResult && (
+                    {orderResult && !showQR && (
                         <RevealSection direction="up">
                             <InvoiceEvent
                                 name={user?.name || ""}

@@ -15,6 +15,7 @@ import Link from "next/link";
 import Swal from "sweetalert2";
 import BatikOverlay from "@/src/components/BatikOverlay";
 import { useAuth } from "@/src/contexts/AuthContext";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 import { PencilIcon } from "@heroicons/react/24/outline";
 
@@ -44,6 +45,8 @@ export default function DetailMember() {
         userData,
         setUserData
     } = useSearchMembers();
+
+    const [showPassword, setShowPassword] = useState(false);
 
     const [showEditForm, setShowEditForm] = useState(false);
     const [submitLoading, setSubmitLoading] = useState(false);
@@ -266,7 +269,7 @@ export default function DetailMember() {
                                     <div className="mt-6 flex gap-4 justify-center">
                                         <button
                                             onClick={handleLogout}
-                                            className="px-8 py-3 border-red-500 hover:bg-red-600/10 active:bg-red-700/10 text-red-600 font-bold border-2 rounded-md transition-all"
+                                            className="cursor-pointer px-8 py-3 border-red-500 hover:bg-red-600/10 active:bg-red-700/10 text-red-600 font-bold border-2 rounded-md transition-all"
                                         >
                                             Logout
                                         </button>
@@ -275,12 +278,11 @@ export default function DetailMember() {
                             </div>
                         </RevealSection>
                     ) : (
-                        // ====== BELUM LOGIN ======
                         <RevealSection direction="up">
                             <div className="flex items-center justify-center w-full mt-8">
                                 <h1 className="text-4xl font-bold m-2 font-young mt-24">Kamu sudah jadi Member?</h1>
                             </div>
-                            <div className="flex flex-col justify-center items-center gap-4 max-w-md mx-auto">
+                            <div className="flex flex-col justify-center items-center gap-4 w-full max-w-md mx-auto">
                                 <InputType
                                     label="Masukkan Username / Hash ID"
                                     id="username"
@@ -292,17 +294,47 @@ export default function DetailMember() {
                                     value={searchId}
                                     onChange={handleChange}
                                 />
-                                <PasswordInput
-                                    label="Password"
-                                    id="password"
-                                    type="text"
-                                    name="password"
-                                    required
-                                    placeholder="••••••••"
-                                    className="flex flex-col gap-2 w-full"  // ← pastikan ada w-full
-                                    value={password}
-                                    onChange={handlePasswordChange}
-                                />
+
+                                {/* 🔥 PASSWORD dengan toggle manual - STYLE SAMA KAYAK REGISTER */}
+                                <div className="flex flex-col gap-2 w-full">
+                                    <label className="font-medium text-xl">
+                                        Password <span className="text-red-500 ml-0.5">*</span>
+                                    </label>
+                                    <div className="relative w-full">
+                                        <input
+                                            id="password"
+                                            name="password"
+                                            type={showPassword ? "text" : "password"}
+                                            value={password}
+                                            onChange={handlePasswordChange}
+                                            placeholder="••••••••"
+                                            required
+                                            className="outline-2 p-3 bg-white outline-tertiary-normal rounded-md w-full pr-12"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setShowPassword(!showPassword);
+                                            }}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none z-10"
+                                            style={{
+                                                cursor: 'pointer',
+                                                background: 'transparent',
+                                                padding: '4px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            {showPassword ? (
+                                                <EyeSlashIcon className="w-5 h-5" />
+                                            ) : (
+                                                <EyeIcon className="w-5 h-5" />
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <button
                                     className={`flex justify-center items-center p-8 rounded-md w-full ${loading ? "bg-neutral-bg-active" : "bg-secondary-bg"} hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl`}
                                     type="button"
@@ -347,7 +379,7 @@ export default function DetailMember() {
                                     <div className="flex items-center">
                                         <button
                                             onClick={() => setShowEditForm(true)}
-                                            className="flex justify-center items-center rounded-md bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-2xl font-young w-1/4"
+                                            className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-2xl font-young w-1/4"
                                         >
                                             <PencilIcon className="m-2" width={24} height={24} /> Edit Profil
                                         </button>
@@ -410,7 +442,7 @@ export default function DetailMember() {
                                     <h2 className="text-3xl font-bold font-young text-neutral-normal">Edit Profil</h2>
                                     <button
                                         onClick={() => setShowEditForm(false)}
-                                        className="font-medium px-8 py-2 rounded-md text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all"
+                                        className="cursor-pointer font-medium px-8 py-2 rounded-md bg-transparent border-2 border-neutral-normal hover:border-transparent hover:bg-neutral-normal-active hover:text-white active:border-transparent active:bg-neutral-normal active:text-white focus:border-transparent focus:bg-neutral-normal focus:text-white transition-all"
                                     >
                                         Batal
                                     </button>
@@ -491,14 +523,14 @@ export default function DetailMember() {
                                         <button
                                             type="button"
                                             onClick={() => setShowEditForm(false)}
-                                            className="flex-1 flex justify-center items-center rounded-md h-16 font-bold text-xl font-young text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all"
+                                            className="cursor-pointer flex-1 flex justify-center items-center rounded-md h-16 font-bold text-xl font-young bg-transparent border-2 border-neutral-normal hover:border-transparent hover:bg-neutral-normal hover:text-white active:border-transparent active:bg-neutral-normal-active active:text-white focus:border-transparent focus:bg-neutral-normal-active focus:text-white transition-all"
                                         >
                                             Batal
                                         </button>
                                         <button
                                             type="submit"
                                             disabled={submitLoading}
-                                            className={`flex-1 flex justify-center items-center ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white font-young`}
+                                            className={`flex-1 flex justify-center items-center ${submitLoading ? "bg-neutral-normal text-white cursor-not-allowed" : "bg-secondary-bg hover:bg-secondary-bg-hover cursor-pointer"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white font-young rounded-md`}
                                         >
                                             {submitLoading ? "Menyimpan..." : "Simpan Perubahan"}
                                         </button>

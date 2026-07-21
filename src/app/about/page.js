@@ -7,12 +7,43 @@ import StructureProfileCard from "@/src/components/StructureProfileCard";
 import BatikOverlay from "@/src/components/BatikOverlay";
 import { useState, useEffect } from "react";
 import { organisationService } from "@/src/services/organisationService";
+import { EyeIcon, DocumentTextIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 export default function About() {
   const [tree, setTree] = useState([]);
   const [years, setYears] = useState([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [loading, setLoading] = useState(true);
+// 🔥 Data dokumen
+const documents = [
+  {
+    id: 1,
+    title: "Akta Pendirian Perkumpulan SH3",
+    type: "Akta Notaris",
+    documentNumber: "SK.AHU-00125.AH.02.01.Tahun 2018", // ← tambah
+    date: "2018",
+    driveLink: "https://drive.google.com/file/d/1DyaTY1HOrMSCGzxI_Mx53L03nqJzFnWx/view?usp=sharing",
+    description: "Akta pendirian Perkumpulan Samarinda Hash House Harriers"
+  },
+  {
+    id: 2,
+    title: "Surat Keterangan Pengesahan Pendirian SH3",
+    type: "SK Kemenkumham",
+    documentNumber: "AHU-0007083.AH.01.07.TAHUN 2025", // ← tambah
+    date: "2025",
+    driveLink: "https://drive.google.com/file/d/1K1HEfmEUtipKynOjvMU45ju6CgwD_Wrm/view?usp=sharing",
+    description: "Surat keterangan pengesahan badan hukum Perkumpulan SH3"
+  },
+  {
+    id: 3,
+    title: "NPWP Perkumpulan SH3",
+    type: "NPWP",
+    documentNumber: "1000 0000 0605 5331", // ← tambah
+    date: "2025",
+    driveLink: "https://drive.google.com/file/d/1p6-BiTuxvdTEpRweRRNG4gePwBdmXnsx/view?usp=sharing",
+    description: "Nomor Pokok Wajib Pajak Perkumpulan SH3"
+  }
+];
 
   function OrgNode({ node }) {
     const hasChildren = node.children && node.children.length > 0;
@@ -99,7 +130,7 @@ export default function About() {
       .then((res) => {
         setTree(res.data.data.tree);
       })
-      .catch((err) => console.error("Error:", err)) // ← tambah ini
+      .catch((err) => console.error("Error:", err))
       .finally(() => setLoading(false));
   }, [selectedYear]);
 
@@ -207,35 +238,75 @@ export default function About() {
           </div>
         </RevealSection>
 
-        <RevealSection direction="up">
-          <div className="flex flex-col gap-4 max-w-306 mx-auto px-4 md:px-0">
-            <div className="font-bold text-4xl font-young md:p-4 ">
-              Akta Pendirian Perkumpulan SH3
-            </div>
-            <iframe src="/assets/files/aktapendiriansh3.pdf" height={600}></iframe>
-          </div>
-        </RevealSection>
+        {/* 🔥 TABEL DOKUMEN - Pengganti iframe PDF */}
+        {/* 🔥 TABEL DOKUMEN */}
+<RevealSection direction="up">
+  <div className="flex flex-col max-w-306 mx-auto px-4 md:px-0 py-8">
+    <div className="font-bold text-4xl font-young md:p-4 mb-6">
+      Dokumen Legal Perkumpulan
+    </div>
+    
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse bg-white rounded-lg shadow-md overflow-hidden">
+        <thead>
+          <tr className="bg-primary-light border-b-2 border-neutral-normal">
+            <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">No</th>
+            <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">Nama Dokumen</th>
+            <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">Tipe</th>
+            <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">No. Dokumen</th>
+            <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">Tanggal</th>
+            <th className="px-6 py-4 text-center font-bold text-sm uppercase tracking-wider">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {documents.map((doc, index) => (
+            <tr 
+              key={doc.id} 
+              className="border-b border-neutral-light hover:bg-primary-light/50 transition-colors"
+            >
+              <td className="px-6 py-4 text-sm font-medium text-neutral-dark">
+                {index + 1}
+              </td>
+              <td className="px-6 py-4">
+                <div className="flex flex-col">
+                  <span className="font-medium text-gray-800">{doc.title}</span>
+                  <span className="text-xs text-gray-500">{doc.description}</span>
+                </div>
+              </td>
+              <td className="px-6 py-4">
+                <span className="inline-block px-3 py-1 text-xs font-semibold bg-emerald-100 text-emerald-700 rounded-full">
+                  {doc.type}
+                </span>
+              </td>
+              <td className="px-6 py-4 text-sm font-mono text-neutral-dark">
+                {doc.documentNumber || "-"}
+              </td>
+              <td className="px-6 py-4 text-sm text-neutral-dark">
+                {doc.date}
+              </td>
+              <td className="px-6 py-4 text-center">
+                <a
+                  href={doc.driveLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-secondary-bg text-white font-medium rounded-md hover:bg-secondary-bg-hover transition-colors text-sm"
+                >
+                  <EyeIcon className="w-4 h-4" />
+                  Lihat
+                  <ArrowTopRightOnSquareIcon className="w-3 h-3" />
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
 
-        <RevealSection direction="up">
-          <div className="flex flex-col gap-4 max-w-306 mx-auto px-4 md:px-0">
-            <div className="font-bold text-4xl font-young md:p-4 ">
-              Surat Keterangan Pengesahan Pendirian SH3
-            </div>
-            <iframe src="/assets/files/cetaksk.pdf" height={600}></iframe>
-          </div>
-        </RevealSection>
-
-        <RevealSection direction="up">
-          <div className="flex flex-col gap-4 max-w-306 mx-auto px-4 md:px-0">
-            <div className="font-bold text-4xl font-young md:p-4 ">
-              NPWP SH3
-            </div>
-            <iframe src="/assets/files/npwpsh3.pdf" height={600}></iframe>
-          </div>
-        </RevealSection>
-
-        
-
+    <p className="text-sm text-neutral-dark mt-4 text-center">
+      Klik tombol <b>Lihat</b> untuk membuka dokumen di Google Drive
+    </p>
+  </div>
+</RevealSection>
 
         {/* Struktur Organisasi dari API */}
         <RevealSection direction="up">

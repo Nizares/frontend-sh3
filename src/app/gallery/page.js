@@ -15,14 +15,26 @@ export default function Gallery() {
             .then(res => {
                 const events = res.data.data ?? [];
 
-                const mappedImages = events.map(event => ({
-                    id: event.id,
-                    url: event.galleries?.[0] ?? null,  // ambil 1 gambar pertama saja
-                    title: event.title,
-                    subtitle: event.category?.name ?? "",
-                    status: event.status,
-                })).filter(img => img.url); // buang event yang tidak punya gambar
+                const mappedImages = events
+                    .map(event => {
+                        // Ambil gambar pertama yang valid
+                        const firstImage = event.galleries?.find(g => g && g !== null && g !== "") ?? null;
 
+                        // 🔥 VALIDASI URL - cek apakah URL benar-benar bisa di-load
+                        if (firstImage && !firstImage.startsWith('http')) {
+                            // Jika URL tidak valid, skip
+                            return null;
+                        }
+
+                        return {
+                            id: event.id,
+                            url: firstImage,
+                            title: event.title ?? "Event Tanpa Nama",
+                            subtitle: event.category?.name ?? "",
+                            status: event.status,
+                        };
+                    })
+                    .filter(img => img && img.url && img.url !== null && img.url !== ""); // ← filter ketat
                 setImages(mappedImages);
             })
             .catch(err => console.error(err))
@@ -34,7 +46,7 @@ export default function Gallery() {
     }
 
     return (
-        <Container className="flex flex-col  w-full ">
+        <Container className="flex flex-col w-full">
             <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
                 <BatikOverlay />
                 <div className="gap-y-4 max-w-306 mx-auto">
@@ -46,9 +58,7 @@ export default function Gallery() {
                         <MasonryGallery images={images} />
                     )}
                 </div>
-
             </div>
-
         </Container>
     );
 }

@@ -1,4 +1,3 @@
-// src/app/merchandise/order/page.jsx
 "use client"
 import { useState, useEffect } from "react"
 import Link from "next/link"
@@ -23,10 +22,17 @@ export default function MerchandiseOrderPage() {
         { value: "qris", label: "QRIS" },
     ]
 
+    // 🔥 OPSI PENGIRIMAN
+    const shippingOptions = [
+        { value: "delivery", label: "Kirim ke Alamat" },
+        { value: "pickup", label: "Ambil di Tempat" },
+    ]
+
     const [item, setItem] = useState(null)
     const [qty, setQty] = useState(1)
     const [selectedSize, setSelectedSize] = useState("")
     const [selectedColor, setSelectedColor] = useState("")
+    const [shippingMethod, setShippingMethod] = useState("delivery") // ← baru
     const [shippingAddress, setShippingAddress] = useState("")
     const [shippingPhone, setShippingPhone] = useState("")
     const [submitLoading, setSubmitLoading] = useState(false)
@@ -63,7 +69,6 @@ export default function MerchandiseOrderPage() {
 
         if (!id) return
 
-        // Simpan info event kalau ada
         if (eId) setEventId(eId)
         if (ePrice) setEventPrice(Number(ePrice))
         if (eDiscount) setDiscountPercentage(Number(eDiscount))
@@ -76,9 +81,21 @@ export default function MerchandiseOrderPage() {
         if (user) setUserData(JSON.parse(user))
     }, [])
 
-    // Harga yang dipakai: event_price kalau ada, fallback ke harga normal
     const activePrice = eventPrice ?? item?.price ?? 0
     const totalPrice = activePrice * qty
+
+    // 🔥 HANDLE SHIPPING METHOD CHANGE
+    const handleShippingMethodChange = (e) => {
+        const method = e.target.value
+        setShippingMethod(method)
+        if (method === "pickup") {
+            setShippingAddress("Ambil di Tempat (Event)")
+            setShippingPhone("")
+        } else {
+            setShippingAddress("")
+            setShippingPhone("")
+        }
+    }
 
     async function submitOrder(e) {
         e.preventDefault()
@@ -95,13 +112,19 @@ export default function MerchandiseOrderPage() {
             Swal.fire({ icon: "warning", title: "Pilih warna dulu!" })
             return
         }
-        if (!shippingAddress) {
-            Swal.fire({ icon: "warning", title: "Isi alamat pengiriman dulu!" })
+        if (!shippingMethod) {
+            Swal.fire({ icon: "warning", title: "Pilih metode pengiriman dulu!" })
             return
         }
-        if (!shippingPhone) {
-            Swal.fire({ icon: "warning", title: "Isi nomor HP pengiriman dulu!" })
-            return
+        if (shippingMethod === "delivery") {
+            if (!shippingAddress) {
+                Swal.fire({ icon: "warning", title: "Isi alamat pengiriman dulu!" })
+                return
+            }
+            if (!shippingPhone) {
+                Swal.fire({ icon: "warning", title: "Isi nomor HP pengiriman dulu!" })
+                return
+            }
         }
         if (!paymentFile) {
             Swal.fire({ icon: "warning", title: "Upload bukti pembayaran dulu!" })
@@ -119,9 +142,9 @@ export default function MerchandiseOrderPage() {
                 quantity: qty,
                 size: selectedSize || null,
                 color: selectedColor || null,
-                shipping_address: shippingAddress,
-                shipping_phone: shippingPhone,
-                // Kirim event_id kalau ada — backend akan ignore kalau belum support
+                shipping_address: shippingAddress || "Ambil di Tempat (Event)",
+                shipping_phone: shippingPhone || "-",
+                shipping_method: shippingMethod,
                 ...(eventId && { event_id: eventId }),
             }
 
@@ -202,7 +225,6 @@ export default function MerchandiseOrderPage() {
                                 <h3 className="text-4xl font-bold font-young mb-2">{item.name}</h3>
                                 <div className="text-sm text-neutral-dark mb-4">{item.description}</div>
 
-                                {/* Harga — tampilkan diskon kalau ada */}
                                 {hasDiscount ? (
                                     <div className="flex flex-col gap-1">
                                         <div className="text-sm text-neutral-dark line-through">
@@ -232,7 +254,7 @@ export default function MerchandiseOrderPage() {
                                     <div className="text-sm mt-1">Kategori: <span className="font-medium">{item.category}</span></div>
                                 )}
                             </div>
-                            
+
                         </div>
                     </RevealSection>
 
@@ -272,6 +294,7 @@ export default function MerchandiseOrderPage() {
                                 </div>
                             </RevealSection>
 
+                            {/* 🔥 SHIPPING SECTION - DENGAN OPSI */}
                             <RevealSection direction="up">
                                 <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md">
                                     <div className="flex justify-between">
@@ -279,14 +302,59 @@ export default function MerchandiseOrderPage() {
                                         <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
                                     </div>
                                     <hr className="border-t-2 border-text-colors" />
-                                    <InputType label="Shipping Address" id="shippingaddress" required type="text"
-                                        name="shippingaddress" placeholder="Jl. Contoh No. 1, Kota"
-                                        className="flex flex-col gap-2" value={shippingAddress}
-                                        onChange={e => setShippingAddress(e.target.value)} />
-                                    <InputType label="Shipping Phone" id="shippingphone" required type="text"
-                                        name="shippingphone" placeholder="08123456789"
-                                        className="flex flex-col gap-2" value={shippingPhone}
-                                        onChange={e => setShippingPhone(e.target.value)} />
+
+                                    {/* 🔥 OPSI PENGIRIMAN */}
+                                    <SelectInput
+                                        id="shippingMethod"
+                                        name="shippingMethod"
+                                        label="Metode Pengiriman"
+                                        required
+                                        placehold="Pilih metode pengiriman..."
+                                        options={shippingOptions}
+                                        value={shippingMethod}
+                                        onChange={handleShippingMethodChange}
+                                    />
+
+                                    {/* 🔥 ALAMAT - muncul hanya jika pilih "Kirim" */}
+                                    {shippingMethod === "delivery" && (
+                                        <InputType
+                                            label="Alamat Pengiriman"
+                                            id="shippingaddress"
+                                            required
+                                            type="text"
+                                            name="shippingaddress"
+                                            placeholder="Jl. Contoh No. 1, Kota"
+                                            className="flex flex-col gap-2"
+                                            value={shippingAddress}
+                                            onChange={e => setShippingAddress(e.target.value)}
+                                        />
+                                    )}
+
+                                    {/* 🔥 AMBIL DI TEMPAT - info alamat */}
+                                    {shippingMethod === "pickup" && (
+                                        <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                                            <p className="text-green-700 font-medium">
+                                                Ambil di Tempat (Event)
+                                            </p>
+                                            <p className="text-sm text-gray-600 mt-1">
+                                                Pesanan akan tersedia di lokasi event.
+                                                {eventId && " Siapkan kode booking untuk mengambil."}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* 🔥 NOMOR HP - TETAP MUNCUL UNTUK KEDUA OPSI */}
+                                    <InputType
+                                        label={shippingMethod === "pickup" ? "Nomor HP (untuk konfirmasi)" : "Nomor HP Pengiriman"}
+                                        id="shippingphone"
+                                        required
+                                        type="text"
+                                        name="shippingphone"
+                                        placeholder="08123456789"
+                                        className="flex flex-col gap-2"
+                                        value={shippingPhone}
+                                        onChange={e => setShippingPhone(e.target.value)}
+                                    />
                                 </div>
                             </RevealSection>
 
@@ -362,7 +430,7 @@ export default function MerchandiseOrderPage() {
                                 <InvoiceMerch
                                     name={userData.name}
                                     email={userData.email}
-                                    hash_id={userData.id}
+                                    hash_id={userData.id || userData.hash_id}
                                     invoice_id={orderResult.invoice_number}
                                     merch_name={item.name}
                                     merch_price={formatRupiah(activePrice)}
@@ -370,6 +438,8 @@ export default function MerchandiseOrderPage() {
                                     merch_size={selectedSize}
                                     merch_color={selectedColor}
                                     total_price={formatRupiah(totalPrice)}
+                                    shipping_method={shippingMethod}
+                                    shipping_address={shippingAddress}
                                 />
                             </div>
                         </RevealSection>

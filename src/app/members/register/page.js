@@ -31,6 +31,7 @@ export default function Members() {
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [password, setPassword] = useState("");
     const [formData, setFormData] = useState({
+        username: "", // ← TAMBAH
         name: "",
         email: "",
         phone: "",
@@ -41,7 +42,7 @@ export default function Members() {
         identity_number: "",
     });
 
-    // 🔥 State untuk validasi password
+    // 🔥 State untuk validasi password (tetap pakai state untuk real-time)
     const [passwordError, setPasswordError] = useState("");
     const [confirmError, setConfirmError] = useState("");
 
@@ -89,6 +90,16 @@ export default function Members() {
     async function handleRegister(e) {
         e.preventDefault();
 
+        // 🔥 Validasi username
+        if (!formData.username) {
+            Swal.fire({ icon: "warning", title: "Username wajib diisi!" });
+            return;
+        }
+        if (!formData.username.match(/^[a-zA-Z0-9_]+$/)) {
+            Swal.fire({ icon: "warning", title: "Username hanya boleh huruf, angka, dan underscore!" });
+            return;
+        }
+
         if (!formData.name || !formData.email || !formData.phone || !formData.birthdate) {
             Swal.fire({ icon: "warning", title: "Pastikan data wajib terisi semua!" });
             return;
@@ -113,6 +124,7 @@ export default function Members() {
         setSubmitLoading(true);
         try {
             const form = new FormData();
+            form.append("username", formData.username); // ← TAMBAH
             form.append("name", formData.name);
             form.append("email", formData.email);
             form.append("phone", formData.phone);
@@ -136,6 +148,7 @@ export default function Members() {
                 title: "Registrasi Berhasil!",
                 html: `
                     <p>Selamat datang, <strong>${participant.name}</strong>!</p>
+                    <p>Username kamu: <strong>${participant.username}</strong></p>
                     <p>Hash ID kamu:</p>
                     <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:8px 0">
                         <h2 id="hash-id-text" style="font-size:2rem;font-weight:bold;color:#00973D;margin:0">
@@ -148,7 +161,7 @@ export default function Members() {
                             Copy
                         </button>
                     </div>
-                    <p style="font-size:0.8rem;color:gray">Simpan Hash ID ini untuk login dan daftar event.</p>
+                    <p style="font-size:0.8rem;color:gray">Simpan Username dan Hash ID ini untuk login.</p>
                 `,
                 didOpen: () => {
                     const copyBtn = document.getElementById("copy-btn");
@@ -172,7 +185,17 @@ export default function Members() {
             localStorage.setItem("user", JSON.stringify(participant));
 
             // Reset form
-            setFormData({ name: "", email: "", phone: "", birthdate: "", emergency_contact: "", emergency_phone: "", allergy_history: "", identity_number: "" });
+            setFormData({ 
+                username: "",
+                name: "", 
+                email: "", 
+                phone: "", 
+                birthdate: "", 
+                emergency_contact: "", 
+                emergency_phone: "", 
+                allergy_history: "", 
+                identity_number: "" 
+            });
             setGender("");
             setBloodType("");
             setPhoto(null);
@@ -185,6 +208,17 @@ export default function Members() {
         } catch (err) {
             const message = err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
             const errors = err.response?.data?.errors;
+            
+            // 🔥 Tampilkan error username khusus
+            if (errors?.username) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Username Tidak Valid!",
+                    text: errors.username.join(", "),
+                });
+                return;
+            }
+            
             Swal.fire({
                 icon: "error",
                 title: "Registrasi Gagal!",
@@ -196,7 +230,7 @@ export default function Members() {
     }
 
     return (
-        <Container className="flex flex-col  w-full ">
+        <Container className="flex flex-col w-full">
             <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
                 <BatikOverlay />
                 <div className="gap-y-8 px-4 md:px-0 max-w-306 mx-auto">
@@ -212,12 +246,45 @@ export default function Members() {
 
                                 {/* Data Dasar */}
                                 <h3 className="text-xl font-bold font-young">Data Diri</h3>
-                                <InputType label="Full Name" id="name" required type="text" name="name"
-                                    placeholder="John Doe" className="flex flex-col gap-2"
-                                    value={formData.name} onChange={handleFormChange} />
-                                <InputType label="Email" id="email" required type="email" name="email"
-                                    placeholder="you@example.com" className="flex flex-col gap-2"
-                                    value={formData.email} onChange={handleFormChange} />
+                                
+                                {/* 🔥 USERNAME - WAJIB DIISI */}
+                                <InputType 
+                                    label="Username" 
+                                    id="username" 
+                                    required 
+                                    type="text" 
+                                    name="username"
+                                    placeholder="john_doe" 
+                                    className="flex flex-col gap-2"
+                                    value={formData.username} 
+                                    onChange={handleFormChange} 
+                                />
+                                <p className="text-xs text-gray-500 -mt-2">
+                                    * Username hanya boleh huruf, angka, dan underscore (_)
+                                </p>
+
+                                <InputType 
+                                    label="Full Name" 
+                                    id="name" 
+                                    required 
+                                    type="text" 
+                                    name="name"
+                                    placeholder="John Doe" 
+                                    className="flex flex-col gap-2"
+                                    value={formData.name} 
+                                    onChange={handleFormChange} 
+                                />
+                                <InputType 
+                                    label="Email" 
+                                    id="email" 
+                                    required 
+                                    type="email" 
+                                    name="email"
+                                    placeholder="you@example.com" 
+                                    className="flex flex-col gap-2"
+                                    value={formData.email} 
+                                    onChange={handleFormChange} 
+                                />
                                 
                                 {/* 🔥 PASSWORD dengan error */}
                                 <div className="relative">
@@ -257,30 +324,73 @@ export default function Members() {
                                     )}
                                 </div>
 
-                                <InputType label="Nomor Telepon/WA" type="text" id="phone" required name="phone"
-                                    placeholder="08123456789" className="flex flex-col gap-2"
-                                    value={formData.phone} onChange={handleFormChange} />
-                                <InputType label="Tanggal Lahir" type="date" id="birthdate" required name="birthdate"
+                                <InputType 
+                                    label="Nomor Telepon/WA" 
+                                    type="text" 
+                                    id="phone" 
+                                    required 
+                                    name="phone"
+                                    placeholder="08123456789" 
                                     className="flex flex-col gap-2"
-                                    value={formData.birthdate} onChange={handleFormChange} />
-                                <SelectInput id="gender" name="gender" label="Gender" required
-                                    options={genderOptions} value={gender} placehold="Pilih Gender..."
-                                    onChange={(e) => setGender(e.target.value)} />
-                                <SelectInput id="blood_type" name="blood_type" label="Golongan Darah" required
-                                    options={bloodTypeOptions} value={bloodType} placehold="Pilih Golongan Darah..."
-                                    onChange={(e) => setBloodType(e.target.value)} />
+                                    value={formData.phone} 
+                                    onChange={handleFormChange} 
+                                />
+                                <InputType 
+                                    label="Tanggal Lahir" 
+                                    type="date" 
+                                    id="birthdate" 
+                                    required 
+                                    name="birthdate"
+                                    className="flex flex-col gap-2"
+                                    value={formData.birthdate} 
+                                    onChange={handleFormChange} 
+                                />
+                                <SelectInput 
+                                    id="gender" 
+                                    name="gender" 
+                                    label="Gender" 
+                                    required
+                                    options={genderOptions} 
+                                    value={gender} 
+                                    placehold="Pilih Gender..."
+                                    onChange={(e) => setGender(e.target.value)} 
+                                />
+                                <SelectInput 
+                                    id="blood_type" 
+                                    name="blood_type" 
+                                    label="Golongan Darah" 
+                                    required
+                                    options={bloodTypeOptions} 
+                                    value={bloodType} 
+                                    placehold="Pilih Golongan Darah..."
+                                    onChange={(e) => setBloodType(e.target.value)} 
+                                />
 
                                 {/* Kontak Darurat */}
                                 <hr className="border-t-2 border-neutral-normal mt-2" />
                                 <h3 className="text-xl font-bold font-young">Kontak Darurat</h3>
-                                <InputType label="Nama Kontak Darurat" id="emergency_contact" type="text" required
-                                    name="emergency_contact" placeholder="Nama keluarga/teman"
+                                <InputType 
+                                    label="Nama Kontak Darurat" 
+                                    id="emergency_contact" 
+                                    type="text" 
+                                    required
+                                    name="emergency_contact" 
+                                    placeholder="Nama keluarga/teman"
                                     className="flex flex-col gap-2"
-                                    value={formData.emergency_contact} onChange={handleFormChange} />
-                                <InputType label="Nomor Kontak Darurat" id="emergency_phone" type="text" required
-                                    name="emergency_phone" placeholder="08123456789"
+                                    value={formData.emergency_contact} 
+                                    onChange={handleFormChange} 
+                                />
+                                <InputType 
+                                    label="Nomor Kontak Darurat" 
+                                    id="emergency_phone" 
+                                    type="text" 
+                                    required
+                                    name="emergency_phone" 
+                                    placeholder="08123456789"
                                     className="flex flex-col gap-2"
-                                    value={formData.emergency_phone} onChange={handleFormChange} />
+                                    value={formData.emergency_phone} 
+                                    onChange={handleFormChange} 
+                                />
 
                                 {/* Info Kesehatan */}
                                 <hr className="border-t-2 border-neutral-normal mt-2" />
@@ -300,18 +410,32 @@ export default function Members() {
                                 {/* Identitas */}
                                 <hr className="border-t-2 border-neutral-normal mt-2" />
                                 <h3 className="text-xl font-bold font-young">Identitas</h3>
-                                <InputType label="Nomor KTP/Passport" id="identity_number" type="text" required
-                                    name="identity_number" placeholder="3201234567890001"
+                                <InputType 
+                                    label="Nomor KTP/Passport" 
+                                    id="identity_number" 
+                                    type="text" 
+                                    required
+                                    name="identity_number" 
+                                    placeholder="3201234567890001"
                                     className="flex flex-col gap-2"
-                                    value={formData.identity_number} onChange={handleFormChange} />
-                                <ImageUpload id="identity_photo" label="Foto KTP/Passport" required
-                                    onChange={file => setIdentityPhoto(file)} />
+                                    value={formData.identity_number} 
+                                    onChange={handleFormChange} 
+                                />
+                                <ImageUpload 
+                                    id="identity_photo" 
+                                    label="Foto KTP/Passport" 
+                                    required
+                                    onChange={file => setIdentityPhoto(file)} 
+                                />
 
                                 {/* Foto Profil */}
                                 <hr className="border-t-2 border-neutral-normal mt-2" />
                                 <h3 className="text-xl font-bold font-young">Foto Profil</h3>
-                                <ImageUpload id="photo" label="Foto Profil"
-                                    onChange={(file) => setPhoto(file)} />
+                                <ImageUpload 
+                                    id="photo" 
+                                    label="Foto Profil"
+                                    onChange={(file) => setPhoto(file)} 
+                                />
 
                                 <button
                                     className={`flex justify-center items-center mb-8 rounded-md ${submitLoading ? "bg-neutral-normal " : "bg-secondary-bg hover:bg-secondary-bg-hover"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-3xl font-young`}
@@ -337,7 +461,6 @@ export default function Members() {
                         </div>
                     </RevealSection>
                 </div>
-
             </div>
         </Container>
     );

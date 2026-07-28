@@ -1,105 +1,108 @@
-"use client"
-import Image from "next/image"
-import { useRef } from "react"
-import dynamic from "next/dynamic"
+// components/InvoiceEventPDF.js
+import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 
-const PDFDownloadLink = dynamic(
-    () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
-    { ssr: false }
-)
-import InvoiceEventPDF from "./InvoiceEventPDF"
+const styles = StyleSheet.create({
+    page: { padding: 40, backgroundColor: '#ffffff' },
+    header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20, borderBottom: '1px solid #ccc', paddingBottom: 10 },
+    logo: { width: 60, height: 60 },
+    title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 10 },
+    statusBadge: { 
+        backgroundColor: '#fef3c7', 
+        color: '#d97706', 
+        padding: '4px 12px', 
+        borderRadius: 20,
+        fontSize: 12,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    row: { flexDirection: 'row', marginBottom: 4 },
+    label: { width: 100, fontSize: 12, color: '#666' },
+    value: { fontSize: 12, fontWeight: 'bold' },
+    table: { marginTop: 20, border: '1px solid #333' },
+    tableHeader: { flexDirection: 'row', backgroundColor: '#00973D', padding: 8 },
+    tableHeaderText: { color: '#fff', fontSize: 12, fontWeight: 'bold', flex: 1, textAlign: 'center' },
+    tableRow: { flexDirection: 'row', borderBottom: '1px solid #ccc', padding: 8 },
+    tableCell: { fontSize: 11, flex: 1, textAlign: 'center' },
+    totalRow: { flexDirection: 'row', backgroundColor: '#00973D', padding: 8 },
+    totalText: { color: '#fff', fontSize: 12, fontWeight: 'bold', flex: 1, textAlign: 'center' },
+    note: { marginTop: 20, fontSize: 10, color: '#ef4444', textAlign: 'center' },
+    statusMessage: { marginTop: 10, fontSize: 12, textAlign: 'center', color: '#d97706' },
+});
 
-export default function InvoiceEvent({
-    name,
-    email,
-    hash_id,
-    invoice_id,
-    event_title,
-    event_price,
-    event_qty
+export default function InvoiceEventPDF({ 
+    name, 
+    email, 
+    hash_id, 
+    invoice_id, 
+    event_title, 
+    event_price, 
+    event_qty,
+    status = "paid" 
 }) {
+    const isPending = status === "pending";
+
     return (
-        <div className="flex flex-col gap-4 my-4">
-            <div className="flex justify-end">
-                <PDFDownloadLink
-                    document={
-                        <InvoiceEventPDF
-                            name={name}
-                            email={email}
-                            hash_id={hash_id}
-                            invoice_id={invoice_id}
-                            event_title={event_title}
-                            event_price={event_price}
-                            event_qty={event_qty}
-                        />
-                    }
-                    fileName={`Invoice-${invoice_id}.pdf`}
-                >
-                    {({ loading }) => (
-                        <button className="bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold py-2 px-6 transition-colors rounded-md">
-                            {loading ? "Menyiapkan PDF..." : "Download PDF"}
-                        </button>
-                    )}
-                </PDFDownloadLink>
-            </div>
+        <Document>
+            <Page size="A4" style={styles.page}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <Image src="/assets/images/sh3logo.png" style={styles.logo} />
+                    <Text style={{ fontSize: 16, fontWeight: 'bold' }}>INVOICE #{invoice_id}</Text>
+                </View>
 
-            <div className="flex flex-col bg-primary-light p-8 border-2 border-neutral-normal rounded-md">
-                <div className="flex flex-col items-center p-8">
-                    <img
-                        src="/assets/images/sh3logo.png"
-                        alt="Logo"
-                        width={125}
-                        height={125}
-                        className="w-20 h-20 md:w-32 md:h-32 lg:w-32 lg:h-32 object-cover"
-                    />
-                </div>
+                {/* Title & Status */}
+                <Text style={styles.title}>INVOICE</Text>
+                {isPending && (
+                    <View style={styles.statusBadge}>
+                        <Text>Menunggu Konfirmasi</Text>
+                    </View>
+                )}
 
-                <div className="font-bold text-3xl md:text-5xl text-center">INVOICE</div>
+                {/* Customer Info */}
+                <View style={{ marginTop: 20 }}>
+                    <View style={styles.row}><Text style={styles.label}>Nama:</Text><Text style={styles.value}>{name}</Text></View>
+                    <View style={styles.row}><Text style={styles.label}>Email:</Text><Text style={styles.value}>{email}</Text></View>
+                    <View style={styles.row}><Text style={styles.label}>Hash ID:</Text><Text style={styles.value}>{hash_id}</Text></View>
+                </View>
 
-                <div className="flex flex-col md:flex-row mt-8 md:mt-16">
-                    <div className="flex flex-col w-full md:w-1/2 px-4 md:px-16 text-lg ">
-                        <div>To : {name}</div>
-                        <div>Email : {email}</div>
-                        <div>Hash ID : {hash_id}</div>
-                    </div>
-                    <div className="flex flex-col items-center w-full md:w-1/2 px-8 mt-4 md:mt-0">
-                        <div className="font-bold text-xl ">
-                            Invoice : {invoice_id}
-                        </div>
-                    </div>
-                </div>
+                {/* Table */}
+                <View style={styles.table}>
+                    <View style={styles.tableHeader}>
+                        <Text style={styles.tableHeaderText}>Qty</Text>
+                        <Text style={styles.tableHeaderText}>Description</Text>
+                        <Text style={styles.tableHeaderText}>Price</Text>
+                        <Text style={styles.tableHeaderText}>Total</Text>
+                    </View>
+                    <View style={styles.tableRow}>
+                        <Text style={styles.tableCell}>{event_qty}</Text>
+                        <Text style={styles.tableCell}>{event_title} Ticket</Text>
+                        <Text style={styles.tableCell}>Rp. {event_price}</Text>
+                        <Text style={styles.tableCell}>Rp. {event_price}</Text>
+                    </View>
+                    <View style={styles.totalRow}>
+                        <Text style={styles.totalText}></Text>
+                        <Text style={styles.totalText}></Text>
+                        <Text style={styles.totalText}>Total</Text>
+                        <Text style={styles.totalText}>Rp. {event_price}</Text>
+                    </View>
+                </View>
 
-                <div className="overflow-x-auto my-8 md:my-16">
-                    <table className="border border-neutral-dark table-auto divide-y w-full">
-                        <thead>
-                            <tr className="divide-neutral-dark divide-x bg-secondary-bg text-white">
-                                <th className="p-4">Qty</th>
-                                <th className="p-4">Description</th>
-                                <th className="p-4">Price</th>
-                                <th className="p-4">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-neutral-dark">
-                            <tr className="text-right divide-neutral-dark divide-x ">
-                                <td className="text-center p-4">{event_qty}</td>
-                                <td className="text-left p-4">{event_title} Ticket</td>
-                                <td className="p-4">Rp. {event_price}</td>
-                                <td className="p-4">Rp. {event_price}</td>
-                            </tr>
-                            <tr className="divide-neutral-dark divide-x bg-secondary-bg text-white">
-                                <th></th>
-                                <th></th>
-                                <th className="p-4">Total</th>
-                                <th className="p-4">Rp. {event_price}</th>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                {/* Status Message */}
+                {isPending ? (
+                    <Text style={styles.statusMessage}>
+                        Pembayaran sedang diverifikasi oleh admin. QR Code akan aktif setelah dikonfirmasi.
+                    </Text>
+                ) : (
+                    <Text style={{ ...styles.statusMessage, color: '#22c55e' }}>
+                        Pembayaran telah dikonfirmasi. QR Code aktif!
+                    </Text>
+                )}
 
-                <div className="text-red-500 text-center">
-                    Tolong hubungin Admin jika ada pertanyaan terkait pembayaran atau hal yang lain!
-                </div>
-            </div>
-        </div>
-    )
+                <Text style={styles.note}>
+                    Tolong hubungi Admin jika ada pertanyaan terkait pembayaran atau hal yang lain!
+                </Text>
+            </Page>
+        </Document>
+    );
 }

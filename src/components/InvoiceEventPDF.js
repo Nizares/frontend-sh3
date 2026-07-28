@@ -18,7 +18,27 @@ const styles = StyleSheet.create({
         fontSize: 36,
         fontWeight: "bold",
         textAlign: "center",
-        marginBottom: 40,
+        marginBottom: 8,
+    },
+    statusBadge: {
+        fontSize: 14,
+        fontWeight: "bold",
+        textAlign: "center",
+        marginBottom: 32,
+        padding: 8,
+        backgroundColor: "#fef3c7",
+        color: "#d97706",
+        borderRadius: 20,
+    },
+    statusBadgePaid: {
+        fontSize: 14,
+        fontWeight: "bold",
+        textAlign: "center",
+        marginBottom: 32,
+        padding: 8,
+        backgroundColor: "#d1fae5",
+        color: "#059669",
+        borderRadius: 20,
     },
     infoRow: {
         flexDirection: "row",
@@ -49,7 +69,7 @@ const styles = StyleSheet.create({
     },
     tableHeader: {
         flexDirection: "row",
-        backgroundColor: "#f59e0b",
+        backgroundColor: "#00973D", // ← warna hijau SH3
     },
     tableRow: {
         flexDirection: "row",
@@ -60,7 +80,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         borderTopWidth: 1,
         borderColor: "#000000",
-        backgroundColor: "#f59e0b",
+        backgroundColor: "#00973D",
     },
     colQty: {
         width: "10%",
@@ -103,6 +123,19 @@ const styles = StyleSheet.create({
     headerText: {
         fontSize: 11,
         fontWeight: "bold",
+        color: "#ffffff",
+    },
+    statusMessage: {
+        fontSize: 11,
+        textAlign: "center",
+        marginTop: 8,
+        color: "#d97706",
+    },
+    statusMessagePaid: {
+        fontSize: 11,
+        textAlign: "center",
+        marginTop: 8,
+        color: "#059669",
     },
     footer: {
         fontSize: 11,
@@ -120,7 +153,10 @@ export default function InvoiceEventPDF({
     event_title,
     event_price,
     event_qty,
+    status = "paid", // ← tambah status (default: paid)
 }) {
+    const isPending = status === "pending";
+
     return (
         <Document>
             <Page size="A4" style={styles.page}>
@@ -131,6 +167,17 @@ export default function InvoiceEventPDF({
 
                 {/* Title */}
                 <Text style={styles.title}>INVOICE</Text>
+
+                {/* 🔥 STATUS BADGE */}
+                {isPending ? (
+                    <View style={styles.statusBadge}>
+                        <Text>Menunggu Konfirmasi</Text>
+                    </View>
+                ) : (
+                    <View style={styles.statusBadgePaid}>
+                        <Text>Lunas / Aktif</Text>
+                    </View>
+                )}
 
                 {/* Info Row */}
                 <View style={styles.infoRow}>
@@ -170,6 +217,17 @@ export default function InvoiceEventPDF({
                         <Text style={[styles.colTotal, styles.headerText]}>Rp. {event_price}</Text>
                     </View>
                 </View>
+
+                {/* 🔥 STATUS MESSAGE */}
+                {isPending ? (
+                    <Text style={styles.statusMessage}>
+                        Pembayaran sedang diverifikasi oleh admin. QR Code akan aktif setelah dikonfirmasi.
+                    </Text>
+                ) : (
+                    <Text style={styles.statusMessagePaid}>
+                        Pembayaran telah dikonfirmasi. QR Code aktif!
+                    </Text>
+                )}
 
                 {/* Footer Note */}
                 <Text style={styles.footer}>

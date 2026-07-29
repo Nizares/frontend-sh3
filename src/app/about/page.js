@@ -205,7 +205,7 @@ export default function About() {
                 </div>
 
                 {/* Foto kecil melayang */}
-                <div className="absolute -bottom-8 -right-8 w-40 h-40 rounded-xl overflow-hidden border-4 border-white shadow-lg hidden sm:block">
+                <div className="absolute -bottom-8 -right-8 w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-lg hidden sm:block">
                   <Image
                     src="/assets/images/sh3logo.png" // ganti dengan foto kegiatan/komunitas
                     alt="SH3 Activity"
@@ -249,7 +249,35 @@ export default function About() {
               </div>
 
               {/* 4 Poin kecil (pengganti card besar) */}
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-col gap-4 mx-auto px-4 md:px-0">
+                <div className="flex flex-col md:flex-row w-full justify-center gap-4">
+                  <div className="flex flex-col flex-1 border-4 border-emerald-600 text-emerald-600 rounded-md p-2">
+                    <div className="font-bold font-young text-xl">Weekly Runs</div>
+                    <div className="text-md">
+                      Setiap Senin & Sabtu, lokasi berbeda setiap minggu
+                    </div>
+                  </div>
+                  <div className="flex flex-col flex-1 border-4 border-emerald-600 text-emerald-600 rounded-md p-2">
+                    <div className="font-bold font-young text-xl">Down Down</div>
+                    <div className="text-md">
+                      Tradisi Hash yang meriah setelah setiap lari
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col md:flex-row w-full justify-center gap-4">
+                  <div className="flex flex-col flex-1 border-4 border-emerald-600 text-emerald-600 rounded-sm p-2">
+                    <div className="font-bold font-young text-xl">Alam Borneo</div>
+                    <div className="text-md">
+                      Trail di hutan, sungai, dan bukit Kalimantan
+                    </div>
+                  </div>
+                  <div className="flex flex-col flex-1 border-4 border-emerald-600 text-emerald-600 rounded-sm p-2">
+                    <div className="font-bold font-young text-xl">Komunitas</div>
+                    <div className="text-md">Inklusif, ramah, dan penuh tawa</div>
+                  </div>
+                </div>
+              </div>
+              {/* <div className="flex flex-wrap gap-3">
                 {[
                   "Lari Setiap Minggu",
                   "Down Down",
@@ -263,7 +291,7 @@ export default function About() {
                     {point}
                   </span>
                 ))}
-              </div>
+              </div> */}
             </div>
           </div>
         </RevealSection>

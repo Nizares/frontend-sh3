@@ -14,36 +14,36 @@ export default function About() {
   const [years, setYears] = useState([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [loading, setLoading] = useState(true);
-// 🔥 Data dokumen
-const documents = [
-  {
-    id: 1,
-    title: "Akta Pendirian Perkumpulan SH3",
-    type: "Akta Notaris",
-    documentNumber: "SK.AHU-00125.AH.02.01.Tahun 2018", // ← tambah
-    date: "2018",
-    driveLink: "https://drive.google.com/file/d/1DyaTY1HOrMSCGzxI_Mx53L03nqJzFnWx/view?usp=sharing",
-    description: "Akta pendirian Perkumpulan Samarinda Hash House Harriers"
-  },
-  {
-    id: 2,
-    title: "Surat Keterangan Pengesahan Pendirian SH3",
-    type: "SK Kemenkumham",
-    documentNumber: "AHU-0007083.AH.01.07.TAHUN 2025", // ← tambah
-    date: "2025",
-    driveLink: "https://drive.google.com/file/d/1K1HEfmEUtipKynOjvMU45ju6CgwD_Wrm/view?usp=sharing",
-    description: "Surat keterangan pengesahan badan hukum Perkumpulan SH3"
-  },
-  {
-    id: 3,
-    title: "NPWP Perkumpulan SH3",
-    type: "NPWP",
-    documentNumber: "1000 0000 0605 5331", // ← tambah
-    date: "2025",
-    driveLink: "https://drive.google.com/file/d/1p6-BiTuxvdTEpRweRRNG4gePwBdmXnsx/view?usp=sharing",
-    description: "Nomor Pokok Wajib Pajak Perkumpulan SH3"
-  }
-];
+  // 🔥 Data dokumen
+  const documents = [
+    {
+      id: 1,
+      title: "Akta Pendirian Perkumpulan SH3",
+      type: "Akta Notaris",
+      documentNumber: "SK.AHU-00125.AH.02.01.Tahun 2018", // ← tambah
+      date: "2018",
+      driveLink: "https://drive.google.com/file/d/1DyaTY1HOrMSCGzxI_Mx53L03nqJzFnWx/view?usp=sharing",
+      description: "Akta pendirian Perkumpulan Samarinda Hash House Harriers"
+    },
+    {
+      id: 2,
+      title: "Surat Keterangan Pengesahan Pendirian SH3",
+      type: "SK Kemenkumham",
+      documentNumber: "AHU-0007083.AH.01.07.TAHUN 2025", // ← tambah
+      date: "2025",
+      driveLink: "https://drive.google.com/file/d/1K1HEfmEUtipKynOjvMU45ju6CgwD_Wrm/view?usp=sharing",
+      description: "Surat keterangan pengesahan badan hukum Perkumpulan SH3"
+    },
+    {
+      id: 3,
+      title: "NPWP Perkumpulan SH3",
+      type: "NPWP",
+      documentNumber: "1000 0000 0605 5331", // ← tambah
+      date: "2025",
+      driveLink: "https://drive.google.com/file/d/1p6-BiTuxvdTEpRweRRNG4gePwBdmXnsx/view?usp=sharing",
+      description: "Nomor Pokok Wajib Pajak Perkumpulan SH3"
+    }
+  ];
 
   function OrgNode({ node }) {
     const hasChildren = node.children && node.children.length > 0;
@@ -139,30 +139,91 @@ const documents = [
       <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
         <BatikOverlay />
 
-        {/* Header */}
-        <div className="flex flex-col flex-1 items-center justify-center  p-8 mt-16">
+        {/* <div className="flex flex-col flex-1 items-center justify-center  p-8 mt-16">
           <h1 className="text-5xl font-bold font-young">About</h1>
+        </div> */}
+
+        {/* Hero + Statistic dalam 1 layar penuh */}
+        <div className="flex flex-col h-screen">
+          {/* Hero - Our Story */}
+          <div className="relative w-full flex-1 min-h-0 overflow-hidden">
+            <Image
+              src="/assets/images/aboutimage3.jpg"
+              alt="SH3 Story"
+              fill
+              priority
+              className="object-cover"
+            />
+            {/* Overlay warna tema */}
+            <div className="absolute inset-0 bg-primary-text/20" />
+
+            <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
+              <span className="text-amber-400 font-bold text-xs md:text-sm uppercase tracking-[0.2em] mb-3">
+                Est. 1988 · Samarinda, East Kalimantan
+              </span>
+              <h1 className="text-white font-young text-4xl sm:text-5xl md:text-7xl font-bold mb-4">
+                Our Story
+              </h1>
+              <p className="text-neutral-light text-sm md:text-lg max-w-xl bg-secondary-bg/20 rounded-md p-2 text-white">
+                Over three decades of running, community, and Borneo spirit.
+              </p>
+            </div>
+          </div>
+
+          {/* Statistic nempel di bawah, tinggi otomatis */}
+          <RevealSection direction="up">
+            <div className="w-full shrink-0">
+              <TotalStatistic />
+            </div>
+          </RevealSection>
         </div>
 
+        {/* Hero - Our Story */}
+
+
+        {/* Stats Bar */}
+
         {/* Logo & Deskripsi */}
+        {/* Tentang Kami */}
         <RevealSection direction="up">
-          <div className="flex flex-col align-middle md:flex-row max-w-306 mx-auto mb-16 px-4 md:px-0">
-            <div className="w-full md:w-1/2 flex items-center justify-center">
-              <Image
-                src="/assets/images/sh3logo.png"
-                alt="Logo"
-                width={250}
-                height={250}
-                className="w-40 h-40 md:w-64 md:h-64 object-cover rounded-lg"
-              />
+          <div className="flex flex-col md:flex-row items-center gap-12 max-w-306 mx-auto mb-16 px-4 md:px-0 my-4 ">
+            {/* Gambar */}
+            <div className="relative w-full md:w-1/2 flex justify-center mb-16 sm:mb-0">
+              <div className="relative">
+                <Image
+                  src="/assets/images/aboutimage1.jpg" // ganti dengan foto lari SH3 yang representatif
+                  alt="SH3 Running"
+                  width={500}
+                  height={500}
+                  className="w-full max-w-md rounded-2xl object-cover shadow-lg"
+                />
+
+                {/* Badge tahun */}
+                <div className="absolute -top-6 -left-6 w-20 h-20 rounded-full bg-yellow-400 flex flex-col items-center justify-center text-center shadow-md">
+                  <span className="text-lg font-bold leading-none">30+</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wide">Tahun</span>
+                </div>
+
+                {/* Foto kecil melayang */}
+                <div className="absolute -bottom-8 -right-8 w-40 h-40 rounded-xl overflow-hidden border-4 border-white shadow-lg hidden sm:block">
+                  <Image
+                    src="/assets/images/sh3logo.png" // ganti dengan foto kegiatan/komunitas
+                    alt="SH3 Activity"
+                    width={200}
+                    height={200}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
             </div>
-            <div className="w-full p-auto md:w-1/2 flex flex-col gap-4">
-              <p className="text-4xl font-bold font-young ">
-                A Drinking Club With a Running Problem
-              </p>
-              <h2 className="text-3xl font-bold font-young ">
-                Samarinda <span className="text-primary-text">Hash</span> House
-                Harriers
+
+            {/* Teks */}
+            <div className="w-full md:w-1/2 flex flex-col gap-4">
+              <span className="text-primary-text font-bold text-sm uppercase tracking-widest">
+                Siapa Kami
+              </span>
+              <h2 className="text-4xl font-bold font-young leading-tight">
+                Lahir dari Jantung <span className="text-primary-text">Kalimantan</span>
               </h2>
               <p className="text-neutral-text leading-relaxed font-medium">
                 SH3 (Samarinda Hash House Harriers) adalah komunitas olahraga lari berbasis di Kota
@@ -171,17 +232,44 @@ const documents = [
                 menggabungkan aktivitas lari trail dengan semangat kebersamaan dan persahabatan.
               </p>
               <p className="text-neutral-text leading-relaxed font-medium">
-                SH3 secara rutin menyelenggarakan kegiatan lari mingguan yang diikuti oleh peserta dari
-                berbagai latar belakang, mulai dari pelari pemula hingga atlet berpengalaman, dengan
-                jumlah rata-rata 200 peserta setiap minggunya. Kegiatan ini menjadi wadah komunitas yang
-                aktif, sehat, dan berdampak positif bagi lingkungan serta masyarakat sekitar.
+                Kami bukan sekadar klub lari — kami adalah klub minum dengan masalah lari, dan bangga akan
+                itu. Dari pelari pemula hingga atlet berpengalaman, setiap hasher menemukan rumah di
+                lingkaran kami. Trail berganti setiap minggu, namun semangatnya tak pernah pudar.
               </p>
+
+              {/* Divider dekoratif */}
+              <div className="flex items-center gap-4 my-2">
+                <div className="flex-1 h-px bg-neutral-normal/30" />
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="w-2 h-2 rotate-45 bg-primary-text/30" />
+                  ))}
+                </div>
+                <div className="flex-1 h-px bg-neutral-normal/30" />
+              </div>
+
+              {/* 4 Poin kecil (pengganti card besar) */}
+              <div className="flex flex-wrap gap-3">
+                {[
+                  "Lari Setiap Minggu",
+                  "Down Down",
+                  "Trail Alam Borneo",
+                  "Komunitas Inklusif",
+                ].map((point) => (
+                  <span
+                    key={point}
+                    className="px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 text-sm font-semibold border border-emerald-200"
+                  >
+                    {point}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </RevealSection>
 
         {/* Highlight Cards */}
-        <RevealSection direction="up">
+        {/* <RevealSection direction="up">
           <div className="flex flex-col gap-4 max-w-306 mx-auto px-4 md:px-0">
             <div className="flex flex-col md:flex-row w-full justify-center gap-4">
               <div className="flex flex-col flex-1 border-4 border-emerald-600 text-emerald-600 rounded-sm p-8">
@@ -210,7 +298,7 @@ const documents = [
               </div>
             </div>
           </div>
-        </RevealSection>
+        </RevealSection> */}
 
         {/* Sejarah */}
         <RevealSection direction="up">
@@ -240,73 +328,73 @@ const documents = [
 
         {/* 🔥 TABEL DOKUMEN - Pengganti iframe PDF */}
         {/* 🔥 TABEL DOKUMEN */}
-<RevealSection direction="up">
-  <div className="flex flex-col max-w-306 mx-auto px-4 md:px-0 py-8">
-    <div className="font-bold text-4xl font-young md:p-4 mb-6">
-      Dokumen Legal Perkumpulan
-    </div>
-    
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse bg-white rounded-lg shadow-md overflow-hidden">
-        <thead>
-          <tr className="bg-primary-light border-b-2 border-neutral-normal">
-            <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">No</th>
-            <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">Nama Dokumen</th>
-            <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">Tipe</th>
-            <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">No. Dokumen</th>
-            <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">Tanggal</th>
-            <th className="px-6 py-4 text-center font-bold text-sm uppercase tracking-wider">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {documents.map((doc, index) => (
-            <tr 
-              key={doc.id} 
-              className="border-b border-neutral-light hover:bg-primary-light/50 transition-colors"
-            >
-              <td className="px-6 py-4 text-sm font-medium text-neutral-dark">
-                {index + 1}
-              </td>
-              <td className="px-6 py-4">
-                <div className="flex flex-col">
-                  <span className="font-medium text-gray-800">{doc.title}</span>
-                  <span className="text-xs text-gray-500">{doc.description}</span>
-                </div>
-              </td>
-              <td className="px-6 py-4">
-                <span className="inline-block px-3 py-1 text-xs font-semibold bg-emerald-100 text-emerald-700 rounded-full">
-                  {doc.type}
-                </span>
-              </td>
-              <td className="px-6 py-4 text-sm font-mono text-neutral-dark">
-                {doc.documentNumber || "-"}
-              </td>
-              <td className="px-6 py-4 text-sm text-neutral-dark">
-                {doc.date}
-              </td>
-              <td className="px-6 py-4 text-center">
-                <a
-                  href={doc.driveLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-secondary-bg text-white font-medium rounded-md hover:bg-secondary-bg-hover transition-colors text-sm"
-                >
-                  <EyeIcon className="w-4 h-4" />
-                  Lihat
-                  <ArrowTopRightOnSquareIcon className="w-3 h-3" />
-                </a>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        <RevealSection direction="up">
+          <div className="flex flex-col max-w-306 mx-auto px-4 md:px-0 py-8">
+            <div className="font-bold text-4xl font-young md:p-4 mb-6">
+              Dokumen Legal Perkumpulan
+            </div>
 
-    <p className="text-sm text-neutral-dark mt-4 text-center">
-      Klik tombol <b>Lihat</b> untuk membuka dokumen di Google Drive
-    </p>
-  </div>
-</RevealSection>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse bg-white rounded-lg shadow-md overflow-hidden">
+                <thead>
+                  <tr className="bg-primary-light border-b-2 border-neutral-normal">
+                    <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">No</th>
+                    <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">Nama Dokumen</th>
+                    <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">Tipe</th>
+                    <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">No. Dokumen</th>
+                    <th className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">Tanggal</th>
+                    <th className="px-6 py-4 text-center font-bold text-sm uppercase tracking-wider">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {documents.map((doc, index) => (
+                    <tr
+                      key={doc.id}
+                      className="border-b border-neutral-light hover:bg-primary-light/50 transition-colors"
+                    >
+                      <td className="px-6 py-4 text-sm font-medium text-neutral-dark">
+                        {index + 1}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-800">{doc.title}</span>
+                          <span className="text-xs text-gray-500">{doc.description}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="inline-block px-3 py-1 text-xs font-semibold bg-emerald-100 text-emerald-700 rounded-full">
+                          {doc.type}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm font-mono text-neutral-dark">
+                        {doc.documentNumber || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-neutral-dark">
+                        {doc.date}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <a
+                          href={doc.driveLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-secondary-bg text-white font-medium rounded-md hover:bg-secondary-bg-hover transition-colors text-sm"
+                        >
+                          <EyeIcon className="w-4 h-4" />
+                          Lihat
+                          <ArrowTopRightOnSquareIcon className="w-3 h-3" />
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <p className="text-sm text-neutral-dark mt-4 text-center">
+              Klik tombol <b>Lihat</b> untuk membuka dokumen di Google Drive
+            </p>
+          </div>
+        </RevealSection>
 
         {/* Struktur Organisasi dari API */}
         <RevealSection direction="up">
@@ -342,11 +430,7 @@ const documents = [
           </div>
         </RevealSection>
 
-        <RevealSection direction="up">
-          <div className="w-full">
-            <TotalStatistic />
-          </div>
-        </RevealSection>
+
       </div>
     </Container>
   );

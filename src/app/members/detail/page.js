@@ -353,7 +353,7 @@ export default function DetailMember() {
           {/* Data User — muncul setelah ditemukan */}
           {isMounted && userData && (
             <RevealSection direction="up">
-              <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 bg-primary-light border-neutral-normal rounded-md">
+              <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 bg-primary-light border-neutral-normal rounded-md my-4">
                 <h2 className="text-3xl font-bold font-young text-neutral-normal">
                   Data Member
                 </h2>
@@ -388,7 +388,7 @@ export default function DetailMember() {
                   <div className="flex items-center">
                     <button
                       onClick={() => setShowEditForm(true)}
-                      className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-2xl font-young w-1/4"
+                      className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-lg text-white mt-4 md:text-2xl font-young w-1/2 md:w-1/4"
                     >
                       <PencilIcon className="m-2" width={24} height={24} /> Edit
                       Profil
@@ -472,7 +472,7 @@ export default function DetailMember() {
           {/* Form Edit Profile */}
           {isMounted && userData && showEditForm && (
             <RevealSection direction="up">
-              <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 border-neutral-normal bg-primary-light rounded-md">
+              <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 border-neutral-normal bg-primary-light rounded-md my-4">
                 <div className="flex justify-between items-center">
                   <h2 className="text-3xl font-bold font-young text-neutral-normal">
                     Edit Profil

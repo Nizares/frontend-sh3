@@ -174,7 +174,7 @@ export default function UpcomingEvents() {
             className="h-128 w-full flex object-cover mt-4"
           />
 
-          <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3 my-8">
+          <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3 my-8 mx-4 md:mx-0">
             <div className="col-span-1 flex flex-col md:col-span-2">
               <h2 className="text-2xl font-bold ">Tentang Event</h2>
               <div className="text-sm">{event.description}</div>
@@ -191,7 +191,7 @@ export default function UpcomingEvents() {
               {/* Sudah join tapi belum dikonfirmasi admin */}
               {isPending && (
                 <div className="flex flex-col gap-2 m-10">
-                  <div className="flex justify-center items-center bg-neutral-normal-active h-20 font-bold text-xl text-white cursor-not-allowed rounded-md">
+                  <div className="flex justify-center items-center bg-neutral-normal-active h-20 font-bold text-xl text-white cursor-not-allowed rounded-md text-center">
                     Menunggu Konfirmasi Admin
                   </div>
                   <p className="text-center text-sm text-gray-500 rounded-md">

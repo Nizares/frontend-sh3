@@ -127,7 +127,7 @@ export default function Home() {
 
             {/* Paragraf + tombol: fade dari bawah */}
             <HeroAnimate animation="fadeUp" delay={700}>
-              <p className="py-5 text-center font-semibold">
+              <p className="py-5 text-center font-semibold mx-4 md:mx-0">
                 A Drinking Club With a Running Problem, Kami mengadakan lari
                 mingguan di berbagai sudut kota dan alam Kalimantan, dilanjutkan
                 dengan sesi down-down yang penuh keceriaan.
@@ -173,7 +173,7 @@ export default function Home() {
         </div>
       </RevealSection>
 
-      <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light p-8">
+      <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light p-4 md:p-8">
         <BatikOverlay />
         <div className="max-w-306 mx-auto px-4 md:px-0">
 

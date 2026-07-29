@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     statusBadge: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: "bold",
         textAlign: "center",
         marginBottom: 32,
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     statusBadgePaid: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: "bold",
         textAlign: "center",
         marginBottom: 32,
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     },
     tableHeader: {
         flexDirection: "row",
-        backgroundColor: "#00973D", // ← warna hijau SH3
+        backgroundColor: "#f59e0b",
     },
     tableRow: {
         flexDirection: "row",
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         borderTopWidth: 1,
         borderColor: "#000000",
-        backgroundColor: "#00973D",
+        backgroundColor: "#f59e0b",
     },
     colQty: {
         width: "10%",
@@ -123,7 +123,6 @@ const styles = StyleSheet.create({
     headerText: {
         fontSize: 11,
         fontWeight: "bold",
-        color: "#ffffff",
     },
     statusMessage: {
         fontSize: 11,
@@ -153,7 +152,7 @@ export default function InvoiceEventPDF({
     event_title,
     event_price,
     event_qty,
-    status = "paid", // ← tambah status (default: paid)
+    status = "paid",
 }) {
     const isPending = status === "pending";
 
@@ -168,14 +167,14 @@ export default function InvoiceEventPDF({
                 {/* Title */}
                 <Text style={styles.title}>INVOICE</Text>
 
-                {/* 🔥 STATUS BADGE */}
+                {/* Status Badge */}
                 {isPending ? (
                     <View style={styles.statusBadge}>
-                        <Text>Menunggu Konfirmasi</Text>
+                        <Text>⏳ Menunggu Konfirmasi</Text>
                     </View>
                 ) : (
                     <View style={styles.statusBadgePaid}>
-                        <Text>Lunas / Aktif</Text>
+                        <Text>✅ Lunas / Aktif</Text>
                     </View>
                 )}
 
@@ -218,14 +217,14 @@ export default function InvoiceEventPDF({
                     </View>
                 </View>
 
-                {/* 🔥 STATUS MESSAGE */}
+                {/* Status Message */}
                 {isPending ? (
                     <Text style={styles.statusMessage}>
-                        Pembayaran sedang diverifikasi oleh admin. QR Code akan aktif setelah dikonfirmasi.
+                        ⏳ Pembayaran sedang diverifikasi oleh admin. QR Code akan aktif setelah dikonfirmasi.
                     </Text>
                 ) : (
                     <Text style={styles.statusMessagePaid}>
-                        Pembayaran telah dikonfirmasi. QR Code aktif!
+                        ✅ Pembayaran telah dikonfirmasi. QR Code aktif!
                     </Text>
                 )}
 

@@ -45,12 +45,12 @@ export default function RegisterEvent() {
     const [showQR, setShowQR] = useState(false);
     const [qrCode, setQrCode] = useState(null);
     const [attendanceCode, setAttendanceCode] = useState(null);
-    const [orderStatus, setOrderStatus] = useState(null); // ← tracking status
+    const [orderStatus, setOrderStatus] = useState(null);
 
     const selectedBank = paymentOptions.find((p) => p.value === payOptions);
     const router = useRouter();
 
-    // Ambil data event
+    // Ambil data event + cek status order
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const eventId = params.get("id") || 1;
@@ -66,7 +66,6 @@ export default function RegisterEvent() {
                             const joined = res.data.data.find(e => e.id === Number(eventId));
                             if (joined?.order) {
                                 setOrderStatus(joined.order.status);
-                                // Jika sudah paid/free, tampilkan QR
                                 if (joined.order.status === "paid" || joined.order.status === "free") {
                                     const attendance = joined.order.attendance;
                                     if (attendance?.qr_code_image) {
@@ -77,7 +76,7 @@ export default function RegisterEvent() {
                                 }
                             }
                         })
-                        .catch(() => { });
+                        .catch(() => {});
                 }
             })
             .catch((err) => console.error(err));
@@ -85,8 +84,22 @@ export default function RegisterEvent() {
 
     // Polling untuk cek status order (jika pending)
     useEffect(() => {
+        let intervalId = null;
+        let timeoutId = null;
+
         if (orderStatus === "pending" && event) {
-            const interval = setInterval(async () => {
+            // Timeout 5 menit
+            timeoutId = setTimeout(() => {
+                if (intervalId) clearInterval(intervalId);
+                Swal.fire({
+                    icon: "info",
+                    title: "Pembayaran Masih Diproses",
+                    text: "Jika sudah lebih dari 5 menit, silakan hubungi admin.",
+                    confirmButtonText: "OK",
+                });
+            }, 300000);
+
+            intervalId = setInterval(async () => {
                 try {
                     const res = await eventService.getMyEvents();
                     const joined = res.data.data.find(e => e.id === event.id);
@@ -94,7 +107,6 @@ export default function RegisterEvent() {
                         const newStatus = joined.order.status;
                         if (newStatus !== orderStatus) {
                             setOrderStatus(newStatus);
-                            // Jika sudah paid, tampilkan QR
                             if (newStatus === "paid" || newStatus === "free") {
                                 const attendance = joined.order.attendance;
                                 if (attendance?.qr_code_image) {
@@ -107,17 +119,21 @@ export default function RegisterEvent() {
                                         text: "QR Code tiket kamu sudah aktif.",
                                     });
                                 }
-                                clearInterval(interval);
+                                if (intervalId) clearInterval(intervalId);
+                                if (timeoutId) clearTimeout(timeoutId);
                             }
                         }
                     }
                 } catch (err) {
                     console.error("Polling error:", err);
                 }
-            }, 5000); // Cek setiap 5 detik
-
-            return () => clearInterval(interval);
+            }, 5000);
         }
+
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+            if (timeoutId) clearTimeout(timeoutId);
+        };
     }, [orderStatus, event]);
 
     async function submitPembayaran(e) {
@@ -155,7 +171,7 @@ export default function RegisterEvent() {
             const invoice_number = order.invoice_number;
             const ticket_code = order.ticket_code;
 
-            // 🔥 EVENT GRATIS - QR LANGSUNG MUNCUL
+            // 🔥 EVENT GRATIS
             if (order.status === "free") {
                 const qr = attendance?.qr_code_image;
                 const code = attendance?.qr_code || ticket_code;
@@ -173,7 +189,7 @@ export default function RegisterEvent() {
                 return;
             }
 
-            // 🔥 EVENT BERBAYAR - butuh upload payment
+            // 🔥 EVENT BERBAYAR
             if (!paymentFile) {
                 Swal.fire({ icon: "warning", title: "Upload bukti bayar dulu!" });
                 return;
@@ -197,7 +213,7 @@ export default function RegisterEvent() {
             });
 
         } catch (err) {
-            console.error("🔴 Order error:", err.response?.data);
+            console.error("Order error:", err.response?.data);
             setOrderResult(null);
             setShowQR(false);
 
@@ -493,7 +509,7 @@ export default function RegisterEvent() {
                         {isPending && (
                             <RevealSection direction="up">
                                 <div className="flex flex-col items-center gap-2 bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6">
-                                    <div className="text-2xl font-bold text-yellow-600">⏳ Menunggu Konfirmasi</div>
+                                    <div className="text-2xl font-bold text-yellow-600">Menunggu Konfirmasi</div>
                                     <p className="text-gray-600 text-center">
                                         Pembayaranmu sedang diverifikasi oleh admin.
                                         <br />
@@ -578,7 +594,6 @@ export default function RegisterEvent() {
                         {/* 🔥 TOMBOL SUBMIT */}
                         <RevealSection direction="up">
                             <div className="flex flex-col gap-4">
-                                {/* Jika sudah paid/free, tombol disembunyikan */}
                                 {!isPaid && !showQR && (
                                     <button
                                         className={`flex justify-center font-young rounded-md items-center ${submitLoading ? "bg-neutral-normal-active" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}  h-16 font-bold text-xl text-white m-10 md:text-3xl`}
@@ -607,7 +622,8 @@ export default function RegisterEvent() {
                         </RevealSection>
                     </Form>
 
-                    {orderResult && !showQR && (
+                    {/* 🔥 INVOICE - TETAP MUNCUL UNTUK SEMUA STATUS */}
+                    {orderResult && (
                         <RevealSection direction="up">
                             <InvoiceEvent
                                 name={user?.name || ""}
@@ -617,7 +633,7 @@ export default function RegisterEvent() {
                                 event_title={event.title}
                                 event_price={formatRupiah(event.price)}
                                 event_qty="1"
-                                status={orderStatus} // ← kirim status
+                                status={orderStatus}
                             />
                         </RevealSection>
                     )}

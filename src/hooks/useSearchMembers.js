@@ -34,8 +34,6 @@ export default function useSearchMembers() {
 
         if (user) {
             setUserData(user);
-            console.log(user);
-            
             // 🔥 UPDATE AUTH CONTEXT - biar navbar berubah!
             setAuthUser(user);
             

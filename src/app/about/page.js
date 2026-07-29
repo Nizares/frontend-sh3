@@ -205,12 +205,12 @@ export default function About() {
                 </div>
 
                 {/* Foto kecil melayang */}
-                <div className="absolute -bottom-8 -right-8 w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-lg hidden sm:block">
+                <div className="absolute -bottom-8 -right-8 w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-lg hidden sm:block p-4 bg-yellow-400/40">
                   <Image
                     src="/assets/images/sh3logo.png" // ganti dengan foto kegiatan/komunitas
                     alt="SH3 Activity"
-                    width={200}
-                    height={200}
+                    width={150}
+                    height={150}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -338,16 +338,13 @@ export default function About() {
               Samarinda Hash House Harriers (SH3) merupakan salah satu komunitas
               olahraga non-prestasi tertua dan paling legendaris di Samarinda
               yang diperkirakan telah berdiri sejak era 1980-an.
-            </div>
-            <div className="indent-32 text-justify">
+
               Selama lebih dari tiga puluh tahun berdiri, SH3 Samarinda berhasil
               mempertahankan eksistensinya secara konsisten lintas generasi.
-            </div>
-            <div className="indent-32 text-justify">
+
               Salah satu kunci utama mengapa SH3 bisa bertahan sangat lama
               adalah sifatnya yang sangat inklusif dan kekeluargaan.
-            </div>
-            <div className="indent-32 text-justify">
+
               Memasuki era modern saat ini, SH3 Samarinda tidak lantas meredup
               di tengah bermunculannya klub lari baru.
             </div>

@@ -14,12 +14,10 @@ export default function PasswordInput({
 }) {
   const [showPassword, setShowPassword] = useState(false);
 
-  console.log("🔵 PasswordInput render - id:", id, "showPassword:", showPassword);
 
   const togglePassword = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("🔵 Toggle clicked for:", id, "current state:", showPassword);
     setShowPassword(!showPassword);
   };
 

@@ -28,29 +28,32 @@ export default function Home() {
   useEffect(() => {
     Promise.all([
       eventService.getAll({ per_page: 100 }),
-      categoryService.getAll()
+      categoryService.getAll(),
     ])
       .then(([eventsRes, categoriesRes]) => {
         const data = eventsRes.data.data ?? [];
         setEvents(Array.isArray(data) ? data : []);
         setCategories(categoriesRes.data.data ?? []);
       })
-      .catch(err => console.error(err))
+      .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 
   // ====== FILTER EVENTS ======
-  const upcomingEvents = events.filter(item =>
-    new Date(item.start_date) > now
-  ).sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+  const upcomingEvents = events
+    .filter((item) => new Date(item.start_date) > now)
+    .sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
 
-  const ongoingEvents = events.filter(item =>
-    new Date(item.start_date) <= now && new Date(item.end_date) >= now
-  ).sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+  const ongoingEvents = events
+    .filter(
+      (item) =>
+        new Date(item.start_date) <= now && new Date(item.end_date) >= now,
+    )
+    .sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
 
-  const pastEvents = events.filter(item =>
-    new Date(item.end_date) < now
-  ).sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
+  const pastEvents = events
+    .filter((item) => new Date(item.end_date) < now)
+    .sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
 
   // ====== GET EVENTS BERDASARKAN TAB ======
   const getEventsByTab = () => {
@@ -67,8 +70,10 @@ export default function Home() {
   };
 
   // ====== FILTER BERDASARKAN KATEGORI ======
-  const displayedEvents = getEventsByTab()
-    .filter(item => activeCategory === "all" || item.category?.name === activeCategory);
+  const displayedEvents = getEventsByTab().filter(
+    (item) =>
+      activeCategory === "all" || item.category?.name === activeCategory,
+  );
 
   // ====== RENDER EMPTY STATE ======
   const getEmptyMessage = () => {
@@ -96,7 +101,11 @@ export default function Home() {
         />
         <div className="flex flex-col justify-center items-center h-full mt-16">
           {/* Logo: muncul dari atas */}
-          <HeroAnimate animation="fadeDown" delay={0} className="flex flex-col p-8 w-full md:w-1/2 items-center">
+          <HeroAnimate
+            animation="fadeDown"
+            delay={0}
+            className="flex flex-col p-8 w-full md:w-1/2 items-center"
+          >
             <Image
               src="/assets/images/sh3logo.png"
               alt="Logo"
@@ -119,8 +128,7 @@ export default function Home() {
             {/* Subjudul: fade dari bawah */}
             <HeroAnimate animation="fadeUp" delay={500}>
               <h2 className="text-3xl font-semibold font-young my-4 text-center">
-                On On! -{" "}
-                <span className="text-primary-text">#Adventure </span>
+                On On! - <span className="text-primary-text">#Adventure </span>
                 in <span className="text-emerald-400">Nature</span>
               </h2>
             </HeroAnimate>
@@ -176,15 +184,14 @@ export default function Home() {
       <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light p-4 md:p-8">
         <BatikOverlay />
         <div className="max-w-306 mx-auto px-4 md:px-0">
-
           <RevealSection direction="up">
             <div className="flex flex-col items-center justify-center pt-24 pb-8">
               <h1 className="text-5xl font-bold font-young ">Events</h1>
             </div>
           </RevealSection>
 
-          <div className="flex md:flex-row justify-center gap-8 flex-col">
-            
+          <div className="flex md:flex-row justify-center gap-8 flex-col my-4">
+            <h2 className="text-5xl font-bold font-young ">Major Events</h2>
             {loading ? (
               <p className="text-xl w-full text-center">Loading...</p>
             ) : (
@@ -192,12 +199,11 @@ export default function Home() {
                 const bigEvents = events
                   .filter(
                     (item) =>
-                      new Date(item.start_date) <= now &&
                       new Date(item.end_date) >= now &&
                       item.category?.name === "Major Events",
                   )
                   .sort(
-                    (a, b) => new Date(b.start_date) - new Date(a.start_date),
+                    (a, b) => new Date(a.start_date) - new Date(b.start_date),
                   )
                   .slice(0, 4);
 
@@ -234,19 +240,21 @@ export default function Home() {
           <div className="flex flex-row gap-4 border-b-2 border-neutral-normal mb-4">
             <button
               onClick={() => setActiveTab("upcoming")}
-              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${activeTab === "upcoming"
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${
+                activeTab === "upcoming"
                   ? "text-secondary-bg border-b-4 border-secondary-bg"
                   : "text-neutral-dark hover:text-secondary-bg"
-                }`}
+              }`}
             >
               Upcoming Events
             </button>
             <button
               onClick={() => setActiveTab("ongoing")}
-              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${activeTab === "ongoing"
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${
+                activeTab === "ongoing"
                   ? "text-secondary-bg border-b-4 border-secondary-bg"
                   : "text-neutral-dark hover:text-secondary-bg"
-                }`}
+              }`}
             >
               Ongoing Events
               {ongoingEvents.length > 0 && (
@@ -257,10 +265,11 @@ export default function Home() {
             </button>
             <button
               onClick={() => setActiveTab("past")}
-              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${activeTab === "past"
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${
+                activeTab === "past"
                   ? "text-secondary-bg border-b-4 border-secondary-bg"
                   : "text-neutral-dark hover:text-secondary-bg"
-                }`}
+              }`}
             >
               Past Events
             </button>
@@ -270,10 +279,11 @@ export default function Home() {
           <div className="flex flex-row flex-wrap gap-3 mb-8">
             <button
               onClick={() => setActiveCategory("all")}
-              className={`px-5 py-2 font-medium font-young transition-all rounded-md border-2 cursor-pointer ${activeCategory === "all"
+              className={`px-5 py-2 font-medium font-young transition-all rounded-md border-2 cursor-pointer ${
+                activeCategory === "all"
                   ? "bg-secondary-bg text-white border-secondary-bg"
                   : "bg-transparent text-neutral-dark border-neutral-normal hover:border-emerald-600 hover:text-emerald-600"
-                }`}
+              }`}
             >
               All Events
             </button>
@@ -281,13 +291,16 @@ export default function Home() {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.name)}
-                className={`px-5 py-2 font-medium font-young transition-all rounded-md border-2 cursor-pointer ${activeCategory === cat.name
+                className={`px-5 py-2 font-medium font-young transition-all rounded-md border-2 cursor-pointer ${
+                  activeCategory === cat.name
                     ? "bg-secondary-bg text-white border-secondary-bg"
                     : "bg-transparent text-neutral-dark border-neutral-normal hover:border-emerald-600 hover:text-emerald-600"
-                  }`}
+                }`}
               >
                 {cat.name}
-                <span className="ml-1 text-xs opacity-60">({cat.events_count || 0})</span>
+                <span className="ml-1 text-xs opacity-60">
+                  ({cat.events_count || 0})
+                </span>
               </button>
             ))}
           </div>

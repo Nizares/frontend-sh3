@@ -90,8 +90,8 @@ export default function Events() {
             </div>
           </RevealSection>
 
-          <div className="flex md:flex-row justify-center gap-8 flex-col">
-            
+          <div className="flex md:flex-row justify-center gap-8 flex-col my-4">
+            <h2 className="text-5xl font-bold font-young ">Major Events</h2>
             {loading ? (
               <p className="text-xl w-full text-center">Loading...</p>
             ) : (
@@ -99,12 +99,11 @@ export default function Events() {
                 const bigEvents = events
                   .filter(
                     (item) =>
-                      new Date(item.start_date) <= now &&
                       new Date(item.end_date) >= now &&
                       item.category?.name === "Major Events",
                   )
                   .sort(
-                    (a, b) => new Date(b.start_date) - new Date(a.start_date),
+                    (a, b) => new Date(a.start_date) - new Date(b.start_date),
                   )
                   .slice(0, 4);
 

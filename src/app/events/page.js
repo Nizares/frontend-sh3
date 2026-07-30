@@ -6,6 +6,7 @@ import BatikOverlay from "@/src/components/BatikOverlay";
 import { RevealSection } from "@/src/components/RevealSection";
 import { eventService } from "@/src/services/eventService";
 import { categoryService } from "@/src/services/categoryService";
+import BigEventCard from "@/src/components/BigEventCard";
 
 export default function Events() {
   const [events, setEvents] = useState([]);
@@ -89,51 +90,52 @@ export default function Events() {
               <h1 className="text-5xl font-bold font-young">Events</h1>
             </div>
           </RevealSection>
+          <div className="flex flex-col">
+            <h2 className="text-5xl font-bold font-young text-center">Major Events</h2>
+            <div className="flex md:flex-row justify-center gap-8 flex-col my-4">
+              {loading ? (
+                <p className="text-xl w-full text-center">Loading...</p>
+              ) : (
+                (() => {
+                  const bigEvents = events
+                    .filter(
+                      (item) =>
+                        new Date(item.end_date) >= now &&
+                        item.category?.name === "Major Events",
+                    )
+                    .sort(
+                      (a, b) => new Date(a.start_date) - new Date(b.start_date),
+                    )
+                    .slice(0, 4);
 
-          <div className="flex md:flex-row justify-center gap-8 flex-col my-4">
-            <h2 className="text-5xl font-bold font-young ">Major Events</h2>
-            {loading ? (
-              <p className="text-xl w-full text-center">Loading...</p>
-            ) : (
-              (() => {
-                const bigEvents = events
-                  .filter(
-                    (item) =>
-                      new Date(item.end_date) >= now &&
-                      item.category?.name === "Major Events",
-                  )
-                  .sort(
-                    (a, b) => new Date(a.start_date) - new Date(b.start_date),
-                  )
-                  .slice(0, 4);
-
-                return bigEvents.length === 0 ? (
-                  <p className="text-xl text-center text-neutral-dark py-12 w-full">
-                    Belum ada Major Events. Pantau terus ya!
-                  </p>
-                ) : (
-                  bigEvents.map((item, i) => (
-                    <RevealSection
-                      key={i}
-                      direction="up"
-                      delay={i * 100}
-                      className="flex justify-center w-full"
-                    >
-                      <BigEventCard
-                        key={item.id}
-                        id={item.id}
-                        title={item.title}
-                        start_date={item.start_date}
-                        end_date={item.end_date}
-                        category={item.category?.name}
-                        img={item.image_url}
-                        status={item.status}
-                      />
-                    </RevealSection>
-                  ))
-                );
-              })()
-            )}
+                  return bigEvents.length === 0 ? (
+                    <p className="text-xl text-center text-neutral-dark py-12 w-full">
+                      Belum ada Major Events. Pantau terus ya!
+                    </p>
+                  ) : (
+                    bigEvents.map((item, i) => (
+                      <RevealSection
+                        key={i}
+                        direction="up"
+                        delay={i * 100}
+                        className="flex justify-center w-full"
+                      >
+                        <BigEventCard
+                          key={item.id}
+                          id={item.id}
+                          title={item.title}
+                          start_date={item.start_date}
+                          end_date={item.end_date}
+                          category={item.category?.name}
+                          img={item.image_url}
+                          status={item.status}
+                        />
+                      </RevealSection>
+                    ))
+                  );
+                })()
+              )}
+            </div>
           </div>
 
           {/* ====== TAB FILTER ====== */}

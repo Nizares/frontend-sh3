@@ -183,6 +183,53 @@ export default function Home() {
             </div>
           </RevealSection>
 
+          <div className="flex md:flex-row justify-center gap-8 flex-col">
+            
+            {loading ? (
+              <p className="text-xl w-full text-center">Loading...</p>
+            ) : (
+              (() => {
+                const bigEvents = events
+                  .filter(
+                    (item) =>
+                      new Date(item.start_date) <= now &&
+                      new Date(item.end_date) >= now &&
+                      item.category?.name === "Major Events",
+                  )
+                  .sort(
+                    (a, b) => new Date(b.start_date) - new Date(a.start_date),
+                  )
+                  .slice(0, 4);
+
+                return bigEvents.length === 0 ? (
+                  <p className="text-xl text-center text-neutral-dark py-12 w-full">
+                    Belum ada Major Events. Pantau terus ya!
+                  </p>
+                ) : (
+                  bigEvents.map((item, i) => (
+                    <RevealSection
+                      key={i}
+                      direction="up"
+                      delay={i * 100}
+                      className="flex justify-center w-full"
+                    >
+                      <BigEventCard
+                        key={item.id}
+                        id={item.id}
+                        title={item.title}
+                        start_date={item.start_date}
+                        end_date={item.end_date}
+                        category={item.category?.name}
+                        img={item.image_url}
+                        status={item.status}
+                      />
+                    </RevealSection>
+                  ))
+                );
+              })()
+            )}
+          </div>
+
           {/* ====== TAB FILTER ====== */}
           <div className="flex flex-row gap-4 border-b-2 border-neutral-normal mb-4">
             <button

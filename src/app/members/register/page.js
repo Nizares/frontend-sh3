@@ -5,9 +5,9 @@ import SelectInput from "@/src/components/SelectInput";
 import { useState } from "react";
 import { memberService } from "@/src/services/memberService";
 import ImageUpload from "@/src/components/ImageUpload";
+import PasswordInput from "@/src/components/passwordInput";
 import Swal from "sweetalert2";
 import { RevealSection } from "@/src/components/RevealSection";
-import PasswordInput from "@/src/components/passwordInput";
 import BatikOverlay from "@/src/components/BatikOverlay";
 
 const genderOptions = [
@@ -22,29 +22,30 @@ const bloodTypeOptions = [
     { value: "O", label: "O" },
 ];
 
+const jerseySizeOptions = [
+    { value: "XS", label: "XS" },
+    { value: "S", label: "S" },
+    { value: "M", label: "M" },
+    { value: "L", label: "L" },
+    { value: "XL", label: "XL" },
+    { value: "XXL", label: "XXL" },
+];
+
 export default function Members() {
     const [gender, setGender] = useState("");
     const [bloodType, setBloodType] = useState("");
-    const [photo, setPhoto] = useState(null);
-    const [identityPhoto, setIdentityPhoto] = useState(null);
+    const [jerseySize, setJerseySize] = useState("");
     const [submitLoading, setSubmitLoading] = useState(false);
-    const [passwordConfirm, setPasswordConfirm] = useState("");
-    const [password, setPassword] = useState("");
     const [formData, setFormData] = useState({
-        username: "", // ← TAMBAH
         name: "",
         email: "",
         phone: "",
-        birthdate: "",
+        date_of_birth: "",
+        address: "",
         emergency_contact: "",
         emergency_phone: "",
-        allergy_history: "",
-        identity_number: "",
+        medical_conditions: "",
     });
-
-    // 🔥 State untuk validasi password (tetap pakai state untuk real-time)
-    const [passwordError, setPasswordError] = useState("");
-    const [confirmError, setConfirmError] = useState("");
 
     function handleFormChange(e) {
         setFormData((prev) => ({
@@ -53,54 +54,10 @@ export default function Members() {
         }));
     }
 
-    // 🔥 Validasi password real-time
-    function handlePasswordChange(e) {
-        const newPassword = e.target.value;
-        setPassword(newPassword);
-        
-        // Cek panjang password
-        if (newPassword.length > 0 && newPassword.length < 6) {
-            setPasswordError("Password minimal 6 karakter!");
-        } else {
-            setPasswordError("");
-        }
-        
-        // Cek konfirmasi password
-        if (passwordConfirm.length > 0 && newPassword !== passwordConfirm) {
-            setConfirmError("Password tidak cocok!");
-        } else if (passwordConfirm.length > 0 && newPassword === passwordConfirm) {
-            setConfirmError("");
-        }
-    }
-
-    // 🔥 Validasi konfirmasi password real-time
-    function handleConfirmPasswordChange(e) {
-        const newConfirm = e.target.value;
-        setPasswordConfirm(newConfirm);
-        
-        if (newConfirm.length > 0 && password !== newConfirm) {
-            setConfirmError("Password tidak cocok!");
-        } else if (newConfirm.length > 0 && password === newConfirm) {
-            setConfirmError("");
-        } else {
-            setConfirmError("");
-        }
-    }
-
     async function handleRegister(e) {
         e.preventDefault();
 
-        // 🔥 Validasi username
-        if (!formData.username) {
-            Swal.fire({ icon: "warning", title: "Username wajib diisi!" });
-            return;
-        }
-        if (!formData.username.match(/^[a-zA-Z0-9_]+$/)) {
-            Swal.fire({ icon: "warning", title: "Username hanya boleh huruf, angka, dan underscore!" });
-            return;
-        }
-
-        if (!formData.name || !formData.email || !formData.phone || !formData.birthdate) {
+        if (!formData.name || !formData.email || !formData.phone) {
             Swal.fire({ icon: "warning", title: "Pastikan data wajib terisi semua!" });
             return;
         }
@@ -109,116 +66,62 @@ export default function Members() {
             return;
         }
 
-        // 🔥 Validasi password sebelum submit
-        if (password !== passwordConfirm) {
-            setConfirmError("Password tidak cocok!");
-            Swal.fire({ icon: "warning", title: "Password tidak cocok!" });
-            return;
-        }
-        if (password.length < 6) {
-            setPasswordError("Password minimal 6 karakter!");
-            Swal.fire({ icon: "warning", title: "Password minimal 6 karakter!" });
-            return;
-        }
-
         setSubmitLoading(true);
         try {
-            const form = new FormData();
-            form.append("username", formData.username); // ← TAMBAH
-            form.append("name", formData.name);
-            form.append("email", formData.email);
-            form.append("phone", formData.phone);
-            form.append("birthdate", formData.birthdate);
-            form.append("password", password);
-            form.append("password_confirmation", passwordConfirm);
-            form.append("gender", gender);
-            if (bloodType) form.append("blood_type", bloodType);
-            if (formData.emergency_contact) form.append("emergency_contact", formData.emergency_contact);
-            if (formData.emergency_phone) form.append("emergency_phone", formData.emergency_phone);
-            if (formData.allergy_history) form.append("allergy_history", formData.allergy_history);
-            if (formData.identity_number) form.append("identity_number", formData.identity_number);
-            if (photo) form.append("photo", photo);
-            if (identityPhoto) form.append("identity_photo", identityPhoto);
+            const payload = {
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                gender: gender,
+            };
 
-            const res = await memberService.register(form);
-            const { participant } = res.data.data;
+            // Tambah field opsional kalau diisi
+            if (formData.date_of_birth) payload.date_of_birth = formData.date_of_birth;
+            if (formData.address) payload.address = formData.address;
+            if (formData.emergency_contact) payload.emergency_contact = formData.emergency_contact;
+            if (formData.emergency_phone) payload.emergency_phone = formData.emergency_phone;
+            if (formData.medical_conditions) payload.medical_conditions = formData.medical_conditions;
+            if (bloodType) payload.blood_type = bloodType;
+            if (jerseySize) payload.jersey_size = jerseySize;
+
+            const res = await memberService.register(payload);
+            const { user, token } = res.data;
+
+            // Simpan token langsung
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(user));
 
             Swal.fire({
                 icon: "success",
                 title: "Registrasi Berhasil!",
                 html: `
-                    <p>Selamat datang, <strong>${participant.name}</strong>!</p>
-                    <p>Username kamu: <strong>${participant.username}</strong></p>
-                    <p>Hash ID kamu:</p>
-                    <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:8px 0">
-                        <h2 id="hash-id-text" style="font-size:2rem;font-weight:bold;color:#00973D;margin:0">
-                            ${participant.hash_id}
-                        </h2>
-                        <button 
-                            id="copy-btn"
-                            style="background:none;border:1px solid #00973D;border-radius:8px;padding:4px 8px;cursor:pointer;color:#00973D;font-size:0.8rem;transition:all 0.2s;"
-                        >
-                            Copy
-                        </button>
-                    </div>
-                    <p style="font-size:0.8rem;color:gray">Simpan Username dan Hash ID ini untuk login.</p>
+                    <p>Selamat datang, <strong>${user.name}</strong>!</p>
+                    <p>Email kamu:</p>
+                    <h2 style="font-size:1.5rem;font-weight:bold;color:#00973D;margin:8px 0">
+                        ${user.email}
+                    </h2>
+                    <p style="font-size:0.8rem;color:gray">Gunakan email ini untuk login.</p>
                 `,
-                didOpen: () => {
-                    const copyBtn = document.getElementById("copy-btn");
-                    const hashIdText = document.getElementById("hash-id-text");
-                    copyBtn.addEventListener("click", () => {
-                        navigator.clipboard.writeText(hashIdText.innerText).then(() => {
-                            copyBtn.innerText = "Copied!";
-                            copyBtn.style.borderColor = "gray";
-                            copyBtn.style.color = "gray";
-                            setTimeout(() => {
-                                copyBtn.innerText = "Copy";
-                                copyBtn.style.borderColor = "#00973D";
-                                copyBtn.style.color = "#00973D";
-                            }, 2000);
-                        });
-                    });
-                }
             });
 
-            localStorage.setItem("token", res.data.data.token);
-            localStorage.setItem("user", JSON.stringify(participant));
-
             // Reset form
-            setFormData({ 
-                username: "",
-                name: "", 
-                email: "", 
-                phone: "", 
-                birthdate: "", 
-                emergency_contact: "", 
-                emergency_phone: "", 
-                allergy_history: "", 
-                identity_number: "" 
+            setFormData({
+                name: "",
+                email: "",
+                phone: "",
+                date_of_birth: "",
+                address: "",
+                emergency_contact: "",
+                emergency_phone: "",
+                medical_conditions: "",
             });
             setGender("");
             setBloodType("");
-            setPhoto(null);
-            setIdentityPhoto(null);
-            setPassword("");
-            setPasswordConfirm("");
-            setPasswordError("");
-            setConfirmError("");
+            setJerseySize("");
 
         } catch (err) {
             const message = err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
             const errors = err.response?.data?.errors;
-            
-            // 🔥 Tampilkan error username khusus
-            if (errors?.username) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Username Tidak Valid!",
-                    text: errors.username.join(", "),
-                });
-                return;
-            }
-            
             Swal.fire({
                 icon: "error",
                 title: "Registrasi Gagal!",
@@ -231,7 +134,7 @@ export default function Members() {
 
     return (
         <Container className="flex flex-col w-full">
-            <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
+            <div className="relative bg-linear-to-b from-primary-light to-primary-light-hover">
                 <BatikOverlay />
                 <div className="gap-y-8 px-4 md:px-0 max-w-306 mx-auto">
                     <RevealSection direction="up">
@@ -246,203 +149,65 @@ export default function Members() {
 
                                 {/* Data Dasar */}
                                 <h3 className="text-xl font-bold font-young">Data Diri</h3>
-                                
-                                {/* 🔥 USERNAME - WAJIB DIISI */}
-                                <InputType 
-                                    label="Username" 
-                                    id="username" 
-                                    required 
-                                    type="text" 
-                                    name="username"
-                                    placeholder="john_doe" 
+                                <InputType label="Nama Lengkap" id="name" required type="text" name="name"
+                                    placeholder="John Doe" className="flex flex-col gap-2"
+                                    value={formData.name} onChange={handleFormChange} />
+                                <InputType label="Email" id="email" required type="email" name="email"
+                                    placeholder="you@example.com" className="flex flex-col gap-2"
+                                    value={formData.email} onChange={handleFormChange} />
+                                <InputType label="Nomor Telepon/WA" type="text" id="phone" required name="phone"
+                                    placeholder="08123456789" className="flex flex-col gap-2"
+                                    value={formData.phone} onChange={handleFormChange} />
+                                <InputType label="Tanggal Lahir" type="date" id="date_of_birth" name="date_of_birth"
                                     className="flex flex-col gap-2"
-                                    value={formData.username} 
-                                    onChange={handleFormChange} 
-                                />
-                                <p className="text-xs text-gray-500 -mt-2">
-                                    * Username hanya boleh huruf, angka, dan underscore (_)
-                                </p>
-
-                                <InputType 
-                                    label="Full Name" 
-                                    id="name" 
-                                    required 
-                                    type="text" 
-                                    name="name"
-                                    placeholder="John Doe" 
+                                    value={formData.date_of_birth} onChange={handleFormChange} />
+                                <SelectInput id="gender" name="gender" label="Gender" required
+                                    options={genderOptions} value={gender} placehold="Pilih Gender..."
+                                    onChange={(e) => setGender(e.target.value)} />
+                                <SelectInput id="blood_type" name="blood_type" label="Golongan Darah"
+                                    options={bloodTypeOptions} value={bloodType} placehold="Pilih Golongan Darah..."
+                                    onChange={(e) => setBloodType(e.target.value)} />
+                                <SelectInput id="jersey_size" name="jersey_size" label="Ukuran Jersey"
+                                    options={jerseySizeOptions} value={jerseySize} placehold="Pilih Ukuran Jersey..."
+                                    onChange={(e) => setJerseySize(e.target.value)} />
+                                <InputType label="Alamat" type="text" id="address" name="address"
+                                    placeholder="Jl. Merdeka No. 1, Samarinda"
                                     className="flex flex-col gap-2"
-                                    value={formData.name} 
-                                    onChange={handleFormChange} 
-                                />
-                                <InputType 
-                                    label="Email" 
-                                    id="email" 
-                                    required 
-                                    type="email" 
-                                    name="email"
-                                    placeholder="you@example.com" 
-                                    className="flex flex-col gap-2"
-                                    value={formData.email} 
-                                    onChange={handleFormChange} 
-                                />
-                                
-                                {/* 🔥 PASSWORD dengan error */}
-                                <div className="relative">
-                                    <PasswordInput
-                                        label="Password"
-                                        id="password"
-                                        required
-                                        name="password"
-                                        placeholder="••••••••"
-                                        className="flex flex-col gap-2"
-                                        value={password}
-                                        onChange={handlePasswordChange}
-                                    />
-                                    {passwordError && (
-                                        <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                                            {passwordError}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* 🔥 KONFIRMASI PASSWORD dengan error */}
-                                <div className="relative">
-                                    <PasswordInput
-                                        label="Konfirmasi Password"
-                                        id="password_confirmation"
-                                        required
-                                        name="password_confirmation"
-                                        placeholder="••••••••"
-                                        className="flex flex-col gap-2"
-                                        value={passwordConfirm}
-                                        onChange={handleConfirmPasswordChange}
-                                    />
-                                    {confirmError && (
-                                        <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                                            {confirmError}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <InputType 
-                                    label="Nomor Telepon/WA" 
-                                    type="text" 
-                                    id="phone" 
-                                    required 
-                                    name="phone"
-                                    placeholder="08123456789" 
-                                    className="flex flex-col gap-2"
-                                    value={formData.phone} 
-                                    onChange={handleFormChange} 
-                                />
-                                <InputType 
-                                    label="Tanggal Lahir" 
-                                    type="date" 
-                                    id="birthdate" 
-                                    required 
-                                    name="birthdate"
-                                    className="flex flex-col gap-2"
-                                    value={formData.birthdate} 
-                                    onChange={handleFormChange} 
-                                />
-                                <SelectInput 
-                                    id="gender" 
-                                    name="gender" 
-                                    label="Gender" 
-                                    required
-                                    options={genderOptions} 
-                                    value={gender} 
-                                    placehold="Pilih Gender..."
-                                    onChange={(e) => setGender(e.target.value)} 
-                                />
-                                <SelectInput 
-                                    id="blood_type" 
-                                    name="blood_type" 
-                                    label="Golongan Darah" 
-                                    required
-                                    options={bloodTypeOptions} 
-                                    value={bloodType} 
-                                    placehold="Pilih Golongan Darah..."
-                                    onChange={(e) => setBloodType(e.target.value)} 
-                                />
+                                    value={formData.address} onChange={handleFormChange} />
 
                                 {/* Kontak Darurat */}
                                 <hr className="border-t-2 border-neutral-normal mt-2" />
                                 <h3 className="text-xl font-bold font-young">Kontak Darurat</h3>
-                                <InputType 
-                                    label="Nama Kontak Darurat" 
-                                    id="emergency_contact" 
-                                    type="text" 
-                                    required
-                                    name="emergency_contact" 
-                                    placeholder="Nama keluarga/teman"
+                                <InputType label="Nama Kontak Darurat" id="emergency_contact" type="text"
+                                    name="emergency_contact" placeholder="Nama keluarga/teman"
                                     className="flex flex-col gap-2"
-                                    value={formData.emergency_contact} 
-                                    onChange={handleFormChange} 
-                                />
-                                <InputType 
-                                    label="Nomor Kontak Darurat" 
-                                    id="emergency_phone" 
-                                    type="text" 
-                                    required
-                                    name="emergency_phone" 
-                                    placeholder="08123456789"
+                                    value={formData.emergency_contact} onChange={handleFormChange} />
+                                <InputType label="Nomor Kontak Darurat" id="emergency_phone" type="text"
+                                    name="emergency_phone" placeholder="08123456789"
                                     className="flex flex-col gap-2"
-                                    value={formData.emergency_phone} 
-                                    onChange={handleFormChange} 
-                                />
+                                    value={formData.emergency_phone} onChange={handleFormChange} />
 
                                 {/* Info Kesehatan */}
                                 <hr className="border-t-2 border-neutral-normal mt-2" />
                                 <h3 className="text-xl font-bold font-young">Info Kesehatan</h3>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-xl font-medium">Riwayat Alergi<span className="text-red-500 ml-0.5">*</span></label>
+                                    <label className="text-xl font-medium">Kondisi Medis / Alergi</label>
                                     <textarea
-                                        name="allergy_history"
-                                        placeholder="Contoh: alergi debu, makanan laut, dll"
+                                        name="medical_conditions"
+                                        placeholder="Contoh: alergi debu, asma, dll (isi jika ada)"
                                         className="border-tertiary-normal p-3 text-lg bg-white border-2 rounded-md"
                                         rows={3}
-                                        value={formData.allergy_history}
+                                        value={formData.medical_conditions}
                                         onChange={handleFormChange}
                                     />
                                 </div>
 
-                                {/* Identitas */}
-                                <hr className="border-t-2 border-neutral-normal mt-2" />
-                                <h3 className="text-xl font-bold font-young">Identitas</h3>
-                                <InputType 
-                                    label="Nomor KTP/Passport" 
-                                    id="identity_number" 
-                                    type="text" 
-                                    required
-                                    name="identity_number" 
-                                    placeholder="3201234567890001"
-                                    className="flex flex-col gap-2"
-                                    value={formData.identity_number} 
-                                    onChange={handleFormChange} 
-                                />
-                                <ImageUpload 
-                                    id="identity_photo" 
-                                    label="Foto KTP/Passport" 
-                                    required
-                                    onChange={file => setIdentityPhoto(file)} 
-                                />
-
-                                {/* Foto Profil */}
-                                <hr className="border-t-2 border-neutral-normal mt-2" />
-                                <h3 className="text-xl font-bold font-young">Foto Profil</h3>
-                                <ImageUpload 
-                                    id="photo" 
-                                    label="Foto Profil"
-                                    onChange={(file) => setPhoto(file)} 
-                                />
-
                                 <button
-                                    className={`flex justify-center items-center mb-8 rounded-md ${submitLoading ? "bg-neutral-normal " : "bg-secondary-bg hover:bg-secondary-bg-hover"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-3xl font-young`}
+                                    className={`flex justify-center items-center mb-8 rounded-md ${submitLoading ? "bg-neutral-bg" : "bg-secondary-bg hover:bg-secondary-bg-hover"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white mt-4 md:text-3xl font-young`}
                                     type="submit"
                                     disabled={submitLoading}
                                 >
-                                    {submitLoading ? "Memproses..." : "Registrasi Member"}
+                                    {submitLoading ? "Memproses..." : "Daftar Sekarang"}
                                 </button>
                             </form>
 

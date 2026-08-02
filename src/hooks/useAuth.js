@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { authService } from "@/src/services/authService";
+import { profileService } from "@/src/services/profileService";
 import api from "@/src/services/api";
 import { useAuth as useAuthContext } from "@/src/contexts/AuthContext";
 
@@ -8,27 +9,26 @@ export default function useAuth() {
     const [error, setError] = useState(null);
     const { setAuthUser } = useAuthContext();
 
-    async function login(username, password) {
+    async function login(email, password) {
         setLoading(true);
         setError(null);
         try {
-            const res = await authService.login(username, password);
-            const token = res.data.data.token;
-            
+            const res = await authService.login(email, password);
+            const { token } = res.data;
+
             localStorage.setItem("token", token);
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            
-            const profileRes = await authService.getProfile();
-            const participant = profileRes.data.data;
-            
-            localStorage.setItem("user", JSON.stringify(participant));
-            
-            // 🔥 UPDATE AUTH CONTEXT
-            setAuthUser(participant);
-            
-            return participant;
+
+            // Ambil profile lengkap dari /profile
+            const profileRes = await profileService.getProfile();
+            const profile = profileRes.data.data ?? profileRes.data;
+
+            localStorage.setItem("user", JSON.stringify(profile));
+            setAuthUser(profile);
+            return profile;
+
         } catch (err) {
-            setError(err.response?.data?.message || "Login gagal.");
+            setError(err.response?.data?.message || "Email atau password salah.");
             localStorage.removeItem("token");
             localStorage.removeItem("user");
             delete api.defaults.headers.common['Authorization'];

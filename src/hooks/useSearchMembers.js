@@ -1,69 +1,47 @@
 import Swal from "sweetalert2";
 import { useState } from "react";
 import useAuth from "./useAuth";
-import { useAuth as useAuthContext } from "@/src/contexts/AuthContext"; // ← TAMBAHKAN
+import { useAuth as useAuthContext } from "@/src/contexts/AuthContext";
 
 export default function useSearchMembers() {
-    const [searchId, setSearchId] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [userData, setUserData] = useState(null);
-    const { loading, error, login } = useAuth();
-    const { setAuthUser } = useAuthContext(); // ← AMBIL setAuthUser
+    const { loading, login } = useAuth();
+    const { setAuthUser } = useAuthContext();
 
-    function handleChange(e) {
-        setSearchId(e.target.value);
-    }
-
-    function handlePasswordChange(e) {
-        setPassword(e.target.value);
-    }
+    function handleChange(e) { setEmail(e.target.value); }
+    function handlePasswordChange(e) { setPassword(e.target.value); }
 
     async function handleSearch(e) {
         e.preventDefault();
-        
-        if (!searchId || !password) {
-            Swal.fire({
-                icon: "warning",
-                title: "Data Kurang",
-                text: "Masukkan Username dan Password dulu!",
-            });
+        if (!email || !password) {
+            Swal.fire({ icon: "warning", title: "Isi email dan password dulu!" });
             return;
         }
-
-        const user = await login(searchId, password);
-
+        const user = await login(email, password);
         if (user) {
             setUserData(user);
-            // 🔥 UPDATE AUTH CONTEXT - biar navbar berubah!
             setAuthUser(user);
-            
             Swal.fire({
                 icon: "success",
                 title: "Login Berhasil!",
-                html: `
-                    <p>Nama: ${user.name}</p>
-                    <p>Email: ${user.email}</p>
-                    <p>Tipe: ${user.participant_type}</p>
-                `,
+                html: `<p>Nama: ${user.name}</p><p>Email: ${user.email}</p>`,
             });
         } else {
             setUserData(null);
-            Swal.fire({
-                icon: "error",
-                title: "Login Gagal",
-                text: "Username atau password salah.",
-            });
+            Swal.fire({ icon: "error", title: "Login Gagal", text: "Email atau password salah." });
         }
     }
 
-    return { 
-        loading, 
-        searchId, 
-        setSearchId, 
-        password, 
-        handlePasswordChange, 
-        handleSearch, 
-        handleChange, 
+    return {
+        loading,
+        searchId: email,
+        setSearchId: setEmail,
+        password,
+        handlePasswordChange,
+        handleSearch,
+        handleChange,
         userData,
         setUserData,
     };

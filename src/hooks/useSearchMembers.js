@@ -7,7 +7,7 @@ export default function useSearchMembers() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [userData, setUserData] = useState(null);
-    const { loading, login } = useAuth();
+    const { loading, error, login } = useAuth();
     const { setAuthUser } = useAuthContext();
 
     function handleChange(e) { setEmail(e.target.value); }
@@ -19,6 +19,7 @@ export default function useSearchMembers() {
             Swal.fire({ icon: "warning", title: "Isi email dan password dulu!" });
             return;
         }
+
         const user = await login(email, password);
         if (user) {
             setUserData(user);
@@ -26,11 +27,15 @@ export default function useSearchMembers() {
             Swal.fire({
                 icon: "success",
                 title: "Login Berhasil!",
-                html: `<p>Nama: ${user.name}</p><p>Email: ${user.email}</p>`,
+                html: `<p>Selamat datang, <strong>${user.name}</strong>!</p>`,
             });
         } else {
             setUserData(null);
-            Swal.fire({ icon: "error", title: "Login Gagal", text: "Email atau password salah." });
+            Swal.fire({
+                icon: "error",
+                title: "Login Gagal",
+                text: error || "Email atau password salah.",
+            });
         }
     }
 

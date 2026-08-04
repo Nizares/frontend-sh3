@@ -1,6 +1,7 @@
+"use client";
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authService } from '@/src/services/authService';
-import { profileService } from '@/src/services/profileService'; // ← tambah
+import { profileService } from '@/src/services/profileService';
 import api from '@/src/services/api';
 
 const AuthContext = createContext();
@@ -22,11 +23,25 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('token');
         if (token) {
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            profileService.getProfile() // ← ganti dari authService.getProfile()
+            profileService.getProfile()
                 .then(res => {
-                    const userData = res.data.data ?? res.data;
-                    setUser(userData);
-                    localStorage.setItem('user', JSON.stringify(userData));
+                    const profile = res.data.data;
+                    const participant = profile.participant ?? {};
+                    const fullUser = {
+                        ...profile.user,
+                        participant_id: participant.id,
+                        phone: participant.phone,
+                        gender: participant.gender,
+                        date_of_birth: participant.date_of_birth,
+                        address: participant.address,
+                        blood_type: participant.blood_type,
+                        jersey_size: participant.jersey_size,
+                        emergency_contact: participant.emergency_contact,
+                        emergency_phone: participant.emergency_phone,
+                        medical_conditions: participant.medical_conditions,
+                    };
+                    setUser(fullUser);
+                    localStorage.setItem('user', JSON.stringify(fullUser));
                 })
                 .catch(() => {
                     localStorage.removeItem('token');
@@ -49,7 +64,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, logout, setAuthUser, isLoggedIn: !!user }}>
+        <AuthContext.Provider value={{
+            user,
+            loading,
+            logout,
+            setAuthUser,
+            isLoggedIn: !!user,
+        }}>
             {children}
         </AuthContext.Provider>
     );

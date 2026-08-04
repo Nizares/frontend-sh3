@@ -14,21 +14,36 @@ export default function useAuth() {
         setError(null);
         try {
             const res = await authService.login(email, password);
-            const { token } = res.data;
+            const { token, user } = res.data;
 
             localStorage.setItem("token", token);
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-            // Ambil profile lengkap dari /profile
-            const profileRes = await profileService.getProfile();
-            const profile = profileRes.data.data ?? profileRes.data;
+            // Flatten user + participant jadi 1 object
+            const participant = user.participants?.[0] ?? {};
+            const fullUser = {
+                ...user,
+                participant_id: participant.id,
+                phone: participant.phone,
+                gender: participant.gender,
+                date_of_birth: participant.date_of_birth,
+                address: participant.address,
+                blood_type: participant.blood_type,
+                jersey_size: participant.jersey_size,
+                emergency_contact: participant.emergency_contact,
+                emergency_phone: participant.emergency_phone,
+                medical_conditions: participant.medical_conditions,
+            };
 
-            localStorage.setItem("user", JSON.stringify(profile));
-            setAuthUser(profile);
-            return profile;
+            localStorage.setItem("user", JSON.stringify(fullUser));
+            setAuthUser(fullUser);
+            return fullUser;
 
         } catch (err) {
-            setError(err.response?.data?.message || "Email atau password salah.");
+            const msg = err.response?.data?.message
+                || err.response?.data?.errors?.email?.[0]
+                || "Email atau password salah.";
+            setError(msg);
             localStorage.removeItem("token");
             localStorage.removeItem("user");
             delete api.defaults.headers.common['Authorization'];
@@ -48,11 +63,13 @@ export default function useAuth() {
     }
 
     function getUser() {
+        if (typeof window === "undefined") return null;
         const user = localStorage.getItem("user");
         return user ? JSON.parse(user) : null;
     }
 
     function isLoggedIn() {
+        if (typeof window === "undefined") return false;
         return !!localStorage.getItem("token");
     }
 

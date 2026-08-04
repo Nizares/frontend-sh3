@@ -14,7 +14,7 @@ export default function MerchandisePage() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        merchandiseService.getCategories()
+        merchandiseService.getAll()
             .then(res => setCategories(res.data.data))
             .catch(err => console.error(err))
     }, [])
@@ -43,7 +43,7 @@ export default function MerchandisePage() {
                     </RevealSection>
 
                     {/* Filter Kategori */}
-                    <RevealSection direction="up" delay="100">
+                    {/* <RevealSection direction="up" delay="100">
                         <div className="flex flex-wrap gap-2 mt-8">
                             <button
                                 onClick={() => setSelectedCategory("")}
@@ -67,7 +67,7 @@ export default function MerchandisePage() {
                                 </button>
                             ))}
                         </div>
-                    </RevealSection>
+                    </RevealSection> */}
 
                     {/* Grid */}
                     {loading ? (

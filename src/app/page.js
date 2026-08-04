@@ -202,6 +202,7 @@ export default function Home() {
                   const bigEvents = events
                     .filter(
                       (item) =>
+                        
                         new Date(item.end_date) >= now &&
                         item.category?.name === "Major Events",
                     )

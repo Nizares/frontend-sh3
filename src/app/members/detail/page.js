@@ -33,12 +33,12 @@ const bloodTypeOptions = [
 ];
 
 const jerseySizeOptions = [
-    { value: "XS", label: "XS" },
-    { value: "S", label: "S" },
-    { value: "M", label: "M" },
-    { value: "L", label: "L" },
-    { value: "XL", label: "XL" },
-    { value: "XXL", label: "XXL" },
+  { value: "XS", label: "XS" },
+  { value: "S", label: "S" },
+  { value: "M", label: "M" },
+  { value: "L", label: "L" },
+  { value: "XL", label: "XL" },
+  { value: "XXL", label: "XXL" },
 ];
 
 
@@ -76,7 +76,7 @@ export default function DetailMember() {
     emergency_phone: "",
     membership_type: "",
     medical_conditions: "",
-    jersey_size:""
+    jersey_size: ""
   });
 
   // Set mounted setelah render client
@@ -104,7 +104,7 @@ export default function DetailMember() {
       const status = userData?.membership_type || "";
       if (status == "none") {
         setIsMember(false);
-      } else { 
+      } else {
         setIsMember(true);
       }
     }
@@ -136,7 +136,7 @@ export default function DetailMember() {
       eventService
         .getMyEvents()
         .then((res) => setMyEvents(res.data.data))
-        .catch(() => {});
+        .catch(() => { });
 
     }
   }, [userData]);
@@ -256,7 +256,7 @@ export default function DetailMember() {
   // Ambil foto profil langsung dari response
   // const profilePhoto = "";
   const profilePhoto = userData?.url || "";
-  
+
   const name = userData?.name || user?.name || "";
   console.log(userData);
   // console.log(userData.participant_type);
@@ -401,32 +401,14 @@ export default function DetailMember() {
                     <span className="font-semibold">Status : </span>
                     <span className="font-mono"> {userData.is_active === true ? "Aktif" : "Non Aktif"}</span>
                   </div>
-
-                  {isMember ? (
-                    <>
-                    <div>
-                      <span className="font-semibold">Nama: </span>
-                      <span>{userData.name}</span>
-                    </div>
-                    <div>
-                      <span className="font-semibold">Email: </span>
-                      <span>{userData.email}</span>
-                    </div>
-                    </>
-                  ) : (
-                    <>
-                    <div>
-                      <span className="font-semi-bold">
-                            Anda bukan Member, Jika ingin berlangganan Membership silahkan Update
-                      </span>
-                    </div>
-                    <div>
-                      <span className="font-semi-bold">
-                            Anda bukan Member, Jika ingin berlangganan Membership silahkan Hubungi <a className="font-bold text-red-500" href="http://wa.me/+62811588338">disini</a>
-                      </span>
-                    </div>
-                    </>
-                  )}
+                  <div>
+                    <span className="font-semibold">Nama: </span>
+                    <span>{userData.name}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold">Email: </span>
+                    <span>{userData.email}</span>
+                  </div>
                   <div>
                     <span className="font-semibold">Tipe: </span>
                     <span
@@ -437,18 +419,33 @@ export default function DetailMember() {
                         : "Member"}
                     </span>
                   </div>
-                  <div>
-                    <span className="font-semibold">Membership mulai dari : </span>
-                    <span className="font-bold text-secondary-bg">
-                        {dateConverted(userData.membership_start_date)}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="font-semibold">Membership berakhir pada : </span>
-                    <span className="font-bold text-red-500">
-                        {dateConverted(userData.membership_end_date)}
-                    </span>
-                  </div>
+                  {isMember ? (
+                    <>
+
+                      <div>
+                        <span className="font-semibold">Membership mulai dari : </span>
+                        <span className="font-bold text-secondary-bg">
+                          {dateConverted(userData.membership_start_date)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="font-semibold">Membership berakhir pada : </span>
+                        <span className="font-bold text-red-500">
+                          {dateConverted(userData.membership_end_date)}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+
+                      <div>
+                        <span className="font-semi-bold">
+                          Anda bukan Member, Jika ingin berlangganan Membership silahkan Hubungi <a className="font-bold text-red-500" href="http://wa.me/+62811588338">disini</a>
+                        </span>
+                      </div>
+                    </>
+                  )}
+
                 </div>
 
                 {!showEditForm && (
@@ -490,17 +487,16 @@ export default function DetailMember() {
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         <span
-                          className={`text-sm font-bold px-3 py-1 rounded-md ${
-                            event.order?.status === "paid"
+                          className={`text-sm font-bold px-3 py-1 rounded-md ${event.order?.status === "paid"
+                            ? "bg-secondary-bg text-white"
+                            : event.order?.status === "free"
                               ? "bg-secondary-bg text-white"
-                              : event.order?.status === "free"
-                                ? "bg-secondary-bg text-white"
-                                : event.order?.status === "pending"
-                                  ? "bg-primary-normal text-white"
-                                  : event.order?.status === "cancelled"
-                                    ? "bg-red-500 text-white"
-                                    : "bg-neutral-bg text-white"
-                          }`}
+                              : event.order?.status === "pending"
+                                ? "bg-primary-normal text-white"
+                                : event.order?.status === "cancelled"
+                                  ? "bg-red-500 text-white"
+                                  : "bg-neutral-bg text-white"
+                            }`}
                         >
                           {event.order?.status === "paid"
                             ? "Lunas"
@@ -516,7 +512,7 @@ export default function DetailMember() {
                         <Link
                           href={
                             event.status === "ongoing" ||
-                            event.status === "upcoming"
+                              event.status === "upcoming"
                               ? `/events/upcoming?id=${event.id}`
                               : `/events/finished?id=${event.id}`
                           }

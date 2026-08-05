@@ -106,7 +106,6 @@ export default function Navbar() {
 
   // Data user dari context (AMAN untuk SSR)
   const userData = user;
-  console.log("user data dari login :" + userData)
 
   const statusMember = () => {
     const status = userData?.membership_type || "";

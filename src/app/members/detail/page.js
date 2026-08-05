@@ -13,6 +13,7 @@ import { profileService } from "@/src/services/profileService";
 import { eventService } from "@/src/services/eventService";
 import Link from "next/link";
 import Swal from "sweetalert2";
+import { dateConverted } from "@/src/lib/utils";
 import BatikOverlay from "@/src/components/BatikOverlay";
 import { useAuth } from "@/src/contexts/AuthContext";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
@@ -62,6 +63,7 @@ export default function DetailMember() {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [identityPhoto, setIdentityPhoto] = useState(null);
+  const [isMember, setIsMember] = useState(false);
   const [myEvents, setMyEvents] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
@@ -69,6 +71,7 @@ export default function DetailMember() {
     gender: "",
     birthdate: "",
     blood_type: "",
+    address: "",
     emergency_contact: "",
     emergency_phone: "",
     membership_type: "",
@@ -98,7 +101,14 @@ export default function DetailMember() {
         emergency_phone: userData.emergency_phone ?? "",
         medical_conditions: userData.medical_conditions ?? "",
       });
+      const status = userData?.membership_type || "";
+      if (status == "none") {
+        setIsMember(false);
+      } else { 
+        setIsMember(true);
+      }
     }
+
   }, [userData]);
 
   // Auto isi form ketika user dari AuthContext berubah (setelah login)
@@ -111,6 +121,7 @@ export default function DetailMember() {
         gender: user.gender ?? "",
         birthdate: user.birthdate ?? "",
         blood_type: user.blood_type ?? "",
+        address: user.address ?? "",
         jersey_size: user.jersey_size ?? "",
         emergency_contact: user.emergency_contact ?? "",
         emergency_phone: user.emergency_phone ?? "",
@@ -126,6 +137,7 @@ export default function DetailMember() {
         .getMyEvents()
         .then((res) => setMyEvents(res.data.data))
         .catch(() => {});
+
     }
   }, [userData]);
 
@@ -145,6 +157,7 @@ export default function DetailMember() {
       if (formData.email) payload.email = formData.email;
       if (formData.phone) payload.phone = formData.phone;
       if (formData.gender) payload.gender = formData.gender;
+      if (formData.address) payload.address = formData.address;
       if (formData.jersey_size) payload.jersey_size = formData.jersey_size;
       if (formData.birthdate || formData.date_of_birth)
         payload.date_of_birth = formData.date_of_birth || formData.birthdate;
@@ -241,8 +254,8 @@ export default function DetailMember() {
   const isUserLoggedIn = isLoggedIn || userData;
 
   // Ambil foto profil langsung dari response
-  const profilePhoto = "";
-  // const profilePhoto = userData?.avatar || "";
+  // const profilePhoto = "";
+  const profilePhoto = userData?.url || "";
   
   const name = userData?.name || user?.name || "";
   console.log(userData);
@@ -267,7 +280,6 @@ export default function DetailMember() {
                     </h1>
                     <div className="w-32 h-32 rounded-full bg-secondary-bg flex items-center justify-center overflow-hidden border-4 border-secondary-bg mx-auto mb-4">
                       {profilePhoto ? (
-                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={profilePhoto}
                           alt={name}
@@ -389,14 +401,32 @@ export default function DetailMember() {
                     <span className="font-semibold">Status : </span>
                     <span className="font-mono"> {userData.is_active === true ? "Aktif" : "Non Aktif"}</span>
                   </div>
-                  <div>
-                    <span className="font-semibold">Nama: </span>
-                    <span>{userData.name}</span>
-                  </div>
-                  <div>
-                    <span className="font-semibold">Email: </span>
-                    <span>{userData.email}</span>
-                  </div>
+
+                  {isMember ? (
+                    <>
+                    <div>
+                      <span className="font-semibold">Nama: </span>
+                      <span>{userData.name}</span>
+                    </div>
+                    <div>
+                      <span className="font-semibold">Email: </span>
+                      <span>{userData.email}</span>
+                    </div>
+                    </>
+                  ) : (
+                    <>
+                    <div>
+                      <span className="font-semi-bold">
+                            Anda bukan Member, Jika ingin berlangganan Membership silahkan Update
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-semi-bold">
+                            Anda bukan Member, Jika ingin berlangganan Membership silahkan Hubungi <a className="font-bold text-red-500" href="http://wa.me/+62811588338">disini</a>
+                      </span>
+                    </div>
+                    </>
+                  )}
                   <div>
                     <span className="font-semibold">Tipe: </span>
                     <span
@@ -405,6 +435,18 @@ export default function DetailMember() {
                       {userData.membership_type === "none"
                         ? "Non Member"
                         : "Member"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold">Membership mulai dari : </span>
+                    <span className="font-bold text-secondary-bg">
+                        {dateConverted(userData.membership_start_date)}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold">Membership berakhir pada : </span>
+                    <span className="font-bold text-red-500">
+                        {dateConverted(userData.membership_end_date)}
                     </span>
                   </div>
                 </div>
@@ -559,6 +601,16 @@ export default function DetailMember() {
                     placeholder="08123456789"
                     className="flex flex-col gap-2"
                     value={formData.phone}
+                    onChange={handleFormChange}
+                  />
+                  <InputType
+                    label="Alamat"
+                    id="address"
+                    type="text"
+                    name="address"
+                    placeholder="Jalan ..."
+                    className="flex flex-col gap-2"
+                    value={formData.address}
                     onChange={handleFormChange}
                   />
                   <SelectInput

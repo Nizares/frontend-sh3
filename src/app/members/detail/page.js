@@ -31,6 +31,16 @@ const bloodTypeOptions = [
   { value: "O", label: "O" },
 ];
 
+const jerseySizeOptions = [
+    { value: "XS", label: "XS" },
+    { value: "S", label: "S" },
+    { value: "M", label: "M" },
+    { value: "L", label: "L" },
+    { value: "XL", label: "XL" },
+    { value: "XXL", label: "XXL" },
+];
+
+
 export default function DetailMember() {
   const { user, logout, isLoggedIn } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
@@ -61,8 +71,9 @@ export default function DetailMember() {
     blood_type: "",
     emergency_contact: "",
     emergency_phone: "",
-    allergy_history: "",
-    identity_number: "",
+    membership_type: "",
+    medical_conditions: "",
+    jersey_size:""
   });
 
   // Set mounted setelah render client
@@ -73,17 +84,19 @@ export default function DetailMember() {
   // Auto isi form ketika userData berhasil didapat
   useEffect(() => {
     if (userData) {
-      setShowEditForm(false);
       setFormData({
         name: userData.name ?? "",
+        email: userData.email ?? "", // ← tambah
         phone: userData.phone ?? "",
         gender: userData.gender ?? "",
-        birthdate: userData.birthdate ?? "",
+        date_of_birth: userData.date_of_birth ?? "", // ← ganti
+        membership_type: userData.membership_type ?? "",
+        address: userData.address ?? "",
         blood_type: userData.blood_type ?? "",
+        jersey_size: userData.jersey_size ?? "",
         emergency_contact: userData.emergency_contact ?? "",
         emergency_phone: userData.emergency_phone ?? "",
-        allergy_history: userData.allergy_history ?? "",
-        identity_number: userData.identity_number ?? "",
+        medical_conditions: userData.medical_conditions ?? "",
       });
     }
   }, [userData]);
@@ -98,9 +111,10 @@ export default function DetailMember() {
         gender: user.gender ?? "",
         birthdate: user.birthdate ?? "",
         blood_type: user.blood_type ?? "",
+        jersey_size: user.jersey_size ?? "",
         emergency_contact: user.emergency_contact ?? "",
         emergency_phone: user.emergency_phone ?? "",
-        allergy_history: user.allergy_history ?? "",
+        medical_conditions: user.medical_conditions ?? "",
         identity_number: user.identity_number ?? "",
       });
     }
@@ -128,16 +142,19 @@ export default function DetailMember() {
     try {
       const payload = {};
       if (formData.name) payload.name = formData.name;
+      if (formData.email) payload.email = formData.email;
       if (formData.phone) payload.phone = formData.phone;
       if (formData.gender) payload.gender = formData.gender;
-      if (formData.birthdate) payload.birthdate = formData.birthdate;
+      if (formData.jersey_size) payload.jersey_size = formData.jersey_size;
+      if (formData.birthdate || formData.date_of_birth)
+        payload.date_of_birth = formData.date_of_birth || formData.birthdate;
       if (formData.blood_type) payload.blood_type = formData.blood_type;
       if (formData.emergency_contact)
         payload.emergency_contact = formData.emergency_contact;
       if (formData.emergency_phone)
         payload.emergency_phone = formData.emergency_phone;
-      if (formData.allergy_history)
-        payload.allergy_history = formData.allergy_history;
+      if (formData.medical_conditions)
+        payload.medical_conditions = formData.medical_conditions;
       if (formData.identity_number)
         payload.identity_number = formData.identity_number;
 
@@ -145,7 +162,7 @@ export default function DetailMember() {
 
       if (photo) {
         const photoForm = new FormData();
-        photoForm.append("photo", photo);
+        photoForm.append("avatar", photo);
         await profileService.uploadPhoto(photoForm);
       }
 
@@ -157,11 +174,13 @@ export default function DetailMember() {
       // Update juga di localStorage
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
-      Swal.fire({
-        icon: "success",
-        title: "Profil Berhasil Diupdate!",
-        text: "Data kamu sudah tersimpan.",
-      });
+      setTimeout(() => {
+        Swal.fire({
+          icon: "success",
+          title: "Profil Berhasil Diupdate!",
+          text: "Data kamu sudah tersimpan.",
+        });
+      }, 100);
       setShowEditForm(false);
       setPhoto(null);
       setIdentityPhoto(null);
@@ -198,13 +217,14 @@ export default function DetailMember() {
       setShowEditForm(false);
       setFormData({
         name: "",
+        email: "",
         phone: "",
         gender: "",
-        birthdate: "",
+        date_of_birth: "",
         blood_type: "",
         emergency_contact: "",
         emergency_phone: "",
-        allergy_history: "",
+        medical_conditions: "",
         identity_number: "",
       });
       setMyEvents([]);
@@ -221,9 +241,14 @@ export default function DetailMember() {
   const isUserLoggedIn = isLoggedIn || userData;
 
   // Ambil foto profil langsung dari response
-  const profilePhoto = userData?.photo || "";
+  const profilePhoto = "";
+  // const profilePhoto = userData?.avatar || "";
+  
   const name = userData?.name || user?.name || "";
+  console.log(userData);
+  // console.log(userData.participant_type);
 
+  // console.log(profilePhoto);
   return (
     <Container className="flex flex-col w-full">
       <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
@@ -361,8 +386,8 @@ export default function DetailMember() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg">
                   <div>
-                    <span className="font-semibold">Hash ID: </span>
-                    <span className="font-mono">{userData.hash_id}</span>
+                    <span className="font-semibold">Status : </span>
+                    <span className="font-mono"> {userData.is_active === true ? "Aktif" : "Non Aktif"}</span>
                   </div>
                   <div>
                     <span className="font-semibold">Nama: </span>
@@ -375,11 +400,11 @@ export default function DetailMember() {
                   <div>
                     <span className="font-semibold">Tipe: </span>
                     <span
-                      className={`font-bold ${userData.participant_type === "member" ? "text-secondary-dark" : "text-tertiary-bg"}`}
+                      className={`font-bold ${userData.membership_type === "none" ? "text-tertiary-bg" : "text-secondary-dark"}`}
                     >
-                      {userData.participant_type === "member"
-                        ? "Member"
-                        : "Non Member"}
+                      {userData.membership_type === "none"
+                        ? "Non Member"
+                        : "Member"}
                     </span>
                   </div>
                 </div>
@@ -517,6 +542,16 @@ export default function DetailMember() {
                     onChange={handleFormChange}
                   />
                   <InputType
+                    label="Email"
+                    id="email"
+                    type="email"
+                    name="email"
+                    className="flex flex-col gap-2"
+                    value={formData.email}
+                    onChange={handleFormChange}
+                    readOnly // ← biar tidak bisa diubah
+                  />
+                  <InputType
                     label="Nomor Telepon/WA"
                     id="phone"
                     type="text"
@@ -537,6 +572,20 @@ export default function DetailMember() {
                       setFormData((prev) => ({
                         ...prev,
                         gender: e.target.value,
+                      }))
+                    }
+                  />
+                  <SelectInput
+                    id="jersey_size"
+                    name="jersey_size"
+                    label="Jersey Size"
+                    options={jerseySizeOptions}
+                    value={formData.jersey_size}
+                    placehold="Pilih Ukuran Jersey..."
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        jersey_size: e.target.value,
                       }))
                     }
                   />
@@ -597,32 +646,14 @@ export default function DetailMember() {
                       Riwayat Alergi
                     </label>
                     <textarea
-                      name="allergy_history"
+                      name="medical_conditions"
                       placeholder="Contoh: alergi debu, makanan laut, dll"
                       className="border-tertiary-normal p-3 text-lg bg-white border-2 rounded-md"
                       rows={3}
-                      value={formData.allergy_history}
+                      value={formData.medical_conditions}
                       onChange={handleFormChange}
                     />
                   </div>
-                  <hr className="border-t-2 border-neutral-normal" />
-                  <h3 className="text-xl font-bold font-young">Identitas</h3>
-                  <InputType
-                    label="Nomor KTP/Passport"
-                    id="identity_number"
-                    type="text"
-                    name="identity_number"
-                    placeholder="3201234567890001"
-                    className="flex flex-col gap-2"
-                    value={formData.identity_number}
-                    onChange={handleFormChange}
-                  />
-                  <ImageUpload
-                    id="identity_photo"
-                    label="Foto KTP/Passport"
-                    onChange={(file) => setIdentityPhoto(file)}
-                  />
-
                   <hr className="border-t-2 border-neutral-normal" />
                   <h3 className="text-xl font-bold mt-4 font-young">
                     Foto Profil

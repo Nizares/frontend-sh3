@@ -106,7 +106,17 @@ export default function Navbar() {
 
   // Data user dari context (AMAN untuk SSR)
   const userData = user;
-  const hashId = userData?.hash_id || "";
+  console.log("user data dari login :" + userData)
+
+  const statusMember = () => {
+    const status = userData?.membership_type || "";
+    if (status == "none") {
+      return "Bukan Member"
+    } else { 
+      return "Member"
+    }
+  }
+  const status_member = statusMember();
   const name = userData?.name || "";
   const photo = userData?.photo || "";
   const isUserLoggedIn = isLoggedIn; // ← HANYA dari context
@@ -178,7 +188,7 @@ export default function Navbar() {
                     {name || "User"}
                   </p>
                   <p className={`text-xs font-mono ${getNavColor()} opacity-70`}>
-                    {hashId || "------"}
+                    {status_member || "------"}
                   </p>
                 </div>
 
@@ -201,7 +211,7 @@ export default function Navbar() {
                       {name || "User"}
                     </p>
                     <p className="text-xs text-gray-400 font-mono">
-                      {hashId || "------"}
+                      {status_member || "------"}
                     </p>
                   </div>
                   <button

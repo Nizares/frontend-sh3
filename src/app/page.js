@@ -75,6 +75,8 @@ export default function Home() {
       activeCategory === "all" || item.category?.name === activeCategory,
   );
 
+  console.log(events)
+
   // ====== RENDER EMPTY STATE ======
   const getEmptyMessage = () => {
     switch (activeTab) {

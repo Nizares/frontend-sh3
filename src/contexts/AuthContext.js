@@ -39,6 +39,9 @@ export const AuthProvider = ({ children }) => {
                         emergency_contact: participant.emergency_contact,
                         emergency_phone: participant.emergency_phone,
                         medical_conditions: participant.medical_conditions,
+                        membership_type: participant.membership_type,
+                        membership_start_date: participant.membership_start_date,
+                        membership_end_date: participant.membership_end_date,
                     };
                     setUser(fullUser);
                     localStorage.setItem('user', JSON.stringify(fullUser));

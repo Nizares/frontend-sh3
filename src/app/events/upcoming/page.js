@@ -6,10 +6,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon } from "@heroicons/react/24/solid";
-import { concateDate } from "@/src/lib/utils";
+import { concateDate, formatRupiah } from "@/src/lib/utils";
 import { eventService } from "@/src/services/eventService";
 import SponsorSection from "@/src/components/SponsorSection";
 import BatikOverlay from "@/src/components/BatikOverlay";
+import QRCode from 'qrcode';
+import Swal from "sweetalert2"; // 🔥 IMPORT SWAL
 
 export default function UpcomingEvents() {
   const [event, setEvent] = useState(null);
@@ -20,12 +22,92 @@ export default function UpcomingEvents() {
   const [attendanceCode, setAttendanceCode] = useState(null);
   const [eventId, setEventId] = useState(null);
 
-  const formatRupiah = (angka) => new Intl.NumberFormat("id-ID").format(angka);
+  // 🔥 Fungsi untuk generate QR dari string
+  const generateQR = async (qrString) => {
+    if (!qrString) return null;
+    try {
+      return await QRCode.toDataURL(qrString, {
+        width: 300,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#ffffff',
+        }
+      });
+    } catch (err) {
+      console.error("Gagal generate QR:", err);
+      return null;
+    }
+  };
+
+  // 🔥 Fungsi untuk set QR dari berbagai sumber
+  const setQRFromData = async (data) => {
+    const qrImage = data?.attendance?.qr_code_image || data?.qr_code_image || null;
+    const qrString = data?.attendance?.qr_code || data?.qr_code || data?.ticket_code || null;
+
+    if (qrImage) {
+      setQrCode(qrImage);
+      setAttendanceCode(qrString);
+      return true;
+    } else if (qrString) {
+      const generatedQR = await generateQR(qrString);
+      if (generatedQR) {
+        setQrCode(generatedQR);
+        setAttendanceCode(qrString);
+        return true;
+      } else {
+        setAttendanceCode(qrString);
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // 🔥 CEK APAKAH REGISTRASI SUDAH DIBUKA
+  const isRegistrationOpen = () => {
+    if (!event) return false;
+    
+    const now = new Date();
+    const regStart = new Date(event.registration_start_date);
+    const regEnd = new Date(event.registration_end_date);
+    
+    return now >= regStart && now <= regEnd;
+  };
+
+  // 🔥 CEK APAKAH EVENT SUDAH SELESAI
+  const isEventCompleted = () => {
+    if (!event) return false;
+    const now = new Date();
+    const endDate = new Date(event.end_date);
+    return now > endDate;
+  };
+
+  // 🔥 DAPATKAN STATUS REGISTRASI
+  const getRegistrationStatus = () => {
+    if (!event) return { text: "Daftar Sekarang", disabled: false };
+    
+    const now = new Date();
+    const regStart = new Date(event.registration_start_date);
+    const regEnd = new Date(event.registration_end_date);
+    
+    if (now < regStart) {
+      return { 
+        text: `Pendaftaran dibuka ${new Date(regStart).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`,
+        disabled: true 
+      };
+    }
+    if (now > regEnd) {
+      return { 
+        text: "Pendaftaran sudah ditutup",
+        disabled: true 
+      };
+    }
+    return { text: "Daftar Sekarang", disabled: false };
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id") ?? 1;
-
     setEventId(id);
 
     // Ambil detail event
@@ -36,20 +118,19 @@ export default function UpcomingEvents() {
 
     // Cek apakah user sudah join
     const token = localStorage.getItem("token");
-
     if (token) {
       eventService
         .getMyEvents()
-        .then((res) => {
-          const joined = res.data.data.find(
-            (e) => e.id === Number(id)
-          );
-
+        .then(async (res) => {
+          const joined = res.data.data.find((e) => e.id === Number(id));
           if (joined) {
             setMyOrder(joined.order);
+            if (joined.order.status === "paid" || joined.order.status === "confirmed" || joined.order.status === "free") {
+              await setQRFromData(joined.order);
+            }
           }
         })
-        .catch(() => { });
+        .catch(() => {});
     }
   }, []);
 
@@ -62,20 +143,20 @@ export default function UpcomingEvents() {
     setQrLoading(true);
     try {
       const res = await eventService.book(event.id);
-      const qr = res.data.data.attendance?.qr_code_image;
-      const code = res.data.data.attendance?.qr_code; // ← tambah ini
-      if (qr) {
-        setQrCode(qr);
-        setAttendanceCode(code); // ← simpan code
+      const data = res.data.data;
+      const success = await setQRFromData(data);
+      if (success) {
         setShowQR(true);
+      } else {
+        console.warn("Tidak ada QR Code ditemukan");
       }
     } catch (err) {
-      const qr = err.response?.data?.data?.attendance?.qr_code_image;
-      const code = err.response?.data?.data?.attendance?.qr_code; // ← tambah ini
-      if (qr) {
-        setQrCode(qr);
-        setAttendanceCode(code); // ← simpan code
-        setShowQR(true);
+      const errorData = err.response?.data?.data;
+      if (errorData) {
+        const success = await setQRFromData(errorData);
+        if (success) {
+          setShowQR(true);
+        }
       }
     } finally {
       setQrLoading(false);
@@ -91,58 +172,24 @@ export default function UpcomingEvents() {
   }
 
   function handleDownloadQR() {
-    const img = new window.Image();
+    if (!qrCode) return;
 
-    // Menggunakan SVG blob agar lebih kompatibel di berbagai browser
-    const svgString = atob(qrCode); // Dekode base64 ke string SVG asli
-    const svgBlob = new Blob([svgString], {
-      type: "image/svg+xml;charset=utf-8",
-    });
-    const url = URL.createObjectURL(svgBlob);
-
-    img.src = url;
-
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      // Tentukan resolusi gambar output (misal: 500x500 px agar QR tidak pecah)
-      canvas.width = 500;
-      canvas.height = 500;
-
-      const ctx = canvas.getContext("2d");
-
-      if (ctx) {
-        // 1. Gambar background putih (opsional, tapi aman untuk PNG/JPEG)
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // 2. Gambar QR Code SVG ke Canvas
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        // 3. Convert ke PNG
-        const pngUrl = canvas.toDataURL("image/png");
-
-        // 4. Trigger download
-        const link = document.createElement("a");
-        link.href = pngUrl;
-        link.download = `tiket-${attendanceCode ?? myOrder?.ticket_code}.png`;
-        link.click();
-      }
-
-      // Bersihkan memory URL blob setelah selesai
-      URL.revokeObjectURL(url);
-    };
-
-    img.onerror = (err) => {
-      console.error("Gagal memuat gambar SVG:", err);
-    };
+    const link = document.createElement("a");
+    link.href = qrCode;
+    link.download = `tiket-${attendanceCode || myOrder?.ticket_code || 'qr'}.png`;
+    link.click();
   }
 
   if (!event)
     return <div className="flex justify-center p-16 text-2xl mt-16 h-screen">Loading...</div>;
 
-  const isPaid = myOrder?.status === "paid" || myOrder?.status === "free";
+  const isPaid = myOrder?.status === "paid" || myOrder?.status === "confirmed" || myOrder?.status === "free";
   const isPending = myOrder?.status === "pending";
   const isCancelled = myOrder?.status === "cancelled";
+  
+  // 🔥 Ambil status registrasi
+  const regStatus = getRegistrationStatus();
+  const isRegistrationAvailable = isRegistrationOpen() && !isEventCompleted();
 
   return (
     <Container className="flex flex-col gap-y-4 w-full">
@@ -153,12 +200,12 @@ export default function UpcomingEvents() {
             <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
           </Link>
           <div className="flex items-center justify-center w-full">
-            <h1 className="text-4xl font-bold  mt-16">{event.title}</h1>
+            <h1 className="text-4xl font-bold mt-16">{event.title}</h1>
           </div>
 
-          <div className="flex flex-row justify-between gap-x-2 mt-8 ">
+          <div className="flex flex-row justify-between gap-x-2 mt-8">
             <div className="flex flex-row justify-center gap-x-2 w-1/2">
-              <MapPinIcon className="w-8 h-8 " />
+              <MapPinIcon className="w-8 h-8" />
               <div className="text-lg font-bold">{event.location}</div>
             </div>
             <div className="text-lg font-bold">
@@ -176,14 +223,60 @@ export default function UpcomingEvents() {
 
           <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3 my-8 mx-4 md:mx-0">
             <div className="col-span-1 flex flex-col md:col-span-2">
-              <h2 className="text-2xl font-bold ">Tentang Event</h2>
+              <h2 className="text-2xl font-bold">Tentang Event</h2>
               <div className="text-sm">{event.description}</div>
 
-              {/* Belum join → Daftar Sekarang */}
+              {/* 🔥 INFO STATUS REGISTRASI (jika belum dibuka atau sudah ditutup) */}
+              {!myOrder && !isRegistrationAvailable && (
+                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md text-center">
+                  <p className="text-yellow-700 font-medium">
+                    {regStatus.text}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Pendaftaran dibuka: {new Date(event.registration_start_date).toLocaleDateString('id-ID', { 
+                      day: 'numeric', 
+                      month: 'long', 
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Ditutup: {new Date(event.registration_end_date).toLocaleDateString('id-ID', { 
+                      day: 'numeric', 
+                      month: 'long', 
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+              )}
+
+              {/* 🔥 BELUM JOIN → TOMBOL DAFTAR (dengan validasi) */}
               {!myOrder && (
-                <Link href={`/events/register?id=${event.id}`}>
-                  <div className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-10 md:text-5xl active:bg-secondary-bg-active">
-                    Daftar Sekarang
+                <Link 
+                  href={isRegistrationAvailable ? `/events/register?id=${event.id}` : "#"}
+                  onClick={(e) => {
+                    if (!isRegistrationAvailable) {
+                      e.preventDefault();
+                      Swal.fire({
+                        icon: "info",
+                        title: "Pendaftaran Belum Dibuka",
+                        text: regStatus.text,
+                        confirmButtonText: "OK",
+                      });
+                    }
+                  }}
+                >
+                  <div 
+                    className={`flex justify-center items-center rounded-md h-32 font-bold text-2xl m-10 md:text-5xl transition-colors text-center ${
+                      isRegistrationAvailable 
+                        ? "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active cursor-pointer text-white" 
+                        : "bg-neutral-normal cursor-not-allowed text-white/70"
+                    }`}
+                  >
+                    {regStatus.text}
                   </div>
                 </Link>
               )}
@@ -225,7 +318,7 @@ export default function UpcomingEvents() {
                     onClick={handleLihatQR}
                     disabled={qrLoading}
                     className={`flex justify-center items-center h-20 font-bold text-2xl text-white transition-colors rounded-md
-                                    ${qrLoading ? "bg-neutral-normal-active cursor-not-allowed" : " cursor-pointer bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}`}
+                      ${qrLoading ? "bg-neutral-normal-active cursor-not-allowed" : "cursor-pointer bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"}`}
                   >
                     {qrLoading
                       ? "Memuat..."
@@ -235,7 +328,7 @@ export default function UpcomingEvents() {
                   </button>
 
                   <Link href={`/events/members?id=${event.id}`}>
-                    <div className="flex justify-center items-center  rounded-md font-young h-20 font-bold text-2xl text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all">
+                    <div className="flex justify-center items-center rounded-md font-young h-20 font-bold text-2xl text-secondary-bg bg-transparent border-2 border-secondary-bg hover:border-transparent hover:bg-secondary-bg hover:text-white active:border-transparent active:bg-secondary-bg active:text-white focus:border-transparent focus:bg-secondary-bg focus:text-white transition-all">
                       Lihat Peserta
                     </div>
                   </Link>
@@ -264,17 +357,26 @@ export default function UpcomingEvents() {
               </div>
             </div>
           </div>
+
           {/* Tampilan QR Code */}
-          {isPaid && showQR && qrCode && (
+          {isPaid && showQR && (
             <div className="flex flex-col items-center gap-4 bg-primary-light border-2 border-neutral-normal p-8 mb-10 mt-8 rounded-md">
               <div className="text-xl font-bold">Tiket QR Kamu</div>
 
               <div className="p-8 bg-white rounded-md">
-                <img
-                  src={`data:image/svg+xml;base64,${qrCode}`}
-                  alt="QR Code Tiket"
-                  className="w-64 h-64"
-                />
+                {qrCode ? (
+                  <img
+                    src={qrCode}
+                    alt="QR Code Tiket"
+                    className="w-64 h-64"
+                  />
+                ) : (
+                  <div className="w-64 h-64 flex items-center justify-center bg-gray-100 rounded-md">
+                    <div className="text-xl font-mono font-bold tracking-wider text-gray-600">
+                      {attendanceCode || myOrder?.ticket_code || "QR Code"}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="text-sm text-center">
@@ -284,16 +386,18 @@ export default function UpcomingEvents() {
                 {attendanceCode ?? myOrder?.ticket_code}
               </div>
 
-              <button
-                onClick={handleDownloadQR}
-                className=" cursor-pointer flex justify-center items-center gap-2 bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold px-8 py-3 font-young rounded-md"
-              >
-                Download QR
-              </button>
+              {qrCode && (
+                <button
+                  onClick={handleDownloadQR}
+                  className="cursor-pointer flex justify-center items-center gap-2 bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold px-8 py-3 font-young rounded-md"
+                >
+                  Download QR
+                </button>
+              )}
             </div>
           )}
 
-          {/* 🔥 TAMPILKAN MERCHANDISE UNTUK SEMUA (tidak perlu isPaid) */}
+          {/* Merchandise Event */}
           {event.merchandise?.length > 0 && (
             <div className="mt-8 mb-10">
               <h2 className="text-2xl font-bold font-young mb-4 text-primary-darker">Merchandise Event</h2>
@@ -302,18 +406,14 @@ export default function UpcomingEvents() {
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {event.merchandise.map(item => {
-                  // 🔥 Ambil harga dari database
                   const originalPrice = Number(item.price) || 0;
-                  const eventPrice = Number(item.event_price) || 0; // ← dari admin
+                  const eventPrice = Number(item.event_price) || 0;
                   const hasDiscount = eventPrice > 0 && eventPrice < originalPrice;
                   const finalPrice = isPaid && hasDiscount ? eventPrice : originalPrice;
-
-                  // 🔥 Hitung diskon persen untuk badge
                   const discountPercent = hasDiscount
                     ? Math.round((1 - eventPrice / originalPrice) * 100)
                     : 0;
 
-                  // 🔥 Build URL
                   let orderUrl = `/merchandise/order?id=${item.id}`;
                   if (isPaid && hasDiscount) {
                     orderUrl += `&event_id=${event.id}&event_price=${finalPrice}&discount_percentage=${discountPercent}`;
@@ -321,7 +421,6 @@ export default function UpcomingEvents() {
 
                   return (
                     <div key={item.id} className="flex flex-col bg-primary-light border-2 border-neutral-normal hover:border-secondary-bg transition-colors rounded-md">
-                      {/* Gambar */}
                       <div className="relative w-full h-[250px] overflow-hidden bg-neutral-bg">
                         {item.image_url ? (
                           <img
@@ -351,7 +450,6 @@ export default function UpcomingEvents() {
                         )}
                       </div>
 
-                      {/* Info */}
                       <div className="p-3 flex flex-col gap-1 flex-1">
                         <div className="flex flex-col gap-1 flex-1">
                           <div className="font-semibold text-sm line-clamp-2">{item.name}</div>
@@ -383,7 +481,7 @@ export default function UpcomingEvents() {
                         <Link
                           href={orderUrl}
                           className={`mt-2 text-white text-center px-5 py-2.5 text-sm font-medium transition-colors font-young shadow-md
-                        ${item.stock === 0
+                            ${item.stock === 0
                               ? "bg-neutral-normal pointer-events-none opacity-60"
                               : isPaid && hasDiscount
                                 ? "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"

@@ -6,19 +6,18 @@ import InputType from "@/src/components/Inputs";
 import SelectInput from "@/src/components/SelectInput";
 import Container from "@/src/components/Container";
 import ImageUpload from "@/src/components/ImageUpload";
-import PasswordInput from "@/src/components/passwordInput";
 import { RevealSection } from "@/src/components/RevealSection";
 import { useState, useEffect } from "react";
 import { profileService } from "@/src/services/profileService";
 import { eventService } from "@/src/services/eventService";
+import { merchandiseService } from "@/src/services/merchandiseService";
 import Link from "next/link";
 import Swal from "sweetalert2";
-import { dateConverted } from "@/src/lib/utils";
+import { dateConverted, formatRupiah } from "@/src/lib/utils";
 import BatikOverlay from "@/src/components/BatikOverlay";
 import { useAuth } from "@/src/contexts/AuthContext";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-
-import { PencilIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
 
 const genderOptions = [
   { value: "male", label: "Laki-laki" },
@@ -41,7 +40,6 @@ const jerseySizeOptions = [
   { value: "XXL", label: "XXL" },
 ];
 
-
 export default function DetailMember() {
   const { user, logout, isLoggedIn } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
@@ -58,13 +56,15 @@ export default function DetailMember() {
   } = useSearchMembers();
 
   const [showPassword, setShowPassword] = useState(false);
-
   const [showEditForm, setShowEditForm] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [identityPhoto, setIdentityPhoto] = useState(null);
   const [isMember, setIsMember] = useState(false);
   const [myEvents, setMyEvents] = useState([]);
+  const [myMerchOrders, setMyMerchOrders] = useState([]);
+  const [loadingMerch, setLoadingMerch] = useState(false);
+  
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -79,20 +79,18 @@ export default function DetailMember() {
     jersey_size: ""
   });
 
-  // Set mounted setelah render client
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Auto isi form ketika userData berhasil didapat
   useEffect(() => {
     if (userData) {
       setFormData({
         name: userData.name ?? "",
-        email: userData.email ?? "", // ← tambah
+        email: userData.email ?? "",
         phone: userData.phone ?? "",
         gender: userData.gender ?? "",
-        date_of_birth: userData.date_of_birth ?? "", // ← ganti
+        date_of_birth: userData.date_of_birth ?? "",
         membership_type: userData.membership_type ?? "",
         address: userData.address ?? "",
         blood_type: userData.blood_type ?? "",
@@ -102,16 +100,10 @@ export default function DetailMember() {
         medical_conditions: userData.medical_conditions ?? "",
       });
       const status = userData?.membership_type || "";
-      if (status == "none") {
-        setIsMember(false);
-      } else {
-        setIsMember(true);
-      }
+      setIsMember(status !== "none");
     }
-
   }, [userData]);
 
-  // Auto isi form ketika user dari AuthContext berubah (setelah login)
   useEffect(() => {
     if (user) {
       setUserData(user);
@@ -131,13 +123,31 @@ export default function DetailMember() {
     }
   }, [user, setUserData]);
 
+  // 🔥 Ambil Riwayat Event
   useEffect(() => {
     if (userData) {
       eventService
         .getMyEvents()
         .then((res) => setMyEvents(res.data.data))
-        .catch(() => { });
+        .catch(() => {});
+    }
+  }, [userData]);
 
+  // 🔥 Ambil Riwayat Order Merchandise
+  useEffect(() => {
+    if (userData) {
+      setLoadingMerch(true);
+      merchandiseService
+        .getMyOrders()
+        .then((res) => {
+          const orders = res.data?.data || [];
+          setMyMerchOrders(orders);
+        })
+        .catch((err) => {
+          console.error("Gagal ambil order merchandise:", err);
+          setMyMerchOrders([]);
+        })
+        .finally(() => setLoadingMerch(false));
     }
   }, [userData]);
 
@@ -175,31 +185,27 @@ export default function DetailMember() {
 
       if (photo) {
         const photoForm = new FormData();
-        photoForm.append("avatar", photo);
+        photoForm.append("photo", photo); // ← PERBAIKAN: "photo" bukan "avatar"
         await profileService.uploadPhoto(photoForm);
       }
 
-      // Update userData setelah update
       const profileRes = await profileService.getProfile();
       const updatedUser = profileRes.data.data;
       setUserData(updatedUser);
-
-      // Update juga di localStorage
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
-      setTimeout(() => {
-        Swal.fire({
-          icon: "success",
-          title: "Profil Berhasil Diupdate!",
-          text: "Data kamu sudah tersimpan.",
-        });
-      }, 100);
+      Swal.fire({
+        icon: "success",
+        title: "Profil Berhasil Diupdate!",
+        text: "Data kamu sudah tersimpan.",
+        timer: 2000,
+        showConfirmButton: false,
+      });
       setShowEditForm(false);
       setPhoto(null);
       setIdentityPhoto(null);
     } catch (err) {
-      const message =
-        err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
+      const message = err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
       const errors = err.response?.data?.errors;
       Swal.fire({
         icon: "error",
@@ -241,6 +247,7 @@ export default function DetailMember() {
         identity_number: "",
       });
       setMyEvents([]);
+      setMyMerchOrders([]);
 
       Swal.fire({
         icon: "success",
@@ -253,31 +260,33 @@ export default function DetailMember() {
   // Cek apakah user sudah login
   const isUserLoggedIn = isLoggedIn || userData;
 
-  // Ambil foto profil langsung dari response
-  // const profilePhoto = "";
-  const profilePhoto = userData?.url || "";
-
+  // ✅ Perbaikan: gunakan avatar atau photo
+  const profilePhoto = userData?.avatar || userData?.photo || "";
   const name = userData?.name || user?.name || "";
-  console.log(userData);
-  // console.log(userData.participant_type);
 
-  // console.log(profilePhoto);
+  // Status badge untuk merchandise order
+  const getOrderStatusBadge = (status) => {
+    const config = {
+      pending: { label: "⏳ Menunggu", className: "bg-yellow-100 text-yellow-800 border-yellow-300" },
+      paid: { label: "✅ Lunas", className: "bg-green-100 text-green-800 border-green-300" },
+      cancelled: { label: "❌ Dibatalkan", className: "bg-red-100 text-red-800 border-red-300" },
+    };
+    return config[status] || { label: status, className: "bg-gray-100 text-gray-800" };
+  };
+
   return (
     <Container className="flex flex-col w-full">
       <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
         <BatikOverlay />
         <div className="gap-y-8 px-4 md:px-0 max-w-306 mx-auto min-h-screen">
+          
           {/* ====== Cek Login Status ====== */}
           {isMounted && isUserLoggedIn ? (
-            // ====== SUDAH LOGIN ======
             <RevealSection direction="up">
               <div className="flex flex-col items-center justify-center mt-24 mb-8">
                 <div className="bg-primary-light p-8 rounded-lg shadow-lg text-center w-full border-2 border-neutral-normal">
-                  {/* Foto Profil */}
                   <div className="flex flex-col items-center gap-4">
-                    <h1 className="text-4xl font-bold font-young text-primary-darker">
-                      Selamat Datang!
-                    </h1>
+                    <h1 className="text-4xl font-bold font-young text-primary-darker">Selamat Datang!</h1>
                     <div className="w-32 h-32 rounded-full bg-secondary-bg flex items-center justify-center overflow-hidden border-4 border-secondary-bg mx-auto mb-4">
                       {profilePhoto ? (
                         <img
@@ -287,10 +296,10 @@ export default function DetailMember() {
                           onError={(e) => {
                             e.target.style.display = "none";
                             e.target.parentElement.innerHTML = `
-                                                            <span class="text-white font-bold text-4xl">
-                                                                ${name ? name.charAt(0).toUpperCase() : "?"}
-                                                            </span>
-                                                        `;
+                              <span class="text-white font-bold text-4xl">
+                                ${name ? name.charAt(0).toUpperCase() : "?"}
+                              </span>
+                            `;
                           }}
                         />
                       ) : (
@@ -300,12 +309,8 @@ export default function DetailMember() {
                       )}
                     </div>
                   </div>
-                  <p className="text-2xl font-semibold text-secondary-bg mt-4">
-                    {name}
-                  </p>
-                  <p className="text-gray-600 mt-2">
-                    {userData?.email || user?.email}
-                  </p>
+                  <p className="text-2xl font-semibold text-secondary-bg mt-4">{name}</p>
+                  <p className="text-gray-600 mt-2">{userData?.email || user?.email}</p>
                   <div className="mt-6 flex gap-4 justify-center">
                     <button
                       onClick={handleLogout}
@@ -326,18 +331,17 @@ export default function DetailMember() {
               </div>
               <div className="flex flex-col justify-center items-center gap-4 w-full max-w-md mx-auto">
                 <InputType
-                  label="Masukkan Username" // ← ubah
-                  id="username"
-                  type="text"
-                  name="username"
-                  placeholder="john_doe" // ← ubah
+                  label="Email"
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="email@example.com"
                   required
                   className="flex flex-col gap-2 w-full"
                   value={searchId}
                   onChange={handleChange}
                 />
 
-                {/* 🔥 PASSWORD dengan toggle manual */}
                 <div className="flex flex-col gap-2 w-full">
                   <label className="font-medium text-xl">
                     Password <span className="text-red-500 ml-0.5">*</span>
@@ -357,49 +361,37 @@ export default function DetailMember() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none z-10"
-                      style={{
-                        cursor: "pointer",
-                        background: "transparent",
-                        padding: "4px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
                     >
-                      {showPassword ? (
-                        <EyeSlashIcon className="w-5 h-5" />
-                      ) : (
-                        <EyeIcon className="w-5 h-5" />
-                      )}
+                      {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
                     </button>
                   </div>
                 </div>
 
                 <button
-                  className={`flex justify-center items-center p-8 rounded-md w-full ${loading ? "bg-neutral-bg-active" : "bg-secondary-bg"} hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+                  className={`flex justify-center items-center p-8 rounded-md w-full ${
+                    loading ? "bg-neutral-bg-active" : "bg-secondary-bg"
+                  } hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl`}
                   type="button"
                   disabled={loading}
                   onClick={handleSearch}
                 >
-                  {loading ? "Mencari..." : "Cek Member"}
+                  {loading ? "Mencari..." : "Login"}
                 </button>
               </div>
             </RevealSection>
           )}
 
-          {/* Data User — muncul setelah ditemukan */}
+          {/* ====== DATA MEMBER ====== */}
           {isMounted && userData && (
             <RevealSection direction="up">
               <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 bg-primary-light border-neutral-normal rounded-md my-4">
-                <h2 className="text-3xl font-bold font-young text-neutral-normal">
-                  Data Member
-                </h2>
+                <h2 className="text-3xl font-bold font-young text-neutral-normal">Data Member</h2>
                 <hr className="border-t-2 border-neutral-normal" />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg">
                   <div>
                     <span className="font-semibold">Status : </span>
-                    <span className="font-mono"> {userData.is_active === true ? "Aktif" : "Non Aktif"}</span>
+                    <span className="font-mono">{userData.is_active === true ? "Aktif" : "Non Aktif"}</span>
                   </div>
                   <div>
                     <span className="font-semibold">Nama: </span>
@@ -411,17 +403,12 @@ export default function DetailMember() {
                   </div>
                   <div>
                     <span className="font-semibold">Tipe: </span>
-                    <span
-                      className={`font-bold ${userData.membership_type === "none" ? "text-tertiary-bg" : "text-secondary-dark"}`}
-                    >
-                      {userData.membership_type === "none"
-                        ? "Non Member"
-                        : "Member"}
+                    <span className={`font-bold ${userData.membership_type === "none" ? "text-tertiary-bg" : "text-secondary-dark"}`}>
+                      {userData.membership_type === "none" ? "Non Member" : "Member"}
                     </span>
                   </div>
                   {isMember ? (
                     <>
-
                       <div>
                         <span className="font-semibold">Membership mulai dari : </span>
                         <span className="font-bold text-secondary-bg">
@@ -436,16 +423,12 @@ export default function DetailMember() {
                       </div>
                     </>
                   ) : (
-                    <>
-
-                      <div>
-                        <span className="font-semi-bold">
-                          Anda bukan Member, Jika ingin berlangganan Membership silahkan Hubungi <a className="font-bold text-red-500" href="http://wa.me/+62811588338">disini</a>
-                        </span>
-                      </div>
-                    </>
+                    <div>
+                      <span className="font-semi-bold">
+                        Anda bukan Member, Jika ingin berlangganan Membership silahkan Hubungi <a className="font-bold text-red-500" href="http://wa.me/+62811588338">disini</a>
+                      </span>
+                    </div>
                   )}
-
                 </div>
 
                 {!showEditForm && (
@@ -454,8 +437,7 @@ export default function DetailMember() {
                       onClick={() => setShowEditForm(true)}
                       className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-lg text-white mt-4 md:text-2xl font-young w-1/2 md:w-1/4"
                     >
-                      <PencilIcon className="m-2" width={24} height={24} /> Edit
-                      Profil
+                      <PencilIcon className="m-2" width={24} height={24} /> Edit Profil
                     </button>
                   </div>
                 )}
@@ -463,13 +445,11 @@ export default function DetailMember() {
             </RevealSection>
           )}
 
-          {/* History Order Event */}
+          {/* ====== RIWAYAT EVENT ====== */}
           {isMounted && userData && myEvents.length > 0 && (
             <RevealSection direction="up">
               <div className="flex flex-col gap-4 bg-primary-light border-2 border-neutral-normal p-8 my-4 rounded-md">
-                <h2 className="text-3xl font-bold font-young text-neutral-normal">
-                  Riwayat Event
-                </h2>
+                <h2 className="text-3xl font-bold font-young text-neutral-normal">Riwayat Event</h2>
                 <hr className="border-t-2 border-neutral-normal" />
                 <div className="flex flex-col gap-4">
                   {myEvents.map((event, i) => (
@@ -478,46 +458,44 @@ export default function DetailMember() {
                       className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-neutral-normal pb-4 gap-2"
                     >
                       <div className="flex flex-col gap-1">
-                        <div className="font-bold text-lg text-neutral-normal">
-                          {event.title}
-                        </div>
-                        <div className="text-sm text-neutral-dark">
-                          {event.location}
-                        </div>
+                        <div className="font-bold text-lg text-neutral-normal">{event.title}</div>
+                        <div className="text-sm text-neutral-dark">{event.location}</div>
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         <span
-                          className={`text-sm font-bold px-3 py-1 rounded-md ${event.order?.status === "paid"
-                            ? "bg-secondary-bg text-white"
-                            : event.order?.status === "free"
+                          className={`text-sm font-bold px-3 py-1 rounded-md ${
+                            event.order?.status === "paid" || event.order?.status === "confirmed"
+                              ? "bg-secondary-bg text-white"
+                              : event.order?.status === "free"
                               ? "bg-secondary-bg text-white"
                               : event.order?.status === "pending"
-                                ? "bg-primary-normal text-white"
-                                : event.order?.status === "cancelled"
-                                  ? "bg-red-500 text-white"
-                                  : "bg-neutral-bg text-white"
-                            }`}
+                              ? "bg-primary-normal text-white"
+                              : event.order?.status === "cancelled" || event.order?.status === "rejected"
+                              ? "bg-red-500 text-white"
+                              : "bg-neutral-bg text-white"
+                          }`}
                         >
-                          {event.order?.status === "paid"
+                          {event.order?.status === "paid" || event.order?.status === "confirmed"
                             ? "Lunas"
                             : event.order?.status === "free"
-                              ? "Gratis"
-                              : event.order?.status === "pending"
-                                ? "Menunggu"
-                                : event.order?.status === "cancelled"
-                                  ? "Dibatalkan"
-                                  : event.order?.status}
+                            ? "Gratis"
+                            : event.order?.status === "pending"
+                            ? "Menunggu"
+                            : event.order?.status === "cancelled"
+                            ? "Dibatalkan"
+                            : event.order?.status === "rejected"
+                            ? "Ditolak"
+                            : event.order?.status || "-"}
                         </span>
 
                         <Link
                           href={
-                            event.status === "ongoing" ||
-                              event.status === "upcoming"
+                            event.status === "publish" || event.status === "ongoing"
                               ? `/events/upcoming?id=${event.id}`
                               : `/events/finished?id=${event.id}`
                           }
                           className={`text-white text-center px-5 py-2.5 font-medium transition-colors font-young shadow-md rounded-md
-                                                    ${event.status === "ongoing" || event.status === "upcoming" ? "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active" : "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-400  "}`}
+                            ${event.status === "publish" || event.status === "ongoing" ? "bg-primary-bg hover:bg-primary-bg-hover active:bg-primary-bg-active" : "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-400"}`}
                         >
                           Detail
                         </Link>
@@ -532,43 +510,119 @@ export default function DetailMember() {
             </RevealSection>
           )}
 
-          {/* Form Edit Profile */}
+          {/* ====== 🔥 RIWAYAT ORDER MERCHANDISE ====== */}
+          {isMounted && userData && (
+            <RevealSection direction="up">
+              <div className="flex flex-col gap-4 bg-primary-light border-2 border-neutral-normal p-8 my-4 rounded-md">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-3xl font-bold font-young text-neutral-normal flex items-center gap-2">
+                    <ShoppingBagIcon className="w-8 h-8" />
+                    Riwayat Order Merchandise
+                  </h2>
+                  <Link
+                    href="/merchandise"
+                    className="text-sm text-secondary-bg hover:underline font-medium"
+                  >
+                    + Belanja Lagi
+                  </Link>
+                </div>
+                <hr className="border-t-2 border-neutral-normal" />
+
+                {loadingMerch ? (
+                  <div className="flex justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  </div>
+                ) : myMerchOrders.length === 0 ? (
+                  <div className="text-center py-8 text-neutral-dark">
+                    <p className="text-lg">Belum ada order merchandise.</p>
+                    <Link
+                      href="/merchandise"
+                      className="text-secondary-bg hover:underline font-medium mt-2 inline-block"
+                    >
+                      Lihat Merchandise →
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    {myMerchOrders.map((order, i) => {
+                      const statusBadge = getOrderStatusBadge(order.payment_status);
+                      return (
+                        <div
+                          key={i}
+                          className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-neutral-normal pb-4 gap-2"
+                        >
+                          <div className="flex flex-col gap-1">
+                            <div className="font-bold text-lg text-neutral-normal">
+                              {order.merchandise?.name || "Merchandise"}
+                            </div>
+                            <div className="text-sm text-neutral-dark">
+                              {order.size && `Ukuran: ${order.size}`}
+                              {order.size && order.quantity && " · "}
+                              {order.quantity && `Jumlah: ${order.quantity} pcs`}
+                            </div>
+                            <div className="text-sm font-semibold text-secondary-bg">
+                              Total: Rp {formatRupiah(order.total_price || 0)}
+                            </div>
+                            <div className="text-xs font-mono text-neutral-dark">
+                              Order ID: #{order.id}
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <span
+                              className={`text-sm font-bold px-3 py-1 rounded-md border ${statusBadge.className}`}
+                            >
+                              {statusBadge.label}
+                            </span>
+                            <div className="text-xs text-neutral-dark">
+                              {order.created_at && new Date(order.created_at).toLocaleDateString('id-ID')}
+                            </div>
+                            {order.payment_status === "pending" && (
+                              <Link
+                                href={`/merchandise/order?id=${order.merchandise_id}`}
+                                className="text-xs text-secondary-bg hover:underline font-medium"
+                              >
+                                Upload Bukti Bayar
+                              </Link>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </RevealSection>
+          )}
+
+          {/* ====== FORM EDIT PROFILE ====== */}
           {isMounted && userData && showEditForm && (
             <RevealSection direction="up">
               <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 border-neutral-normal bg-primary-light rounded-md my-4">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-3xl font-bold font-young text-neutral-normal">
-                    Edit Profil
-                  </h2>
+                  <h2 className="text-3xl font-bold font-young text-neutral-normal">Edit Profil</h2>
                   <button
                     onClick={() => setShowEditForm(false)}
-                    className="cursor-pointer font-medium px-8 py-2 rounded-md bg-transparent border-2 border-neutral-normal hover:border-transparent hover:bg-neutral-normal-active hover:text-white active:border-transparent active:bg-neutral-normal active:text-white focus:border-transparent focus:bg-neutral-normal focus:text-white transition-all"
+                    className="cursor-pointer font-medium px-8 py-2 rounded-md bg-transparent border-2 border-neutral-normal hover:border-transparent hover:bg-neutral-normal-active hover:text-white transition-all"
                   >
                     Batal
                   </button>
                 </div>
                 <hr className="border-t-2 border-neutral-normal" />
 
-                {/* Foto Profil Saat Ini */}
-                {userData.photo && (
+                {(userData.photo || userData.avatar) && (
                   <div className="flex flex-col items-center gap-2">
-                    <label className="text-lg font-medium">
-                      Foto Profil Saat Ini
-                    </label>
-
+                    <label className="text-lg font-medium">Foto Profil Saat Ini</label>
                     <img
-                      src={userData.photo}
+                      src={userData.photo || userData.avatar}
                       alt="Foto Profil"
                       className="w-32 h-32 rounded-full object-cover border-2 border-gray-300"
                     />
                   </div>
                 )}
 
-                <form
-                  onSubmit={handleUpdateProfile}
-                  className="flex flex-col gap-4"
-                >
+                <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4">
                   <h3 className="text-xl font-bold font-young">Data Diri</h3>
+                  
                   <InputType
                     label="Nama Lengkap"
                     id="name"
@@ -587,7 +641,7 @@ export default function DetailMember() {
                     className="flex flex-col gap-2"
                     value={formData.email}
                     onChange={handleFormChange}
-                    readOnly // ← biar tidak bisa diubah
+                    readOnly
                   />
                   <InputType
                     label="Nomor Telepon/WA"
@@ -616,12 +670,7 @@ export default function DetailMember() {
                     options={genderOptions}
                     value={formData.gender}
                     placehold="Pilih Gender..."
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        gender: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value }))}
                   />
                   <SelectInput
                     id="jersey_size"
@@ -630,12 +679,7 @@ export default function DetailMember() {
                     options={jerseySizeOptions}
                     value={formData.jersey_size}
                     placehold="Pilih Ukuran Jersey..."
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        jersey_size: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => setFormData(prev => ({ ...prev, jersey_size: e.target.value }))}
                   />
                   <InputType
                     label="Tanggal Lahir"
@@ -653,17 +697,12 @@ export default function DetailMember() {
                     options={bloodTypeOptions}
                     value={formData.blood_type}
                     placehold="Pilih Golongan Darah..."
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        blood_type: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => setFormData(prev => ({ ...prev, blood_type: e.target.value }))}
                   />
+                  
                   <hr className="border-t-2 border-neutral-normal" />
-                  <h3 className="text-xl font-bold font-young">
-                    Kontak Darurat
-                  </h3>
+                  <h3 className="text-xl font-bold font-young">Kontak Darurat</h3>
+                  
                   <InputType
                     label="Nama Kontak Darurat"
                     id="emergency_contact"
@@ -686,13 +725,10 @@ export default function DetailMember() {
                   />
 
                   <hr className="border-t-2 border-neutral-normal" />
-                  <h3 className="text-xl font-bold font-young">
-                    Info Kesehatan
-                  </h3>
+                  <h3 className="text-xl font-bold font-young">Info Kesehatan</h3>
+                  
                   <div className="flex flex-col gap-2">
-                    <label className="text-xl font-medium">
-                      Riwayat Alergi
-                    </label>
+                    <label className="text-xl font-medium">Riwayat Alergi</label>
                     <textarea
                       name="medical_conditions"
                       placeholder="Contoh: alergi debu, makanan laut, dll"
@@ -702,10 +738,10 @@ export default function DetailMember() {
                       onChange={handleFormChange}
                     />
                   </div>
+                  
                   <hr className="border-t-2 border-neutral-normal" />
-                  <h3 className="text-xl font-bold mt-4 font-young">
-                    Foto Profil
-                  </h3>
+                  <h3 className="text-xl font-bold mt-4 font-young">Foto Profil</h3>
+                  
                   <ImageUpload
                     id="photo"
                     label="Upload Foto Profil Baru"
@@ -716,14 +752,16 @@ export default function DetailMember() {
                     <button
                       type="button"
                       onClick={() => setShowEditForm(false)}
-                      className="cursor-pointer flex-1 flex justify-center items-center rounded-md h-16 font-bold text-xl font-young bg-transparent border-2 border-neutral-normal hover:border-transparent hover:bg-neutral-normal hover:text-white active:border-transparent active:bg-neutral-normal-active active:text-white focus:border-transparent focus:bg-neutral-normal-active focus:text-white transition-all"
+                      className="cursor-pointer flex-1 flex justify-center items-center rounded-md h-16 font-bold text-xl font-young bg-transparent border-2 border-neutral-normal hover:border-transparent hover:bg-neutral-normal hover:text-white transition-all"
                     >
                       Batal
                     </button>
                     <button
                       type="submit"
                       disabled={submitLoading}
-                      className={`flex-1 flex justify-center items-center ${submitLoading ? "bg-neutral-normal text-white cursor-not-allowed" : "bg-secondary-bg hover:bg-secondary-bg-hover cursor-pointer"} active:bg-secondary-bg-active h-16 font-bold text-xl text-white font-young rounded-md`}
+                      className={`flex-1 flex justify-center items-center ${
+                        submitLoading ? "bg-neutral-normal text-white cursor-not-allowed" : "bg-secondary-bg hover:bg-secondary-bg-hover cursor-pointer"
+                      } active:bg-secondary-bg-active h-16 font-bold text-xl text-white font-young rounded-md`}
                     >
                       {submitLoading ? "Menyimpan..." : "Simpan Perubahan"}
                     </button>

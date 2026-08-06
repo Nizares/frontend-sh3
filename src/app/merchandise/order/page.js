@@ -18,23 +18,13 @@ import BatikOverlay from "@/src/components/BatikOverlay"
 
 export default function MerchandiseOrderPage() {
     const paymentMethodOptions = [
-        { value: "bank_transfer", label: "Bank Transfer" },
+        { value: "transfer", label: "Bank Transfer" },
         { value: "qris", label: "QRIS" },
-    ]
-
-    // 🔥 OPSI PENGIRIMAN
-    const shippingOptions = [
-        { value: "delivery", label: "Kirim ke Alamat" },
-        { value: "pickup", label: "Ambil di Tempat" },
     ]
 
     const [item, setItem] = useState(null)
     const [qty, setQty] = useState(1)
     const [selectedSize, setSelectedSize] = useState("")
-    const [selectedColor, setSelectedColor] = useState("")
-    const [shippingMethod, setShippingMethod] = useState("delivery") // ← baru
-    const [shippingAddress, setShippingAddress] = useState("")
-    const [shippingPhone, setShippingPhone] = useState("")
     const [submitLoading, setSubmitLoading] = useState(false)
     const [orderResult, setOrderResult] = useState(null)
     const [userData, setUserData] = useState(null)
@@ -42,7 +32,6 @@ export default function MerchandiseOrderPage() {
     const [paymentMethod, setPaymentMethod] = useState("")
     const [confirmOrder, setConfirmedOrder] = useState(null)
 
-    // State untuk diskon event
     const [eventId, setEventId] = useState(null)
     const [eventPrice, setEventPrice] = useState(null)
     const [discountPercentage, setDiscountPercentage] = useState(null)
@@ -84,98 +73,131 @@ export default function MerchandiseOrderPage() {
     const activePrice = eventPrice ?? item?.price ?? 0
     const totalPrice = activePrice * qty
 
-    // 🔥 HANDLE SHIPPING METHOD CHANGE
-    const handleShippingMethodChange = (e) => {
-        const method = e.target.value
-        setShippingMethod(method)
-        if (method === "pickup") {
-            setShippingAddress("Ambil di Tempat (Event)")
-            setShippingPhone("")
-        } else {
-            setShippingAddress("")
-            setShippingPhone("")
-        }
-    }
-
     async function submitOrder(e) {
         e.preventDefault()
 
+        // ========== VALIDASI ==========
         if (!userData) {
             Swal.fire({ icon: "warning", title: "Belum login!", text: "Kamu harus login terlebih dahulu." })
             return
         }
-        if (item.sizes?.length > 0 && !selectedSize) {
+
+        if (!userData.name) {
+            Swal.fire({
+                icon: "warning",
+                title: "Data tidak lengkap!",
+                text: "Nama kamu tidak ditemukan. Update profil dulu."
+            })
+            return
+        }
+
+        if (!userData.phone) {
+            Swal.fire({
+                icon: "warning",
+                title: "Data tidak lengkap!",
+                text: "Nomor telepon tidak ditemukan. Update profil dulu."
+            })
+            return
+        }
+
+        // ✅ Cek size hanya jika item punya size_options
+        const hasSizeOptions = item.sizes && item.sizes.length > 0
+        if (hasSizeOptions && !selectedSize) {
             Swal.fire({ icon: "warning", title: "Pilih ukuran dulu!" })
             return
         }
-        if (item.colors?.length > 0 && !selectedColor) {
-            Swal.fire({ icon: "warning", title: "Pilih warna dulu!" })
+
+        if (qty < 1) {
+            Swal.fire({ icon: "warning", title: "Minimal 1 item!" })
             return
         }
-        if (!shippingMethod) {
-            Swal.fire({ icon: "warning", title: "Pilih metode pengiriman dulu!" })
+
+        if (qty > item.stock) {
+            Swal.fire({
+                icon: "warning",
+                title: "Stok tidak mencukupi!",
+                text: `Stok tersisa ${item.stock}`
+            })
             return
         }
-        if (shippingMethod === "delivery") {
-            if (!shippingAddress) {
-                Swal.fire({ icon: "warning", title: "Isi alamat pengiriman dulu!" })
-                return
-            }
-            if (!shippingPhone) {
-                Swal.fire({ icon: "warning", title: "Isi nomor HP pengiriman dulu!" })
-                return
-            }
-        }
+
         if (!paymentFile) {
             Swal.fire({ icon: "warning", title: "Upload bukti pembayaran dulu!" })
             return
         }
+
         if (!paymentMethod) {
             Swal.fire({ icon: "warning", title: "Pilih metode pembayaran dulu!" })
             return
         }
 
         setSubmitLoading(true)
+
+        setSubmitLoading(true)
+
         try {
             const orderPayload = {
                 merchandise_id: item.id,
+                customer_name: userData.name,
+                customer_contact: userData.phone,
                 quantity: qty,
-                size: selectedSize || null,
-                color: selectedColor || null,
-                shipping_address: shippingAddress || "Ambil di Tempat (Event)",
-                shipping_phone: shippingPhone || "-",
-                shipping_method: shippingMethod,
-                ...(eventId && { event_id: eventId }),
             }
 
-            const orderRes = await merchandiseService.createOrder(orderPayload)
+            if (hasSizeOptions && selectedSize) {
+                orderPayload.size = selectedSize
+            }
+
+
+            // ✅ PAKAI method "order" (bukan "createOrder")
+            const orderRes = await merchandiseService.order(orderPayload)
+
             const order = orderRes.data.data
 
+            // Upload payment
             const formData = new FormData()
             formData.append("payment_proof", paymentFile)
-            formData.append("payment_method", paymentMethod)
-            formData.append("paid_amount", totalPrice)
-            formData.append("paid_at", new Date().toISOString().slice(0, 19).replace("T", " "))
 
-            await merchandiseService.uploadPayment(order.order_id, formData)
+            await merchandiseService.uploadPayment(order.id, formData)
 
             setOrderResult({
-                order_id: order.order_id,
-                invoice_number: order.invoice_number,
-                payment_instructions: order.payment_instructions,
+                order_id: order.id,
+                invoice_number: order.invoice_number || `INV-${order.id}`,
             })
-            setConfirmedOrder(true);
+            setConfirmedOrder(true)
+
+            Swal.fire({
+                icon: "success",
+                title: "Order Berhasil!",
+                text: "Pesananmu sudah dibuat. Tunggu konfirmasi dari admin.",
+                timer: 3000,
+                showConfirmButton: false,
+            })
+
             setTimeout(() => {
                 document.getElementById("invoice-section")?.scrollIntoView({ behavior: "smooth" })
             }, 300)
 
         } catch (err) {
-            setConfirmedOrder(false);
+
+            let errorMessage = "Terjadi kesalahan, coba lagi."
+
+            if (err.response?.data?.message) {
+                errorMessage = err.response.data.message
+            } else if (err.response?.data?.errors) {
+                const errors = err.response.data.errors
+                const firstError = Object.values(errors)[0]
+                errorMessage = Array.isArray(firstError) ? firstError[0] : firstError
+            } else if (err.message) {
+                errorMessage = err.message
+            }
+
             Swal.fire({
                 icon: "error",
                 title: "Gagal!",
-                text: err.response?.data?.message || "Terjadi kesalahan, coba lagi.",
+                text: errorMessage,
             })
+
+            setConfirmedOrder(false)
         } finally {
             setSubmitLoading(false)
         }
@@ -184,10 +206,8 @@ export default function MerchandiseOrderPage() {
     if (!item) return <div className="flex justify-center p-16 text-2xl">Loading...</div>
 
     const sizeOptions = item.sizes?.map(s => ({ value: s, label: s })) ?? []
-    const colorOptions = item.colors?.map(c => ({ value: c, label: c })) ?? []
     const originalPrice = Number(item?.price) || 0;
-    const eventPriceFromParams = Number(eventPrice) || 0;
-    const hasDiscount = eventPriceFromParams > 0 && eventPriceFromParams < originalPrice;
+    const hasDiscount = eventPrice && eventPrice < originalPrice;
 
     return (
         <Container className="flex flex-col gap-y-4 w-full px-4 md:px-0 ">
@@ -256,7 +276,6 @@ export default function MerchandiseOrderPage() {
                                     <div className="text-sm mt-1">Kategori: <span className="font-medium">{item.category}</span></div>
                                 )}
                             </div>
-
                         </div>
                     </RevealSection>
 
@@ -273,6 +292,15 @@ export default function MerchandiseOrderPage() {
                                         <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
                                     </div>
                                     <hr className="border-t-2 border-text-colors" />
+
+                                    {/* Data Pemesan */}
+                                    <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                                        <p className="font-medium text-green-700">Data Pemesan</p>
+                                        <p className="text-sm mt-1">Nama: <span className="font-semibold">{userData?.name || "-"}</span></p>
+                                        <p className="text-sm">Kontak: <span className="font-semibold">{userData?.phone || "-"}</span></p>
+                                        <p className="text-sm">Email: <span className="font-semibold">{userData?.email || "-"}</span></p>
+                                    </div>
+
                                     <div className="flex flex-col gap-2">
                                         <label className="font-medium text-xl">
                                             Jumlah <span className="text-red-500">*</span>
@@ -285,78 +313,19 @@ export default function MerchandiseOrderPage() {
                                                 className="cursor-pointer w-10 h-10 bg-secondary-bg text-white font-bold text-xl hover:bg-secondary-bg-hover transition-colors">+</button>
                                         </div>
                                     </div>
+
                                     {sizeOptions.length > 0 && (
-                                        <SelectInput id="size" name="size" label="Ukuran" required placehold="Pilih ukuran..."
-                                            options={sizeOptions} value={selectedSize} onChange={e => setSelectedSize(e.target.value)} />
-                                    )}
-                                    {colorOptions.length > 0 && (
-                                        <SelectInput id="color" name="color" label="Warna" required placehold="Pilih warna..."
-                                            options={colorOptions} value={selectedColor} onChange={e => setSelectedColor(e.target.value)} />
-                                    )}
-                                </div>
-                            </RevealSection>
-
-                            {/* 🔥 SHIPPING SECTION - DENGAN OPSI */}
-                            <RevealSection direction="up">
-                                <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md">
-                                    <div className="flex justify-between">
-                                        <div className="text-2xl font-bold font-young">Shipping Info</div>
-                                        <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
-                                    </div>
-                                    <hr className="border-t-2 border-text-colors" />
-
-                                    {/* 🔥 OPSI PENGIRIMAN */}
-                                    <SelectInput
-                                        id="shippingMethod"
-                                        name="shippingMethod"
-                                        label="Metode Pengiriman"
-                                        required
-                                        placehold="Pilih metode pengiriman..."
-                                        options={shippingOptions}
-                                        value={shippingMethod}
-                                        onChange={handleShippingMethodChange}
-                                    />
-
-                                    {/* 🔥 ALAMAT - muncul hanya jika pilih "Kirim" */}
-                                    {shippingMethod === "delivery" && (
-                                        <InputType
-                                            label="Alamat Pengiriman"
-                                            id="shippingaddress"
+                                        <SelectInput
+                                            id="size"
+                                            name="size"
+                                            label="Ukuran"
                                             required
-                                            type="text"
-                                            name="shippingaddress"
-                                            placeholder="Jl. Contoh No. 1, Kota"
-                                            className="flex flex-col gap-2"
-                                            value={shippingAddress}
-                                            onChange={e => setShippingAddress(e.target.value)}
+                                            placehold="Pilih ukuran..."
+                                            options={sizeOptions}
+                                            value={selectedSize}
+                                            onChange={e => setSelectedSize(e.target.value)}
                                         />
                                     )}
-
-                                    {/* 🔥 AMBIL DI TEMPAT - info alamat */}
-                                    {shippingMethod === "pickup" && (
-                                        <div className="bg-green-50 border border-green-200 rounded-md p-4">
-                                            <p className="text-green-700 font-medium">
-                                                Ambil di Tempat (Event)
-                                            </p>
-                                            <p className="text-sm text-gray-600 mt-1">
-                                                Pesanan akan tersedia di lokasi event.
-                                                {eventId && " Siapkan kode booking untuk mengambil."}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {/* 🔥 NOMOR HP - TETAP MUNCUL UNTUK KEDUA OPSI */}
-                                    <InputType
-                                        label={shippingMethod === "pickup" ? "Nomor HP (untuk konfirmasi)" : "Nomor HP Pengiriman"}
-                                        id="shippingphone"
-                                        required
-                                        type="text"
-                                        name="shippingphone"
-                                        placeholder="08123456789"
-                                        className="flex flex-col gap-2"
-                                        value={shippingPhone}
-                                        onChange={e => setShippingPhone(e.target.value)}
-                                    />
                                 </div>
                             </RevealSection>
 
@@ -367,6 +336,7 @@ export default function MerchandiseOrderPage() {
                                         <ChevronUpIcon className="w-4 h-4 md:w-8 md:h-8" />
                                     </div>
                                     <hr className="border-t-2 border-text-colors" />
+
                                     <div className="flex justify-between">
                                         <div className="text-xl font-medium">Merchandise</div>
                                         <div className="text-xl font-medium">{item.name}</div>
@@ -394,9 +364,16 @@ export default function MerchandiseOrderPage() {
                                         <div className="text-2xl font-bold">Rp. {formatRupiah(totalPrice)}</div>
                                     </div>
 
-                                    <SelectInput id="paymentmethod" name="paymentmethod" label="Metode Pembayaran" required
-                                        placehold="Pilih metode pembayaran..." options={paymentMethodOptions}
-                                        value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} />
+                                    <SelectInput
+                                        id="paymentmethod"
+                                        name="paymentmethod"
+                                        label="Metode Pembayaran"
+                                        required
+                                        placehold="Pilih metode pembayaran..."
+                                        options={paymentMethodOptions}
+                                        value={paymentMethod}
+                                        onChange={e => setPaymentMethod(e.target.value)}
+                                    />
 
                                     <div className="bg-primary-light-active border border-neutral-normal p-4 text-sm text-neutral-dark">
                                         <div className="flex flex-col items-center">
@@ -411,7 +388,12 @@ export default function MerchandiseOrderPage() {
 
                                     <div className="flex flex-col gap-2 mt-4">
                                         <div className="font-bold text-xl">Upload Bukti Pembayaran</div>
-                                        <ImageUpload id="paymentproof" label="Bukti Transfer" required onChange={file => setPaymentFile(file)} />
+                                        <ImageUpload
+                                            id="paymentproof"
+                                            label="Bukti Transfer (max 5MB)"
+                                            required
+                                            onChange={file => setPaymentFile(file)}
+                                        />
                                     </div>
                                 </div>
                             </RevealSection>
@@ -419,7 +401,9 @@ export default function MerchandiseOrderPage() {
                             <RevealSection direction="up">
                                 <button
                                     className={`flex justify-center font-young items-center rounded-md my-8 ${submitLoading ? "bg-primary-bg disabled" : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"} h-16 font-bold text-xl text-white md:text-3xl w-full ${confirmOrder ? "hidden" : ""}`}
-                                    type="submit" disabled={submitLoading}>
+                                    type="submit"
+                                    disabled={submitLoading}
+                                >
                                     {submitLoading ? "Memproses..." : "Confirm Order"}
                                 </button>
                             </RevealSection>
@@ -438,10 +422,7 @@ export default function MerchandiseOrderPage() {
                                     merch_price={formatRupiah(activePrice)}
                                     merch_qty={qty}
                                     merch_size={selectedSize}
-                                    merch_color={selectedColor}
                                     total_price={formatRupiah(totalPrice)}
-                                    shipping_method={shippingMethod}
-                                    shipping_address={shippingAddress}
                                 />
                             </div>
                         </RevealSection>

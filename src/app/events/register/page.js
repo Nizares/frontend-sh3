@@ -45,12 +45,12 @@ export default function RegisterEvent() {
     const selectedBank = paymentOptions.find((p) => p.value === payOptions);
     const router = useRouter();
 
-    // 🔥 Cek apakah user adalah member aktif
+    // Cek apakah user adalah member aktif
     const isMember = user?.membership_type && user.membership_type !== "none";
     const isFreeForMembers = event?.is_free_for_members === true;
     const isEventFree = event?.price === 0 || event?.price === "0" || event?.price === null;
 
-    // 🔥 Fungsi generate QR dari string
+    // Fungsi generate QR dari string
     const generateQR = async (qrString) => {
         if (!qrString) return null;
         try {
@@ -63,12 +63,11 @@ export default function RegisterEvent() {
                 }
             });
         } catch (err) {
-            console.error("Gagal generate QR:", err);
             return null;
         }
     };
 
-    // 🔥 Fungsi set QR dari berbagai sumber
+    // Fungsi set QR dari berbagai sumber
     const setQRFromData = async (data) => {
         const qrImage = data?.qr_code_image || null;
         const qrString = data?.qr_code || data?.ticket_code || null;
@@ -160,7 +159,7 @@ export default function RegisterEvent() {
                         }
                     }
                 } catch (err) {
-                    console.error("Polling error:", err);
+                    // Silent error
                 }
             }, 5000);
         }
@@ -189,24 +188,21 @@ export default function RegisterEvent() {
             return;
         }
 
-        // 🔥 CEK: Apakah member dan event free for members?
+        // CEK: Apakah member dan event free for members?
         const canRegisterFree = isMember && isFreeForMembers;
 
-        // 🔥 Jika member dan event free → LANGSUNG DAFTAR, TANPA UPLOAD
+        // Jika member dan event free → LANGSUNG DAFTAR, TANPA UPLOAD
         if (canRegisterFree) {
             setSubmitLoading(true);
             try {
                 const response = await eventService.registerEvent(event.id);
                 const data = response.data.data;
 
-                console.log("📦 Member registration response:", data);
-
                 const orderId = data.event_participant_id || data.id;
                 const invoiceNumber = data.invoice_number || `INV-${orderId}`;
                 const qrString = data.qr_code || data.ticket_code;
                 const paymentStatus = data.payment_status || "confirmed";
 
-                // 🔥 Set QR
                 await setQRFromData(data);
                 setShowQR(true);
                 setOrderStatus(paymentStatus);
@@ -218,16 +214,14 @@ export default function RegisterEvent() {
 
                 Swal.fire({
                     icon: "success",
-                    title: "🎉 Pendaftaran Berhasil!",
+                    title: "Pendaftaran Berhasil!",
                     text: "Sebagai member, kamu mendapatkan event ini GRATIS! Tiket dan QR Code sudah aktif.",
                     timer: 3000,
                     showConfirmButton: false,
                 });
                 return;
             } catch (err) {
-                console.error("Member registration error:", err.response?.data);
-                
-                // 🔥 Jika sudah terdaftar
+                // Jika sudah terdaftar
                 if (err.response?.status === 422 || err.response?.data?.message?.includes("already registered")) {
                     try {
                         const myEventsRes = await eventService.getMyEvents();
@@ -259,10 +253,9 @@ export default function RegisterEvent() {
             }
         }
 
-        // 🔥 NON-MEMBER ATAU EVENT BERBAYAR → HARUS UPLOAD BUKTI
+        // NON-MEMBER ATAU EVENT BERBAYAR → HARUS UPLOAD BUKTI
         // Cek apakah event gratis (tidak perlu upload)
         if (isEventFree) {
-            // Event gratis, langsung daftar
             setSubmitLoading(true);
             try {
                 const response = await eventService.registerEvent(event.id);
@@ -291,14 +284,14 @@ export default function RegisterEvent() {
                 });
                 return;
             } catch (err) {
-                // handle error
+                // handle error silently
             } finally {
                 setSubmitLoading(false);
             }
             return;
         }
 
-        // 🔥 EVENT BERBAYAR → VALIDASI UPLOAD BUKTI
+        // EVENT BERBAYAR → VALIDASI UPLOAD BUKTI
         if (!paymentFile) {
             Swal.fire({ 
                 icon: "warning", 
@@ -313,14 +306,11 @@ export default function RegisterEvent() {
             const response = await eventService.registerEvent(event.id);
             const data = response.data.data;
 
-            console.log("📦 Paid registration response:", data);
-
             const orderId = data.event_participant_id || data.id;
             const invoiceNumber = data.invoice_number || `INV-${orderId}`;
             const qrString = data.qr_code || data.ticket_code;
             const paymentStatus = data.payment_status || "pending";
 
-            // 🔥 Jika langsung confirmed (misal event gratis)
             if (paymentStatus === "confirmed" || paymentStatus === "free") {
                 await setQRFromData(data);
                 setShowQR(true);
@@ -339,11 +329,7 @@ export default function RegisterEvent() {
                 return;
             }
 
-            // 🔥 Jika pending → butuh konfirmasi admin
             if (paymentStatus === "pending") {
-                // 🔥 Upload bukti bayar ke payment
-                // ... upload logic jika ada endpoint upload payment
-
                 setOrderStatus("pending");
                 setOrderResult({
                     order_id: orderId,
@@ -361,9 +347,7 @@ export default function RegisterEvent() {
             }
 
         } catch (err) {
-            console.error("Registration error:", err.response?.data);
-
-            // 🔥 SUDAH TERDAFTAR
+            // SUDAH TERDAFTAR
             if (err.response?.status === 422 || err.response?.data?.message?.includes("already registered")) {
                 try {
                     const myEventsRes = await eventService.getMyEvents();
@@ -427,7 +411,6 @@ export default function RegisterEvent() {
     const isPaid = orderStatus === "paid" || orderStatus === "confirmed" || orderStatus === "free";
     const isPending = orderStatus === "pending";
 
-    // 🔥 Tampilkan info member di UI
     const showMemberInfo = isMember && isFreeForMembers && !isPaid && !isPending;
 
     return (
@@ -521,7 +504,7 @@ export default function RegisterEvent() {
                                                 </p>
                                                 {isMember && (
                                                     <p className="text-green-600 text-sm mt-1">
-                                                        ⭐ Status: <span className="font-bold">Member</span>
+                                                        Status: <span className="font-bold">Member</span>
                                                     </p>
                                                 )}
                                             </div>
@@ -576,11 +559,10 @@ export default function RegisterEvent() {
                             </div>
                         </RevealSection>
 
-                        {/* 🔥 INFO MEMBER - EVENT GRATIS UNTUK MEMBER */}
+                        {/* INFO MEMBER - EVENT GRATIS UNTUK MEMBER */}
                         {showMemberInfo && (
                             <RevealSection direction="up">
                                 <div className="bg-green-50 border-2 border-green-300 rounded-lg p-6 flex flex-col items-center gap-2">
-                                    <div className="text-3xl">⭐</div>
                                     <div className="text-xl font-bold text-green-700">Event Gratis untuk Member!</div>
                                     <p className="text-center text-gray-600">
                                         Kamu adalah member aktif. Event ini <span className="font-bold text-green-600">GRATIS</span> untukmu!
@@ -613,7 +595,7 @@ export default function RegisterEvent() {
                                 {isMember && isFreeForMembers && (
                                     <div className="flex justify-between">
                                         <div className="text-xl font-medium text-green-600">Diskon Member</div>
-                                        <div className="text-xl font-medium text-green-600">GRATIS! 🎉</div>
+                                        <div className="text-xl font-medium text-green-600">GRATIS!</div>
                                     </div>
                                 )}
                                 <div className="flex justify-between">
@@ -625,11 +607,11 @@ export default function RegisterEvent() {
                             </div>
                         </RevealSection>
 
-                        {/* 🔥 TAMPILAN QR CODE */}
+                        {/* TAMPILAN QR CODE */}
                         {isPaid && showQR && (
                             <RevealSection direction="up">
                                 <div className="flex flex-col items-center gap-4 bg-green-50 border-2 border-green-300 rounded-lg p-6">
-                                    <div className="text-2xl font-bold text-green-700">✅ Tiket Aktif</div>
+                                    <div className="text-2xl font-bold text-green-700">Tiket Aktif</div>
                                     {qrCode ? (
                                         <img
                                             src={qrCode}
@@ -677,7 +659,7 @@ export default function RegisterEvent() {
                             </RevealSection>
                         )}
 
-                        {/* 🔥 PAYMENT PROCESS - HANYA UNTUK NON-MEMBER & EVENT BERBAYAR */}
+                        {/* PAYMENT PROCESS - HANYA UNTUK NON-MEMBER & EVENT BERBAYAR */}
                         {!isPaid && !isPending && !isEventFree && !(isMember && isFreeForMembers) && (
                             <div className="flex flex-col bg-primary-light border-neutral-normal border-2 p-4 gap-4 rounded-md z-1 mb-4">
                                 <RevealSection direction="up">
@@ -746,7 +728,7 @@ export default function RegisterEvent() {
                             </div>
                         )}
 
-                        {/* 🔥 TOMBOL SUBMIT */}
+                        {/* TOMBOL SUBMIT */}
                         <RevealSection direction="up">
                             <div className="flex flex-col gap-4">
                                 {!isPaid && !showQR && (
@@ -756,7 +738,7 @@ export default function RegisterEvent() {
                                         disabled={submitLoading || !isLoggedIn || isPending}
                                     >
                                         {submitLoading ? "Memproses..." : 
-                                         (isMember && isFreeForMembers) ? "⭐ Daftar Gratis (Member)" : 
+                                         (isMember && isFreeForMembers) ? "Daftar Gratis (Member)" : 
                                          isEventFree ? "Daftar Gratis" : 
                                          "Konfirmasi Pembayaran"}
                                     </button>
@@ -773,14 +755,14 @@ export default function RegisterEvent() {
                                 )}
                                 {isPaid && showQR && (
                                     <Link href="/events" className="text-center text-secondary-bg font-medium hover:underline">
-                                        ← Kembali ke Events
+                                        Kembali ke Events
                                     </Link>
                                 )}
                             </div>
                         </RevealSection>
                     </form>
 
-                    {/* 🔥 INVOICE */}
+                    {/* INVOICE */}
                     {orderResult && (
                         <RevealSection direction="up">
                             <InvoiceEvent

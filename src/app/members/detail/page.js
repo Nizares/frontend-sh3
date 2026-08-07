@@ -185,7 +185,7 @@ export default function DetailMember() {
 
       if (photo) {
         const photoForm = new FormData();
-        photoForm.append("photo", photo); // ← PERBAIKAN: "photo" bukan "avatar"
+        photoForm.append("avatar", photo); // ← PERBAIKAN: "photo" bukan "avatar"
         await profileService.uploadPhoto(photoForm);
       }
 

@@ -19,6 +19,59 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // 🔥 LOGIN DENGAN USERNAME
+    const login = async (username, password) => {
+        setLoading(true);
+        try {
+            const response = await api.post('/auth/login', { 
+                username,  // ← username, bukan email
+                password 
+            });
+            
+            const { token, user: userData } = response.data.data || response.data;
+            
+            // Simpan token
+            localStorage.setItem('token', token);
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            
+            // Ambil profile lengkap
+            const profileRes = await profileService.getProfile();
+            const profile = profileRes.data.data;
+            const participant = profile.participant ?? {};
+            
+            const fullUser = {
+                ...profile.user,
+                participant_id: participant.id,
+                phone: participant.phone,
+                gender: participant.gender,
+                date_of_birth: participant.date_of_birth,
+                address: participant.address,
+                blood_type: participant.blood_type,
+                jersey_size: participant.jersey_size,
+                emergency_contact: participant.emergency_contact,
+                emergency_phone: participant.emergency_phone,
+                medical_conditions: participant.medical_conditions,
+                membership_type: participant.membership_type,
+                membership_start_date: participant.membership_start_date,
+                membership_end_date: participant.membership_end_date,
+                is_active: participant.is_active,
+                hash_id: participant.hash_id,
+            };
+            
+            setUser(fullUser);
+            localStorage.setItem('user', JSON.stringify(fullUser));
+            
+            return fullUser;
+            
+        } catch (error) {
+            console.error('Login error:', error.response?.data);
+            const message = error.response?.data?.message || 'Username atau password salah.';
+            throw new Error(message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -42,6 +95,8 @@ export const AuthProvider = ({ children }) => {
                         membership_type: participant.membership_type,
                         membership_start_date: participant.membership_start_date,
                         membership_end_date: participant.membership_end_date,
+                        is_active: participant.is_active,
+                        hash_id: participant.hash_id,
                     };
                     setUser(fullUser);
                     localStorage.setItem('user', JSON.stringify(fullUser));
@@ -70,6 +125,7 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider value={{
             user,
             loading,
+            login,           // ← tambahkan login ke context
             logout,
             setAuthUser,
             isLoggedIn: !!user,

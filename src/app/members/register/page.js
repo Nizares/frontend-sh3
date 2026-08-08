@@ -38,6 +38,7 @@ export default function RegisterPage() {
     const { setAuthUser } = useAuth();
     const router = useRouter();
 
+    const [username, setUsername] = useState("");
     const [gender, setGender] = useState("");
     const [bloodType, setBloodType] = useState("");
     const [jerseySize, setJerseySize] = useState("");
@@ -62,6 +63,15 @@ export default function RegisterPage() {
     async function handleRegister(e) {
         e.preventDefault();
 
+        // 🔥 Validasi username wajib
+        if (!username) {
+            Swal.fire({ icon: "warning", title: "Username wajib diisi!" });
+            return;
+        }
+        if (username.length < 3) {
+            Swal.fire({ icon: "warning", title: "Username minimal 3 karakter!" });
+            return;
+        }
         if (!formData.name || !formData.email) {
             Swal.fire({ icon: "warning", title: "Nama dan email wajib diisi!" });
             return;
@@ -82,6 +92,7 @@ export default function RegisterPage() {
         setSubmitLoading(true);
         try {
             const payload = {
+                username: username, // 🔥 Tambahkan username
                 name: formData.name,
                 email: formData.email,
                 gender,
@@ -111,6 +122,7 @@ export default function RegisterPage() {
             const participant = user.participants?.[0] ?? {};
             const fullUser = {
                 ...user,
+                username: username, // 🔥 Tambahkan username ke user
                 participant_id: participant.id,
                 phone: participant.phone,
                 gender: participant.gender,
@@ -131,9 +143,12 @@ export default function RegisterPage() {
                 title: "Registrasi Berhasil!",
                 html: `
                     <p>Selamat datang, <strong>${user.name}</strong>!</p>
+                    <p style="margin-top:4px;font-size:0.9rem;color:#555">
+                        Username: <strong>${username}</strong>
+                    </p>
                     <p style="margin-top:8px;font-size:0.9rem;color:#555">
                         ${password
-                            ? "Kamu bisa login dengan email dan password yang sudah dibuat."
+                            ? "Kamu bisa login dengan username dan password yang sudah dibuat."
                             : "Kamu sudah otomatis login. Untuk login kembali di lain waktu, gunakan <strong>Lupa Password</strong>."}
                     </p>
                 `,
@@ -145,6 +160,17 @@ export default function RegisterPage() {
         } catch (err) {
             const message = err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
             const errors = err.response?.data?.errors;
+            
+            // 🔥 Tampilkan error khusus untuk username yang sudah dipakai
+            if (errors?.username) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Registrasi Gagal!",
+                    text: `Username "${username}" sudah digunakan. Silakan pilih username lain.`,
+                });
+                return;
+            }
+            
             Swal.fire({
                 icon: "error",
                 title: "Registrasi Gagal!",
@@ -170,44 +196,130 @@ export default function RegisterPage() {
                         <div className="flex flex-col gap-x-16 md:grid md:grid-cols-3">
                             <form onSubmit={handleRegister} className="col-span-2 flex flex-col gap-4">
 
+                                {/* 🔥 USERNAME - WAJIB */}
+                                <h3 className="text-xl font-bold font-young">Akun</h3>
+                                <InputType 
+                                    label="Username" 
+                                    id="username" 
+                                    required 
+                                    type="text"
+                                    name="username" 
+                                    placeholder="john_doe" 
+                                    className="flex flex-col gap-2"
+                                    value={username} 
+                                    onChange={e => setUsername(e.target.value)} 
+                                />
+                                <p className="text-sm text-neutral-dark -mt-2">
+                                    Username akan digunakan untuk login. Minimal 3 karakter.
+                                </p>
+
                                 {/* Data Dasar */}
+                                <hr className="border-t-2 border-neutral-normal mt-2" />
                                 <h3 className="text-xl font-bold font-young">Data Diri</h3>
-                                <InputType label="Nama Lengkap" id="name" required type="text"
-                                    name="name" placeholder="John Doe" className="flex flex-col gap-2"
-                                    value={formData.name} onChange={handleFormChange} />
-                                <InputType label="Email" id="email" required type="email"
-                                    name="email" placeholder="you@example.com" className="flex flex-col gap-2"
-                                    value={formData.email} onChange={handleFormChange} />
-                                <InputType label="Nomor Telepon/WA" type="text" id="phone"
-                                    name="phone" placeholder="08123456789" className="flex flex-col gap-2"
-                                    value={formData.phone} onChange={handleFormChange} />
-                                <InputType label="Tanggal Lahir" type="date" id="date_of_birth"
-                                    name="date_of_birth" className="flex flex-col gap-2"
-                                    value={formData.date_of_birth} onChange={handleFormChange} />
-                                <SelectInput id="gender" name="gender" label="Gender" required
-                                    options={genderOptions} value={gender} placehold="Pilih Gender..."
-                                    onChange={e => setGender(e.target.value)} />
-                                <SelectInput id="blood_type" name="blood_type" label="Golongan Darah"
-                                    options={bloodTypeOptions} value={bloodType} placehold="Pilih Golongan Darah..."
-                                    onChange={e => setBloodType(e.target.value)} />
-                                <SelectInput id="jersey_size" name="jersey_size" label="Ukuran Jersey"
-                                    options={jerseySizeOptions} value={jerseySize} placehold="Pilih Ukuran Jersey..."
-                                    onChange={e => setJerseySize(e.target.value)} />
-                                <InputType label="Alamat" type="text" id="address" name="address"
-                                    placeholder="Jl. Merdeka No. 1, Samarinda" className="flex flex-col gap-2"
-                                    value={formData.address} onChange={handleFormChange} />
+                                
+                                <InputType 
+                                    label="Nama Lengkap" 
+                                    id="name" 
+                                    required 
+                                    type="text"
+                                    name="name" 
+                                    placeholder="John Doe" 
+                                    className="flex flex-col gap-2"
+                                    value={formData.name} 
+                                    onChange={handleFormChange} 
+                                />
+                                <InputType 
+                                    label="Email" 
+                                    id="email" 
+                                    required 
+                                    type="email"
+                                    name="email" 
+                                    placeholder="you@example.com" 
+                                    className="flex flex-col gap-2"
+                                    value={formData.email} 
+                                    onChange={handleFormChange} 
+                                />
+                                <InputType 
+                                    label="Nomor Telepon/WA" 
+                                    type="text" 
+                                    id="phone"
+                                    name="phone" 
+                                    placeholder="08123456789" 
+                                    className="flex flex-col gap-2"
+                                    value={formData.phone} 
+                                    onChange={handleFormChange} 
+                                />
+                                <InputType 
+                                    label="Tanggal Lahir" 
+                                    type="date" 
+                                    id="date_of_birth"
+                                    name="date_of_birth" 
+                                    className="flex flex-col gap-2"
+                                    value={formData.date_of_birth} 
+                                    onChange={handleFormChange} 
+                                />
+                                <SelectInput 
+                                    id="gender" 
+                                    name="gender" 
+                                    label="Gender" 
+                                    required
+                                    options={genderOptions} 
+                                    value={gender} 
+                                    placehold="Pilih Gender..."
+                                    onChange={e => setGender(e.target.value)} 
+                                />
+                                <SelectInput 
+                                    id="blood_type" 
+                                    name="blood_type" 
+                                    label="Golongan Darah"
+                                    options={bloodTypeOptions} 
+                                    value={bloodType} 
+                                    placehold="Pilih Golongan Darah..."
+                                    onChange={e => setBloodType(e.target.value)} 
+                                />
+                                <SelectInput 
+                                    id="jersey_size" 
+                                    name="jersey_size" 
+                                    label="Ukuran Jersey"
+                                    options={jerseySizeOptions} 
+                                    value={jerseySize} 
+                                    placehold="Pilih Ukuran Jersey..."
+                                    onChange={e => setJerseySize(e.target.value)} 
+                                />
+                                <InputType 
+                                    label="Alamat" 
+                                    type="text" 
+                                    id="address" 
+                                    name="address"
+                                    placeholder="Jl. Merdeka No. 1, Samarinda" 
+                                    className="flex flex-col gap-2"
+                                    value={formData.address} 
+                                    onChange={handleFormChange} 
+                                />
 
                                 {/* Kontak Darurat */}
                                 <hr className="border-t-2 border-neutral-normal mt-2" />
                                 <h3 className="text-xl font-bold font-young">Kontak Darurat</h3>
-                                <InputType label="Nama Kontak Darurat" id="emergency_contact" type="text"
-                                    name="emergency_contact" placeholder="Nama keluarga/teman"
+                                <InputType 
+                                    label="Nama Kontak Darurat" 
+                                    id="emergency_contact" 
+                                    type="text"
+                                    name="emergency_contact" 
+                                    placeholder="Nama keluarga/teman"
                                     className="flex flex-col gap-2"
-                                    value={formData.emergency_contact} onChange={handleFormChange} />
-                                <InputType label="Nomor Kontak Darurat" id="emergency_phone" type="text"
-                                    name="emergency_phone" placeholder="08123456789"
+                                    value={formData.emergency_contact} 
+                                    onChange={handleFormChange} 
+                                />
+                                <InputType 
+                                    label="Nomor Kontak Darurat" 
+                                    id="emergency_phone" 
+                                    type="text"
+                                    name="emergency_phone" 
+                                    placeholder="08123456789"
                                     className="flex flex-col gap-2"
-                                    value={formData.emergency_phone} onChange={handleFormChange} />
+                                    value={formData.emergency_phone} 
+                                    onChange={handleFormChange} 
+                                />
 
                                 {/* Info Kesehatan */}
                                 <hr className="border-t-2 border-neutral-normal mt-2" />
@@ -230,14 +342,25 @@ export default function RegisterPage() {
                                 <p className="text-sm text-neutral-dark">
                                     Opsional — kalau tidak diisi, gunakan fitur <strong>Lupa Password</strong> untuk login kembali nanti.
                                 </p>
-                                <PasswordInput label="Password" id="password" name="password"
-                                    placeholder="Minimal 6 karakter" className="flex flex-col gap-2"
-                                    value={password} onChange={e => setPassword(e.target.value)} />
+                                <PasswordInput 
+                                    label="Password" 
+                                    id="password" 
+                                    name="password"
+                                    placeholder="Minimal 6 karakter" 
+                                    className="flex flex-col gap-2"
+                                    value={password} 
+                                    onChange={e => setPassword(e.target.value)} 
+                                />
                                 {password && (
-                                    <PasswordInput label="Konfirmasi Password" id="password_confirmation"
-                                        name="password_confirmation" placeholder="Ulangi password"
+                                    <PasswordInput 
+                                        label="Konfirmasi Password" 
+                                        id="password_confirmation"
+                                        name="password_confirmation" 
+                                        placeholder="Ulangi password"
                                         className="flex flex-col gap-2"
-                                        value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} />
+                                        value={passwordConfirm} 
+                                        onChange={e => setPasswordConfirm(e.target.value)} 
+                                    />
                                 )}
 
                                 <button

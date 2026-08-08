@@ -15,15 +15,15 @@ export default function BigEventCard({
   const isOngoing = status == "publish" || status == "ongoing"
 
   return (
-    <div className="flex flex-col md:flex-row flex-1 shrink-0 basis-1/2 items-center bg-white h-full w-full max-w-3xl rounded-md">
+    <div className="flex flex-col md:flex-row flex-1 shrink-0 items-center bg-white h-full w-full max-w-3xl rounded-md">
       <Image
         src={img}
         alt="image"
         width={250}
         height={250}
-        className="w-full object-cover rounded-l-md"
+        className="w-full object-cover md:rounded-l-md h-full overflow-hidden"
       />
-      <div className="flex flex-col gap-4 p-8 justify-between h-full">
+      <div className="flex flex-col gap-4 justify-between h-full p-8">  
 
         <div className="text-2xl font-bold font-young">{title}</div>
         <div className="text-lg">{concateDate(start_date, end_date)}</div>

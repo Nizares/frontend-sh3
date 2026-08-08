@@ -117,7 +117,7 @@ export default function Navbar() {
   }
   const status_member = statusMember();
   const name = userData?.name || "";
-  const photo = userData?.photo || "";
+  const photo = userData?.avatar || "";
   const isUserLoggedIn = isLoggedIn; // ← HANYA dari context
 
   return (
@@ -164,7 +164,7 @@ export default function Navbar() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center space-x-3 focus:outline-none hover:bg-white/50 rounded-full px-3 py-2 transition-all"
+                className="flex items-center space-x-3 focus:outline-none hover:bg-white/50 rounded-full px-3 py-2 transition-all cursor-pointer"
               >
                 {/* Avatar */}
                 <div className="w-10 h-10 rounded-full bg-secondary-bg flex items-center justify-center overflow-hidden border-2 border-secondary-bg">

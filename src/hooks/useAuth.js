@@ -9,11 +9,12 @@ export default function useAuth() {
     const [error, setError] = useState(null);
     const { setAuthUser } = useAuthContext();
 
-    async function login(email, password) {
+    // 🔥 LOGIN DENGAN USERNAME (bukan email)
+    async function login(username, password) {
         setLoading(true);
         setError(null);
         try {
-            const res = await authService.login(email, password);
+            const res = await authService.login(username, password);
             const { token, user } = res.data;
 
             localStorage.setItem("token", token);
@@ -41,8 +42,8 @@ export default function useAuth() {
 
         } catch (err) {
             const msg = err.response?.data?.message
-                || err.response?.data?.errors?.email?.[0]
-                || "Email atau password salah.";
+                || err.response?.data?.errors?.username?.[0]
+                || "Username atau password salah.";
             setError(msg);
             localStorage.removeItem("token");
             localStorage.removeItem("user");

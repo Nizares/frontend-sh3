@@ -146,13 +146,13 @@ export default function SponsorsPage() {
                                 onChange={(e) => setSelectedYear(e.target.value)}
                                 className="border-2 border-neutral-normal bg-primary-light px-4 py-2 font-young text-lg rounded-md focus:outline-none focus:border-secondary-bg"
                             >
-                                <option value="all">📅 Semua Tahun</option>
+                                <option value="all">Semua Tahun</option>
                                 {availableYears.map((year) => (
                                     <option key={year} value={year}>
                                         {year}
                                     </option>
                                 ))}
-                                <option value="Lainnya">📌 Lainnya</option>
+                                <option value="Lainnya">Lainnya</option>
                             </select>
                             
                             <span className="text-sm text-neutral-dark bg-primary-light px-3 py-1 rounded-full border border-neutral-normal">

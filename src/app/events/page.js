@@ -12,7 +12,7 @@ export default function Events() {
   const [events, setEvents] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("upcoming");
+  const [activeTab, setActiveTab] = useState("ongoing");
   const [activeCategory, setActiveCategory] = useState("all");
   const now = new Date();
 
@@ -141,22 +141,11 @@ export default function Events() {
           {/* ====== TAB FILTER ====== */}
           <div className="flex flex-row gap-4 border-b-2 border-neutral-normal mb-4">
             <button
-              onClick={() => setActiveTab("upcoming")}
-              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${
-                activeTab === "upcoming"
-                  ? "text-secondary-bg border-b-4 border-secondary-bg"
-                  : "text-neutral-dark hover:text-secondary-bg"
-              }`}
-            >
-              Upcoming Events
-            </button>
-            <button
               onClick={() => setActiveTab("ongoing")}
-              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${
-                activeTab === "ongoing"
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${activeTab === "ongoing"
                   ? "text-secondary-bg border-b-4 border-secondary-bg"
                   : "text-neutral-dark hover:text-secondary-bg"
-              }`}
+                }`}
             >
               Ongoing Events
               {ongoingEvents.length > 0 && (
@@ -166,12 +155,21 @@ export default function Events() {
               )}
             </button>
             <button
-              onClick={() => setActiveTab("past")}
-              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${
-                activeTab === "past"
+              onClick={() => setActiveTab("upcoming")}
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${activeTab === "upcoming"
                   ? "text-secondary-bg border-b-4 border-secondary-bg"
                   : "text-neutral-dark hover:text-secondary-bg"
-              }`}
+                }`}
+            >
+              Upcoming Events
+            </button>
+
+            <button
+              onClick={() => setActiveTab("past")}
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${activeTab === "past"
+                  ? "text-secondary-bg border-b-4 border-secondary-bg"
+                  : "text-neutral-dark hover:text-secondary-bg"
+                }`}
             >
               Past Events
             </button>
@@ -181,11 +179,10 @@ export default function Events() {
           <div className="flex flex-row flex-wrap gap-3 mb-8">
             <button
               onClick={() => setActiveCategory("all")}
-              className={`px-5 py-2 font-medium font-young transition-all rounded-md border-2 cursor-pointer ${
-                activeCategory === "all"
+              className={`px-5 py-2 font-medium font-young transition-all rounded-md border-2 cursor-pointer ${activeCategory === "all"
                   ? "bg-secondary-bg text-white border-secondary-bg"
                   : "bg-transparent text-neutral-dark border-neutral-normal hover:border-emerald-600 hover:text-emerald-600"
-              }`}
+                }`}
             >
               All Events
             </button>
@@ -193,11 +190,10 @@ export default function Events() {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.name)}
-                className={`px-5 py-2 font-medium font-young transition-all rounded-md border-2 cursor-pointer ${
-                  activeCategory === cat.name
+                className={`px-5 py-2 font-medium font-young transition-all rounded-md border-2 cursor-pointer ${activeCategory === cat.name
                     ? "bg-secondary-bg text-white border-secondary-bg"
                     : "bg-transparent text-neutral-dark border-neutral-normal hover:border-emerald-600 hover:text-emerald-600"
-                }`}
+                  }`}
               >
                 {cat.name}
                 <span className="ml-1 text-xs opacity-60">

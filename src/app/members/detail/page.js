@@ -80,13 +80,6 @@ export default function DetailMember() {
   }, []);
 
   useEffect(() => {
-    console.log("🔍 ====== USER DATA ======");
-    console.log("📦 user dari AuthContext:", user);
-    console.log("📦 userData dari useSearchMembers:", userData);
-    console.log("📦 isLoggedIn:", isLoggedIn);
-  }, [user, userData, isLoggedIn]);
-
-  useEffect(() => {
     if (userData) {
       setFormData({
         name: userData.name ?? "",

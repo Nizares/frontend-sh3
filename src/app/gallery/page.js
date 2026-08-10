@@ -66,8 +66,8 @@ function GalleryCard({ image }) {
                     image.status === "cancelled" ? "bg-red-500" :
                     "bg-gray-500"
                 }`}>
-                    {image.status === "ongoing" ? "🔥 Berlangsung" :
-                     image.status === "upcoming" || image.status === "publish" ? "📅 Akan Datang" :
+                    {image.status === "ongoing" ? "Berlangsung" :
+                     image.status === "upcoming" || image.status === "publish" ? "Akan Datang" :
                      image.status === "completed" ? "✅ Selesai" :
                      image.status === "cancelled" ? "❌ Dibatalkan" :
                      image.status}
@@ -103,7 +103,6 @@ export default function Gallery() {
         galleryService
             .getAll()
             .then((res) => {
-                console.log("📸 Gallery response:", res.data);
                 
                 const galleries = res.data?.data || [];
                 
@@ -126,14 +125,12 @@ export default function Gallery() {
                     })
                     .filter((img) => img.url && img.url !== "");
                 
-                console.log("📸 Mapped images:", mappedImages.length);
                 
                 setAllImages(mappedImages);
                 setFilteredImages(mappedImages);
                 
                 // 🔥 Generate list status yang tersedia
                 const statuses = [...new Set(mappedImages.map(img => img.status).filter(s => s !== ""))];
-                console.log("📸 Available statuses:", statuses);
                 setAvailableStatuses(statuses);
                 
                 setError(null);

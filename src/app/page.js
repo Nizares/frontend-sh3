@@ -21,7 +21,7 @@ export default function Home() {
   const [events, setEvents] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("upcoming");
+  const [activeTab, setActiveTab] = useState("ongoing");
   const [activeCategory, setActiveCategory] = useState("all");
   const now = new Date();
 
@@ -74,8 +74,6 @@ export default function Home() {
     (item) =>
       activeCategory === "all" || item.category?.name === activeCategory,
   );
-
-  console.log(events)
 
   // ====== RENDER EMPTY STATE ======
   const getEmptyMessage = () => {
@@ -246,16 +244,6 @@ export default function Home() {
           {/* ====== TAB FILTER ====== */}
           <div className="flex flex-row gap-4 border-b-2 border-neutral-normal mb-4">
             <button
-              onClick={() => setActiveTab("upcoming")}
-              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${
-                activeTab === "upcoming"
-                  ? "text-secondary-bg border-b-4 border-secondary-bg"
-                  : "text-neutral-dark hover:text-secondary-bg"
-              }`}
-            >
-              Upcoming Events
-            </button>
-            <button
               onClick={() => setActiveTab("ongoing")}
               className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${
                 activeTab === "ongoing"
@@ -269,6 +257,16 @@ export default function Home() {
                   {ongoingEvents.length}
                 </span>
               )}
+            </button>
+            <button
+              onClick={() => setActiveTab("upcoming")}
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${
+                activeTab === "upcoming"
+                  ? "text-secondary-bg border-b-4 border-secondary-bg"
+                  : "text-neutral-dark hover:text-secondary-bg"
+              }`}
+            >
+              Upcoming Events
             </button>
             <button
               onClick={() => setActiveTab("past")}

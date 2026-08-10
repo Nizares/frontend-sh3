@@ -80,7 +80,7 @@ export default function Footer() {
 
 
             </div>
-            <div className="text-center text-white">
+            <div className="text-center text-white md:p-0 p-2">
                 Copyright &copy; 2026 Samarinda Hash House Harriers | All Rights Reserved
             </div>
 

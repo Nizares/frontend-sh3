@@ -164,7 +164,7 @@ export default function DetailMember() {
       // 🔥 Upload avatar dengan field "photo" (sesuai Postman)
       if (avatar) {
         const avatarForm = new FormData();
-        avatarForm.append("photo", avatar);
+        avatarForm.append("avatar", avatar);
         await profileService.uploadPhoto(avatarForm);
       }
 

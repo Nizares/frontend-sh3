@@ -136,6 +136,7 @@ export default function DetailMember() {
     }));
   }
 
+  // ============ UPDATE PROFILE ============
   async function handleUpdateProfile(e) {
     e.preventDefault();
     setSubmitLoading(true);
@@ -161,10 +162,10 @@ export default function DetailMember() {
 
       await profileService.update(payload);
 
-      // 🔥 Upload avatar dengan field "photo" (sesuai Postman)
+      // Upload avatar dengan field "photo" (sesuai Postman)
       if (avatar) {
         const avatarForm = new FormData();
-        avatarForm.append("avatar", avatar);
+        avatarForm.append("photo", avatar);
         await profileService.uploadPhoto(avatarForm);
       }
 
@@ -238,7 +239,7 @@ export default function DetailMember() {
   // Cek apakah user sudah login
   const isUserLoggedIn = isLoggedIn || userData;
 
-  // 🔥 Ambil data dari userData
+  // Ambil data dari userData
   const profileAvatar = userData?.avatar || "";
   const name = userData?.name || user?.name || "";
   const username = userData?.username || user?.username || "";
@@ -279,7 +280,6 @@ export default function DetailMember() {
                     </div>
                   </div>
                   <p className="text-2xl font-semibold text-secondary-bg mt-4">{name}</p>
-                  {/* 🔥 TAMPILKAN USERNAME */}
                   {username && (
                     <p className="text-sm text-gray-500 mt-1">
                       @{username}
@@ -666,6 +666,25 @@ export default function DetailMember() {
                     </button>
                   </div>
                 </form>
+
+                {/* ====== 🔥 SECTION KEAMANAN ====== */}
+                <div className="mt-6 pt-4 border-t-2 border-neutral-normal">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-bold font-young text-neutral-normal">Keamanan</h3>
+                    <Link
+                      href="/auth/forgot-password"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-secondary-bg hover:bg-secondary-bg-hover text-white font-medium rounded-md transition-colors text-sm"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                      </svg>
+                      Reset Password
+                    </Link>
+                  </div>
+                  <p className="text-sm text-neutral-dark mt-2">
+                    Lupa password atau ingin mengganti? Klik tombol di atas untuk reset password via email.
+                  </p>
+                </div>
               </div>
             </RevealSection>
           )}

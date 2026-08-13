@@ -79,45 +79,90 @@ export default function DetailMember() {
     setIsMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (userData) {
-      setFormData({
-        name: userData.name ?? "",
-        email: userData.email ?? "",
-        phone: userData.phone ?? "",
-        gender: userData.gender ?? "",
-        date_of_birth: userData.date_of_birth ?? "",
-        membership_type: userData.membership_type ?? "",
-        address: userData.address ?? "",
-        blood_type: userData.blood_type ?? "",
-        jersey_size: userData.jersey_size ?? "",
-        emergency_contact: userData.emergency_contact ?? "",
-        emergency_phone: userData.emergency_phone ?? "",
-        medical_conditions: userData.medical_conditions ?? "",
-      });
-      const status = userData?.membership_type || "";
-      setIsMember(status !== "none");
-    }
-  }, [userData]);
-
+  // 🔥 AUTO UPDATE DATA DARI AUTHCONTEXT
   useEffect(() => {
     if (user) {
       setUserData(user);
       setFormData({
         name: user.name ?? "",
+        email: user.email ?? "",
         phone: user.phone ?? "",
         gender: user.gender ?? "",
-        birthdate: user.birthdate ?? "",
-        blood_type: user.blood_type ?? "",
+        date_of_birth: user.date_of_birth ?? "",
+        membership_type: user.membership_type ?? "",
         address: user.address ?? "",
+        blood_type: user.blood_type ?? "",
         jersey_size: user.jersey_size ?? "",
         emergency_contact: user.emergency_contact ?? "",
         emergency_phone: user.emergency_phone ?? "",
         medical_conditions: user.medical_conditions ?? "",
         identity_number: user.identity_number ?? "",
       });
+      const status = user?.membership_type || "";
+      setIsMember(status !== "none");
     }
   }, [user, setUserData]);
+
+  // 🔥 AMBIL DATA LENGKAP DARI PROFILE API (untuk refresh)
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!isLoggedIn || !user) return;
+      
+      try {
+        const profileRes = await profileService.getProfile();
+        const profileData = profileRes.data.data;
+        const participant = profileData.participant || {};
+        const userDataFromApi = profileData.user || {};
+
+        const fullUser = {
+          ...userDataFromApi,
+          participant_id: participant.id,
+          phone: participant.phone,
+          gender: participant.gender,
+          date_of_birth: participant.date_of_birth,
+          address: participant.address,
+          blood_type: participant.blood_type,
+          jersey_size: participant.jersey_size,
+          emergency_contact: participant.emergency_contact,
+          emergency_phone: participant.emergency_phone,
+          medical_conditions: participant.medical_conditions,
+          membership_type: participant.membership_type,
+          membership_start_date: participant.membership_start_date,
+          membership_end_date: participant.membership_end_date,
+          is_active: participant.is_active,
+          hash_id: participant.hash_id,
+          avatar: participant.avatar || userDataFromApi.avatar,
+          username: userDataFromApi.username || user.username,
+        };
+        setUserData(fullUser);
+        localStorage.setItem("user", JSON.stringify(fullUser));
+        
+        setFormData({
+          name: fullUser.name ?? "",
+          email: fullUser.email ?? "",
+          phone: fullUser.phone ?? "",
+          gender: fullUser.gender ?? "",
+          date_of_birth: fullUser.date_of_birth ?? "",
+          membership_type: fullUser.membership_type ?? "",
+          address: fullUser.address ?? "",
+          blood_type: fullUser.blood_type ?? "",
+          jersey_size: fullUser.jersey_size ?? "",
+          emergency_contact: fullUser.emergency_contact ?? "",
+          emergency_phone: fullUser.emergency_phone ?? "",
+          medical_conditions: fullUser.medical_conditions ?? "",
+          identity_number: fullUser.identity_number ?? "",
+        });
+        
+        const status = fullUser?.membership_type || "";
+        setIsMember(status !== "none");
+        
+      } catch (err) {
+        console.error("❌ [Profile] Error fetching profile:", err);
+      }
+    };
+
+    fetchProfile();
+  }, [isLoggedIn, user]);
 
   // 🔥 Ambil Riwayat Event
   useEffect(() => {
@@ -125,7 +170,7 @@ export default function DetailMember() {
       eventService
         .getMyEvents()
         .then((res) => setMyEvents(res.data.data))
-        .catch(() => { });
+        .catch(() => {});
     }
   }, [userData]);
 
@@ -168,10 +213,34 @@ export default function DetailMember() {
         await profileService.uploadPhoto(avatarForm);
       }
 
+      // 🔥 Refresh data setelah update
       const profileRes = await profileService.getProfile();
-      const updatedUser = profileRes.data.data;
-      setUserData(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      const profileData = profileRes.data.data;
+      const participant = profileData.participant || {};
+      const userDataFromApi = profileData.user || {};
+
+      const fullUser = {
+        ...userDataFromApi,
+        participant_id: participant.id,
+        phone: participant.phone,
+        gender: participant.gender,
+        date_of_birth: participant.date_of_birth,
+        address: participant.address,
+        blood_type: participant.blood_type,
+        jersey_size: participant.jersey_size,
+        emergency_contact: participant.emergency_contact,
+        emergency_phone: participant.emergency_phone,
+        medical_conditions: participant.medical_conditions,
+        membership_type: participant.membership_type,
+        membership_start_date: participant.membership_start_date,
+        membership_end_date: participant.membership_end_date,
+        is_active: participant.is_active,
+        hash_id: participant.hash_id,
+        avatar: participant.avatar || userDataFromApi.avatar,
+      };
+
+      setUserData(fullUser);
+      localStorage.setItem("user", JSON.stringify(fullUser));
 
       Swal.fire({
         icon: "success",

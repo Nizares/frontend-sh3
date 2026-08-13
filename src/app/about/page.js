@@ -4,133 +4,14 @@ import { RevealSection } from "@/src/components/RevealSection";
 import TotalStatistic from "@/src/components/TotalStatistics";
 import Image from "next/image";
 import BatikOverlay from "@/src/components/BatikOverlay";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { organisationService } from "@/src/services/organisationService";
 import { EyeIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 export default function About() {
-  // 🔥 Data statis organisasi (sesuai gambar)
-const organizationData = [
-  // 1. PIMPINAN INTI & SEKRETARIS
-  { id: 1, name: "Minardi Soetomo", position: "Hash Master (Ketua Umum)", order: 1, active: true, period: "2024 - 2027" },
-  { id: 2, name: "Haryanto Widjojo", position: "Vice Master (Wakil Ketua I)", order: 2, active: true, period: "2024 - 2027" },
-  { id: 3, name: "Veronika", position: "Joint Master I (Wakil Ketua II)", order: 3, active: true, period: "2024 - 2027" },
-  { id: 4, name: "Handria Suryadinata", position: "Joint Master II (Wakil Ketua III)", order: 4, active: true, period: "2024 - 2027" },
-  { id: 5, name: "Conan Luhas", position: "Hash Secretary (Wakil Ketua IV / Sekretaris Umum)", order: 5, active: true, period: "2024 - 2027" },
-
-  // 2. PENASIHAT (DIPINDAHKAN DI BAWAH SEKRETARIS)
-  { id: 6, name: "Amin Setiawan", position: "Penasihat", order: 6, active: true, period: "2024 - 2027" },
-  { id: 7, name: "Rudianto W", position: "Penasihat", order: 7, active: true, period: "2024 - 2027" },
-  { id: 8, name: "Alexander", position: "Penasihat", order: 8, active: true, period: "2024 - 2027" },
-  { id: 9, name: "H Amin", position: "Penasihat", order: 9, active: true, period: "2024 - 2027" },
-  { id: 10, name: "Johan Lim", position: "Penasihat", order: 10, active: true, period: "2024 - 2027" },
-  { id: 11, name: "Ibu Bertine", position: "Penasihat", order: 11, active: true, period: "2024 - 2027" },
-
-  // 3. BENDAHARA
-  { id: 12, name: "Mulyadi Widjojo", position: "Bendahara", order: 12, active: true, period: "2024 - 2027" },
-  { id: 13, name: "Natalia Rosalie", position: "Wakil Bendahara", order: 13, active: true, period: "2024 - 2027" },
-
-  // 4. SEKSI-SEKSI DI BAWAH JOINT MASTER I (Veronika)
-  // Seksi Konsumsi (Minuman)
-  { id: 14, name: "Ko Asun", position: "Anggota Seksi Konsumsi (Minuman)", order: 14, active: true, period: "2024 - 2027" },
-  { id: 15, name: "Aliang", position: "Anggota Seksi Konsumsi (Minuman)", order: 15, active: true, period: "2024 - 2027" },
-  { id: 16, name: "Afu (Willy Antonio)", position: "Anggota Seksi Konsumsi (Minuman)", order: 16, active: true, period: "2024 - 2027" },
-  { id: 17, name: "Sentoy", position: "Anggota Seksi Konsumsi (Minuman)", order: 17, active: true, period: "2024 - 2027" },
-  { id: 18, name: "Asmuran", position: "Anggota Seksi Konsumsi (Minuman)", order: 18, active: true, period: "2024 - 2027" },
-  { id: 19, name: "Sri Rahayu", position: "Anggota Seksi Konsumsi (Minuman)", order: 19, active: true, period: "2024 - 2027" },
-  { id: 20, name: "Ko Atu (Turunsyah)", position: "Anggota Seksi Konsumsi (Minuman)", order: 20, active: true, period: "2024 - 2027" },
-  { id: 21, name: "Rohmah", position: "Anggota Seksi Konsumsi (Minuman)", order: 21, active: true, period: "2024 - 2027" },
-  // Seksi Konsumsi (Makanan)
-  { id: 22, name: "Bu Susi", position: "Anggota Seksi Konsumsi (Makanan)", order: 22, active: true, period: "2024 - 2027" },
-  { id: 23, name: "Achen", position: "Anggota Seksi Konsumsi (Makanan)", order: 23, active: true, period: "2024 - 2027" },
-  { id: 24, name: "Rini", position: "Anggota Seksi Konsumsi (Makanan)", order: 24, active: true, period: "2024 - 2027" },
-  { id: 25, name: "Rohman", position: "Anggota Seksi Konsumsi (Makanan)", order: 25, active: true, period: "2024 - 2027" },
-  { id: 26, name: "Latifah", position: "Anggota Seksi Konsumsi (Makanan)", order: 26, active: true, period: "2024 - 2027" },
-  { id: 27, name: "Sri Rahayu", position: "Anggota Seksi Konsumsi (Makanan)", order: 27, active: true, period: "2024 - 2027" },
-  { id: 28, name: "Kevin", position: "Anggota Seksi Konsumsi (Makanan)", order: 28, active: true, period: "2024 - 2027" },
-  // Seksi Acara
-  { id: 29, name: "Baseg", position: "Anggota Seksi Acara", order: 29, active: true, period: "2024 - 2027" },
-  { id: 30, name: "Ko Casun", position: "Anggota Seksi Acara", order: 30, active: true, period: "2024 - 2027" },
-  { id: 31, name: "Linda", position: "Anggota Seksi Acara", order: 31, active: true, period: "2024 - 2027" },
-  { id: 32, name: "Joni", position: "Anggota Seksi Acara", order: 32, active: true, period: "2024 - 2027" },
-  { id: 33, name: "Sarimole", position: "Anggota Seksi Acara", order: 33, active: true, period: "2024 - 2027" },
-  { id: 34, name: "Amok", position: "Anggota Seksi Acara", order: 34, active: true, period: "2024 - 2027" },
-  { id: 35, name: "Amben", position: "Anggota Seksi Acara", order: 35, active: true, period: "2024 - 2027" },
-  { id: 36, name: "Tina", position: "Anggota Seksi Acara", order: 36, active: true, period: "2024 - 2027" },
-  // Seksi P3K
-  { id: 37, name: "Dr. Johanes", position: "Ketua Seksi P3K", order: 37, active: true, period: "2024 - 2027" },
-  { id: 38, name: "Dr. Teni Jirri", position: "Anggota Seksi P3K", order: 38, active: true, period: "2024 - 2027" },
-  { id: 39, name: "Dr. Abraham Jirri", position: "Anggota Seksi P3K", order: 39, active: true, period: "2024 - 2027" },
-  { id: 40, name: "Las Sugiarto", position: "Anggota Seksi P3K", order: 40, active: true, period: "2024 - 2027" },
-  { id: 41, name: "Bonny", position: "Anggota Seksi P3K", order: 41, active: true, period: "2024 - 2027" },
-  // Seksi KAMTIB
-  { id: 42, name: "Pak Rojan", position: "Anggota Seksi KAMTIB", order: 42, active: true, period: "2024 - 2027" },
-  { id: 43, name: "Hardiy Ev", position: "Anggota Seksi KAMTIB", order: 43, active: true, period: "2024 - 2027" },
-  { id: 44, name: "H. Hasan", position: "Anggota Seksi KAMTIB", order: 44, active: true, period: "2024 - 2027" },
-  { id: 45, name: "Aris", position: "Anggota Seksi KAMTIB", order: 45, active: true, period: "2024 - 2027" },
-
-  // 5. SEKSI-SEKSI DI BAWAH JOINT MASTER II (Handria Suryadinata)
-  // Seksi Sponsorship
-  { id: 46, name: "Johan Sugiarto", position: "Ketua Seksi Sponsorship", order: 46, active: true, period: "2024 - 2027" },
-  { id: 47, name: "Agus Widya (Hasan)", position: "Anggota Seksi Sponsorship", order: 47, active: true, period: "2024 - 2027" },
-  { id: 48, name: "Budi Kang", position: "Anggota Seksi Sponsorship", order: 48, active: true, period: "2024 - 2027" },
-  { id: 49, name: "Sri Rahayu", position: "Anggota Seksi Sponsorship", order: 49, active: true, period: "2024 - 2027" },
-  // Seksi Perlengkapan
-  { id: 50, name: "Baseg", position: "Anggota Seksi Perlengkapan", order: 50, active: true, period: "2024 - 2027" },
-  { id: 51, name: "Marsono (Along)", position: "Anggota Seksi Perlengkapan", order: 51, active: true, period: "2024 - 2027" },
-  { id: 52, name: "Las Sugiarto", position: "Anggota Seksi Perlengkapan", order: 52, active: true, period: "2024 - 2027" },
-  { id: 53, name: "Mika", position: "Anggota Seksi Perlengkapan", order: 53, active: true, period: "2024 - 2027" },
-  { id: 54, name: "Akwang", position: "Anggota Seksi Perlengkapan", order: 54, active: true, period: "2024 - 2027" },
-  { id: 55, name: "Ronny C", position: "Anggota Seksi Perlengkapan", order: 55, active: true, period: "2024 - 2027" },
-  // Seksi Marketing & Promosi
-  { id: 56, name: "Leny Ana", position: "Anggota Seksi Marketing & Promosi", order: 56, active: true, period: "2024 - 2027" },
-  { id: 57, name: "Budi Kang", position: "Anggota Seksi Marketing & Promosi", order: 57, active: true, period: "2024 - 2027" },
-  { id: 58, name: "Teddy Tarimole", position: "Anggota Seksi Marketing & Promosi", order: 58, active: true, period: "2024 - 2027" },
-  // Seksi Dokumentasi
-  { id: 59, name: "Armanto", position: "Anggota Seksi Dokumentasi (Foto)", order: 59, active: true, period: "2024 - 2027" },
-  { id: 60, name: "William", position: "Anggota Seksi Dokumentasi (Foto/Video)", order: 60, active: true, period: "2024 - 2027" },
-  { id: 61, name: "Conan", position: "Anggota Seksi Dokumentasi (Video)", order: 61, active: true, period: "2024 - 2027" },
-  { id: 62, name: "Ermanto", position: "Anggota Seksi Dokumentasi (Foto)", order: 62, active: true, period: "2024 - 2027" },
-  { id: 63, name: "Tata", position: "Anggota Seksi Dokumentasi", order: 63, active: true, period: "2024 - 2027" },
-  // Seksi Merchandising
-  { id: 64, name: "Megawati (IPAC)", position: "Anggota Seksi Merchandising", order: 64, active: true, period: "2024 - 2027" },
-  { id: 65, name: "Rini", position: "Anggota Seksi Merchandising", order: 65, active: true, period: "2024 - 2027" },
-  { id: 66, name: "Latifah", position: "Anggota Seksi Merchandising", order: 66, active: true, period: "2024 - 2027" },
-
-  // 6. SEKSI-SEKSI DI BAWAH HASH SECRETARY (Conan Luhas)
-  // Seksi Hare
-  { id: 67, name: "Arbin Heng", position: "Ketua Seksi Hare", order: 67, active: true, period: "2024 - 2027" },
-  { id: 68, name: "Wimi (Didi Gunawan)", position: "Wakil Ketua Seksi Hare", order: 68, active: true, period: "2024 - 2027" },
-  { id: 69, name: "Hardanto Subro", position: "Anggota Seksi Hare", order: 69, active: true, period: "2024 - 2027" },
-  { id: 70, name: "Asmiran", position: "Anggota Seksi Hare", order: 70, active: true, period: "2024 - 2027" },
-  { id: 71, name: "Indra Toyo", position: "Anggota Seksi Hare", order: 71, active: true, period: "2024 - 2027" },
-  { id: 72, name: "Valen", position: "Anggota Seksi Hare", order: 72, active: true, period: "2024 - 2027" },
-  { id: 73, name: "Ali Sanjaya", position: "Anggota Seksi Hare", order: 73, active: true, period: "2024 - 2027" },
-  { id: 74, name: "Titi", position: "Anggota Seksi Hare", order: 74, active: true, period: "2024 - 2027" },
-  { id: 75, name: "Lekong", position: "Anggota Seksi Hare", order: 75, active: true, period: "2024 - 2027" },
-  { id: 76, name: "Arek", position: "Anggota Seksi Hare", order: 76, active: true, period: "2024 - 2027" },
-  { id: 77, name: "Achien", position: "Anggota Seksi Hare", order: 77, active: true, period: "2024 - 2027" },
-  { id: 78, name: "Mithal", position: "Anggota Seksi Hare", order: 78, active: true, period: "2024 - 2027" },
-  { id: 79, name: "Jobs", position: "Anggota Seksi Hare", order: 79, active: true, period: "2024 - 2027" },
-  // Seksi Operasional
-  { id: 80, name: "Joni Dentu", position: "Anggota Seksi Operasional", order: 80, active: true, period: "2024 - 2027" },
-  { id: 81, name: "Mali Mangur", position: "Anggota Seksi Operasional", order: 81, active: true, period: "2024 - 2027" },
-  { id: 82, name: "Andre Iman", position: "Anggota Seksi Operasional", order: 82, active: true, period: "2024 - 2027" },
-  { id: 83, name: "Rachel", position: "Anggota Seksi Operasional", order: 83, active: true, period: "2024 - 2027" },
-  { id: 84, name: "Moka", position: "Anggota Seksi Operasional", order: 84, active: true, period: "2024 - 2027" },
-  // Seksi Legal
-  { id: 85, name: "Pak Ferry", position: "Anggota Seksi Legal", order: 85, active: true, period: "2024 - 2027" },
-  // Seksi Pendaftaran Anggota
-  { id: 86, name: "Sari San", position: "Anggota Seksi Pendaftaran Anggota", order: 86, active: true, period: "2024 - 2027" },
-  { id: 87, name: "Muryani Tjong", position: "Anggota Seksi Pendaftaran Anggota", order: 87, active: true, period: "2024 - 2027" },
-  { id: 88, name: "Subhan Agus / Riri", position: "Anggota Seksi Pendaftaran Anggota", order: 88, active: true, period: "2024 - 2027" },
-  { id: 89, name: "Lirus", position: "Anggota Seksi Pendaftaran Anggota", order: 89, active: true, period: "2024 - 2027" },
-  { id: 90, name: "Megawati (IPAC)", position: "Anggota Seksi Pendaftaran Anggota", order: 90, active: true, period: "2024 - 2027" },
-  { id: 91, name: "Linda", position: "Anggota Seksi Pendaftaran Anggota", order: 91, active: true, period: "2024 - 2027" },
-  // Seksi Pengihubung Lapangan
-  { id: 92, name: "Glen Mario", position: "Anggota Seksi Pengihubung Lapangan", order: 92, active: true, period: "2024 - 2027" },
-  { id: 93, name: "Las Sugiarto", position: "Anggota Seksi Pengihubung Lapangan", order: 93, active: true, period: "2024 - 2027" },
-  { id: 94, name: "Hardan Eky", position: "Anggota Seksi Pengihubung Lapangan", order: 94, active: true, period: "2024 - 2027" },
-];
+  const [organizationData, setOrganizationData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // 🔥 Data dokumen
   const documents = [
@@ -162,6 +43,35 @@ const organizationData = [
       description: "Nomor Pokok Wajib Pajak Perkumpulan SH3"
     }
   ];
+
+  // 🔥 Ambil data dari API
+  useEffect(() => {
+    setLoading(true);
+    organisationService
+      .getAll()
+      .then((res) => {
+        const data = res.data?.data || [];
+        setOrganizationData(data);
+        setError(null);
+      })
+      .catch((err) => {
+        console.error("Error fetching organization:", err);
+        setError(err.response?.data?.message || "Gagal memuat data organisasi");
+        setOrganizationData([]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  // 🔥 Format period untuk display
+  const formatPeriod = (start, end) => {
+    if (!start && !end) return "-";
+    const startYear = start ? new Date(start).getFullYear() : "";
+    const endYear = end ? new Date(end).getFullYear() : "";
+    if (startYear && endYear) return `${startYear} - ${endYear}`;
+    if (startYear) return `${startYear} - ...`;
+    if (endYear) return `... - ${endYear}`;
+    return "-";
+  };
 
   return (
     <Container className="flex flex-col">
@@ -383,54 +293,88 @@ const organizationData = [
                 <div className="font-bold text-4xl font-young md:p-4">
                   Struktur Organisasi
                 </div>
+                <span className="text-sm text-neutral-dark bg-primary-light px-3 py-1 rounded-full border border-neutral-normal">
+                  {organizationData.length} anggota
+                </span>
               </div>
 
+              {/* Loading */}
+              {loading && (
+                <div className="flex justify-center py-12">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+                    <p className="text-neutral-dark">Memuat data organisasi...</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Error */}
+              {error && !loading && (
+                <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md text-center">
+                  <p>{error}</p>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="mt-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+                  >
+                    Coba Lagi
+                  </button>
+                </div>
+              )}
+
               {/* Tabel organisasi */}
-              <div className="overflow-x-auto rounded-lg border border-neutral-normal">
-                <table className="w-full border-collapse bg-white">
-                  <thead>
-                    <tr className="bg-primary-light border-b-2 border-neutral-normal">
-                      <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">#</th>
-                      <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">NAME</th>
-                      <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">POSITION</th>
-                      <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">ORDER</th>
-                      <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">ACTIVE</th>
-                      <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">PERIOD</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {organizationData.map((member) => (
-                      <tr
-                        key={member.id}
-                        className="border-b border-neutral-light hover:bg-primary-light/50 transition-colors"
-                      >
-                        <td className="px-4 py-3 text-sm font-medium text-neutral-dark">
-                          {member.id}
-                        </td>
-                        <td className="px-4 py-3 text-sm font-medium text-gray-800">
-                          {member.name}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-neutral-dark">
-                          {member.position}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-neutral-dark">
-                          {member.order}
-                        </td>
-                        <td className="px-4 py-3 text-sm">
-                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
-                            member.active ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                          }`}>
-                            {member.active ? "Yes" : "No"}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-neutral-dark">
-                          {member.period}
-                        </td>
+              {!loading && !error && (
+                <div className="overflow-x-auto rounded-lg border border-neutral-normal">
+                  <table className="w-full border-collapse bg-white">
+                    <thead>
+                      <tr className="bg-primary-light border-b-2 border-neutral-normal">
+                        <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">#</th>
+                        <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">NAMA</th>
+                        <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">JABATAN</th>
+                        <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">AKTIF</th>
+                        <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">PERIODE</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {organizationData.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="px-4 py-8 text-center text-neutral-dark">
+                            Belum ada data organisasi.
+                          </td>
+                        </tr>
+                      ) : (
+                        organizationData.map((member, index) => (
+                          <tr
+                            key={member.id}
+                            className="border-b border-neutral-light hover:bg-primary-light/50 transition-colors"
+                          >
+                            <td className="px-4 py-3 text-sm font-medium text-neutral-dark">
+                              {index + 1}
+                            </td>
+                            <td className="px-4 py-3 text-sm font-medium text-gray-800">
+                              {member.holder?.name || member.name || "-"}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-neutral-dark">
+                              {member.position || "-"}
+                            </td>
+                            <td className="px-4 py-3 text-sm">
+                              <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                                member.is_active 
+                                  ? "bg-green-100 text-green-700" 
+                                  : "bg-red-100 text-red-700"
+                              }`}>
+                                {member.is_active ? "Aktif" : "Nonaktif"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-sm text-neutral-dark">
+                              {formatPeriod(member.period_start, member.period_end)}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </RevealSection>

@@ -190,7 +190,7 @@ export default function Home() {
             </div>
           </RevealSection>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col mb-4 md:mb-4">
             <h2 className="text-5xl font-bold font-young text-center">
               Major Events
             </h2>

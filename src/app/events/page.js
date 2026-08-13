@@ -90,7 +90,7 @@ export default function Events() {
               <h1 className="text-5xl font-bold font-young">Events</h1>
             </div>
           </RevealSection>
-          <div className="flex flex-col">
+          <div className="flex flex-col mb-4 md:mb-4">
             <h2 className="text-5xl font-bold font-young text-center">Major Events</h2>
             <div className="flex md:flex-row justify-center gap-8 flex-col my-4">
               {loading ? (

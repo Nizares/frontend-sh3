@@ -162,10 +162,9 @@ export default function DetailMember() {
 
       await profileService.update(payload);
 
-      // Upload avatar dengan field "photo" (sesuai Postman)
       if (avatar) {
         const avatarForm = new FormData();
-        avatarForm.append("photo", avatar);
+        avatarForm.append("avatar", avatar);
         await profileService.uploadPhoto(avatarForm);
       }
 

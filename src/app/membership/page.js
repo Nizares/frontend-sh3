@@ -119,7 +119,6 @@ export default function MembershipPage() {
                 // 🔥 Pastikan file adalah File object
                 if (paymentProof instanceof File) {
                     formData.append("payment_proof", paymentProof);
-                    console.log("📎 File appended:", paymentProof.name, paymentProof.size, paymentProof.type);
                 } else if (typeof paymentProof === 'string') {
                     // 🔥 Jika string (misal base64), konversi ke blob
                     const response = await fetch(paymentProof);
@@ -130,10 +129,8 @@ export default function MembershipPage() {
             }
 
             // 🔥 DEBUG: Log semua data FormData
-            console.log("📦 FormData entries:");
             for (let pair of formData.entries()) {
                 const value = pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1];
-                console.log(pair[0], value);
             }
 
             const response = await membershipService.subscribe(formData);
@@ -213,9 +210,7 @@ export default function MembershipPage() {
 
     // 🔥 Handle file change
     const handleFileChange = (file) => {
-        console.log("📎 File received:", file);
         if (file && file instanceof File) {
-            console.log("📎 File valid:", file.name, file.size, file.type);
             setPaymentProof(file);
         } else {
             console.warn("⚠️ Invalid file:", file);
@@ -245,17 +240,10 @@ export default function MembershipPage() {
                 <BatikOverlay />
                 <div className="px-4 md:px-0 max-w-306 mx-auto py-8">
                     
-                    <RevealSection direction="up">
-                        <div className="flex items-center gap-4 mt-16">
-                            <Link href="/members/detail" className="text-neutral-dark hover:text-primary-text transition-colors">
-                                ← Kembali ke Profil
-                            </Link>
-                        </div>
-                    </RevealSection>
 
                     {/* Header */}
                     <RevealSection direction="up">
-                        <div className="flex flex-col items-center justify-center mt-4 mb-8">
+                        <div className="flex flex-col items-center justify-center mt-16 mb-8">
                             <h1 className="text-4xl font-bold font-young text-primary-darker">
                                 Membership
                             </h1>
@@ -274,7 +262,7 @@ export default function MembershipPage() {
                                 <div>
                                     <span className="font-semibold">Status: </span>
                                     <span className={`font-bold ${isMemberActive ? "text-green-600" : "text-red-500"}`}>
-                                        {isMemberActive ? "✅ Aktif" : "❌ Tidak Aktif"}
+                                        {isMemberActive ? "Aktif" : "Tidak Aktif"}
                                     </span>
                                 </div>
                                 <div>
@@ -366,7 +354,7 @@ export default function MembershipPage() {
 
                                     {selectedPlan && (
                                         <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-green-700 text-sm">
-                                            ✅ Paket terpilih: <span className="font-bold">
+                                            Paket terpilih: <span className="font-bold">
                                                 {plans.find(p => (p.key || p.type || String(p.id)) === selectedPlan)?.name || selectedPlan}
                                             </span>
                                         </div>

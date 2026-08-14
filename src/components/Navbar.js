@@ -14,22 +14,18 @@ export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
 
-  // 🔥 State untuk user data (agar bisa update tanpa refresh)
   const [localUser, setLocalUser] = useState(null);
 
-  // Set mounted setelah client render
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // 🔥 Sync user dari AuthContext ke localUser
   useEffect(() => {
     if (user) {
       setLocalUser(user);
     }
   }, [user]);
 
-  // 🔥 Event listener untuk update dari localStorage (ketika profile diupdate di halaman lain)
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === 'user' && e.newValue) {
@@ -42,7 +38,6 @@ export default function Navbar() {
       }
     };
 
-    // 🔥 Custom event untuk update dari komponen lain (misal setelah update profile)
     const handleUserUpdate = (e) => {
       if (e.detail?.user) {
         setLocalUser(e.detail.user);
@@ -58,7 +53,6 @@ export default function Navbar() {
     };
   }, []);
 
-  // 🔥 Polling untuk cek perubahan user (opsional, sebagai fallback)
   useEffect(() => {
     const interval = setInterval(() => {
       if (isMounted && isLoggedIn) {
@@ -66,7 +60,6 @@ export default function Navbar() {
         if (storedUser) {
           try {
             const parsedUser = JSON.parse(storedUser);
-            // Cek apakah ada perubahan di avatar
             if (localUser && parsedUser.avatar !== localUser.avatar) {
               setLocalUser(parsedUser);
             }
@@ -75,7 +68,7 @@ export default function Navbar() {
           }
         }
       }
-    }, 5000); // Cek setiap 5 detik
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [isMounted, isLoggedIn, localUser]);
@@ -83,7 +76,6 @@ export default function Navbar() {
   const isActive = (href) => pathname === href
   const isHome = pathname === "/";
 
-  // Close dropdown when click outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -94,7 +86,6 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  // Scroll effect untuk home
   useEffect(() => {
     if (!isHome) {
       return;
@@ -110,12 +101,10 @@ export default function Navbar() {
     }
   }, [isHome]);
 
-  // Tutup mobile menu saat pindah halaman
   useEffect(() => {
     setIsOpen(false)
   }, [pathname])
 
-  // Style functions
   const getNavBg = () => {
     if (isHome && !isScrolled && !isOpen) {
       return "bg-transparent";
@@ -151,7 +140,6 @@ export default function Navbar() {
     return "hover:text-secondary-text";
   }
 
-  // Handlers
   const handleLogout = async () => {
     setIsDropdownOpen(false)
     if (confirm("Yakin mau logout?")) {
@@ -166,7 +154,11 @@ export default function Navbar() {
     router.push("/members/detail")
   }
 
-  // 🔥 Data user dari localUser (yang sudah sync)
+  const goToMembership = () => {
+    setIsDropdownOpen(false)
+    router.push("/membership")
+  }
+
   const userData = localUser || user;
 
   const statusMember = () => {
@@ -204,8 +196,6 @@ export default function Navbar() {
             { href: "/merchandise", label: "Merchandise" },
             { href: "/gallery", label: "Gallery" },
             { href: "/sponsor", label: "Sponsorship" },
-            { href: "/membership", label: "Membership" },
-
           ].map((item) => (
             <li key={item.href}>
               <Link
@@ -224,20 +214,18 @@ export default function Navbar() {
         {/* Tombol Auth - DESKTOP */}
         <div className="hidden md:flex gap-4">
           {isMounted && isUserLoggedIn ? (
-            // ====== SUDAH LOGIN ======
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center space-x-3 focus:outline-none hover:bg-white/50 rounded-full px-3 py-2 transition-all cursor-pointer"
               >
-                {/* 🔥 Avatar - AUTO UPDATE */}
                 <div className="w-10 h-10 rounded-full bg-secondary-bg flex items-center justify-center overflow-hidden border-2 border-secondary-bg">
                   {photo ? (
                     <img
                       src={photo}
                       alt={name}
                       className="object-cover w-full h-full"
-                      key={photo} // 🔥 Key berubah saat avatar berubah, force re-render
+                      key={photo}
                       onError={(e) => {
                         e.target.style.display = "none";
                         e.target.parentElement.innerHTML = `
@@ -254,7 +242,6 @@ export default function Navbar() {
                   )}
                 </div>
 
-                {/* Nama dan Hash ID */}
                 <div className="hidden lg:block text-left">
                   <p className={`text-sm font-semibold ${getNavColor()}`}>
                     {name || "User"}
@@ -264,7 +251,6 @@ export default function Navbar() {
                   </p>
                 </div>
 
-                {/* Chevron */}
                 <svg
                   className={`w-4 h-4 ${getNavColor()} transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
                   fill="none"
@@ -275,7 +261,6 @@ export default function Navbar() {
                 </svg>
               </button>
 
-              {/* Dropdown */}
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 border border-gray-100 z-50">
                   <div className="px-4 py-3 border-b border-gray-100">
@@ -286,6 +271,7 @@ export default function Navbar() {
                       {status_member || "------"}
                     </p>
                   </div>
+                  
                   <button
                     onClick={goToProfile}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -297,6 +283,19 @@ export default function Navbar() {
                       <span>Profile Saya</span>
                     </span>
                   </button>
+
+                  <button
+                    onClick={goToMembership}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <span className="flex items-center space-x-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                      <span>Membership</span>
+                    </span>
+                  </button>
+
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
@@ -312,19 +311,18 @@ export default function Navbar() {
               )}
             </div>
           ) : (
-            // ====== BELUM LOGIN ======
             <>
               <Link
                 href="/members/register"
                 className="bg-emerald-600 text-white rounded-sm px-6 py-2.5 font-medium hover:bg-emerald-500 active:bg-emerald-400"
               >
-                Registrasi Member
+                Registrasi
               </Link>
               <Link
                 href="/members/detail"
                 className="bg-emerald-600 text-white rounded-sm px-6 py-2.5 font-medium hover:bg-emerald-500 active:bg-emerald-400"
               >
-                Login Member
+                Login
               </Link>
             </>
           )}
@@ -342,8 +340,8 @@ export default function Navbar() {
 
       </div>
 
-      {/* Menu Mobile */}
-      <div className={`md:hidden transition-all duration-300 overflow-hidden ${isOpen ? "max-h-96 mt-4" : "max-h-0"}`}>
+      {/* 🔥 Menu Mobile - FIX OVERFLOW */}
+      <div className={`md:hidden transition-all duration-300 overflow-y-auto ${isOpen ? "max-h-[80vh] mt-4" : "max-h-0"}`}>
         <ul className="flex flex-col gap-4 pb-4">
           {[
             { href: "/", label: "Home" },
@@ -352,8 +350,6 @@ export default function Navbar() {
             { href: "/merchandise", label: "Merchandise" },
             { href: "/gallery", label: "Gallery" },
             { href: "/sponsor", label: "Sponsorship" },
-            { href: "/membership", label: "Membership" },
-
           ].map((item) => (
             <li key={item.href}>
               <Link
@@ -368,38 +364,42 @@ export default function Navbar() {
             </li>
           ))}
 
-          {/* Tombol Auth di Mobile */}
+          {/* 🔥 Tombol Auth di Mobile */}
           <li className="flex flex-col gap-3 pt-2 border-t border-gray-200">
             {isMounted && isUserLoggedIn ? (
-              // ====== SUDAH LOGIN (Mobile) ======
               <>
                 <Link
                   href="/members/detail"
-                  className="bg-secondary-bg text-white px-6 py-2.5 font-medium rounded-sm hover:bg-secondary-bg-hover text-center"
+                  className="bg-secondary-bg text-white px-6 py-2.5 font-medium rounded-md hover:bg-secondary-bg-hover text-center transition-colors"
                 >
                   Profile Saya
                 </Link>
+                <Link
+                  href="/membership"
+                  className="bg-secondary-bg text-white px-6 py-2.5 font-medium rounded-md hover:bg-secondary-bg-hover text-center transition-colors"
+                >
+                  Membership
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className="border-red-600 text-red-600  px-6 py-2.5 font-medium rounded-sm text-center border-2 hover:bg-red-600/10"
+                  className="bg-red-500 hover:bg-red-600 active:bg-red-700 text-white px-6 py-2.5 font-medium rounded-md text-center transition-colors"
                 >
                   Logout
                 </button>
               </>
             ) : (
-              // ====== BELUM LOGIN (Mobile) ======
               <>
                 <Link
                   href="/members/register"
-                  className="bg-emerald-600 text-white px-6 py-2.5 font-medium rounded-sm hover:bg-emerald-500 active:bg-emerald-400 text-center"
+                  className="bg-emerald-600 text-white px-6 py-2.5 font-medium rounded-md hover:bg-emerald-500 active:bg-emerald-400 text-center transition-colors"
                 >
-                  Registrasi Member
+                  Registrasi
                 </Link>
                 <Link
                   href="/members/detail"
-                  className="bg-emerald-600 text-white px-6 py-2.5 font-medium rounded-sm hover:bg-emerald-500 active:bg-emerald-400 text-center"
+                  className="bg-emerald-600 text-white px-6 py-2.5 font-medium rounded-md hover:bg-emerald-500 active:bg-emerald-400 text-center transition-colors"
                 >
-                  Login Member
+                  Login
                 </Link>
               </>
             )}

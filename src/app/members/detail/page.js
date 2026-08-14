@@ -512,14 +512,14 @@ export default function DetailMember() {
                   ) : (
                     <div className="md:col-span-2">
                       <span className="font-semi-bold">
-                        Anda bukan Member, Jika ingin berlangganan Membership
-                        silahkan Hubungi{" "}
-                        <a
+                        Anda bukan Member, jika ingin berlangganan
+                        silahkan klik link{" "}
+                        <Link
                           className="font-bold text-red-500"
-                          href="http://wa.me/+62811588338"
+                          href="/membership"
                         >
                           disini
-                        </a>
+                        </Link>
                       </span>
                     </div>
                   )}

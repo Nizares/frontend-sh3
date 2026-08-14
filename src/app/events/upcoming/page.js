@@ -183,9 +183,10 @@ export default function UpcomingEvents() {
   if (!event)
     return <div className="flex justify-center p-16 text-2xl mt-16 h-screen">Loading...</div>;
 
+  console.log(myOrder);
   const isPaid = myOrder?.status === "paid" || myOrder?.status === "confirmed" || myOrder?.status === "free";
   const isPending = myOrder?.status === "pending";
-  const isCancelled = myOrder?.status === "cancelled";
+  const isCancelled = myOrder?.status === "cancelled" || myOrder?.status === "rejected";
   
   // 🔥 Ambil status registrasi
   const regStatus = getRegistrationStatus();

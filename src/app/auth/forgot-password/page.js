@@ -177,7 +177,7 @@ export default function ForgotPasswordPage() {
                     <RevealSection direction="up">
                         <div className="flex flex-col items-center justify-center mt-24 mb-8">
                             <h1 className="text-4xl font-bold font-young text-primary-darker">
-                                {step === 1 ? "Lupa Password?" : "Reset Password"}
+                                {step === 1 ? "Ganti / Lupa Password?" : "Reset Password"}
                             </h1>
                             <p className="text-neutral-dark mt-2 text-center">
                                 {step === 1 

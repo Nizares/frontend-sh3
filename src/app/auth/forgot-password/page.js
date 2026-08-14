@@ -10,6 +10,7 @@ import BatikOverlay from "@/src/components/BatikOverlay";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import Swal from "sweetalert2";
 import { participantAuthService } from "@/src/services/participantAuthService";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export default function ForgotPasswordPage() {
     const router = useRouter();
@@ -66,7 +67,6 @@ export default function ForgotPasswordPage() {
         } catch (err) {
             console.error("Verify error:", err.response?.data);
             
-            // Error dari backend (422, dll)
             const errorData = err.response?.data;
             if (errorData?.errors) {
                 const formattedErrors = {};
@@ -90,7 +90,6 @@ export default function ForgotPasswordPage() {
     const handleResetPassword = async (e) => {
         e.preventDefault();
 
-        // Validasi
         if (!newPassword) {
             setErrors({ newPassword: "Password baru wajib diisi." });
             return;
@@ -167,11 +166,16 @@ export default function ForgotPasswordPage() {
                 <BatikOverlay />
                 <div className="px-4 md:px-0 max-w-306 mx-auto py-8">
                     
-                    {/* Back Button */}
-
-                    {/* Header */}
+                    {/* 🔥 Back Button (sama seperti login) */}
                     <RevealSection direction="up">
-                        <div className="flex flex-col items-center justify-center mt-16 mb-8">
+                        <Link href="/members/detail" className="static md:absolute mt-8">
+                            <ArrowLongLeftIcon className="w-8 h-8 md:w-16 md:h-16" />
+                        </Link>
+                    </RevealSection>
+
+                    {/* 🔥 Header (sama seperti login) */}
+                    <RevealSection direction="up">
+                        <div className="flex flex-col items-center justify-center mt-24 mb-8">
                             <h1 className="text-4xl font-bold font-young text-primary-darker">
                                 {step === 1 ? "Lupa Password?" : "Reset Password"}
                             </h1>
@@ -184,21 +188,21 @@ export default function ForgotPasswordPage() {
                         </div>
                     </RevealSection>
 
-                    {/* Form */}
+                    {/* 🔥 Form (sama stylingnya dengan login) */}
                     <RevealSection direction="up">
-                        <div className="max-w-md mx-auto bg-primary-light border-2 border-neutral-normal rounded-lg p-6 md:p-8 shadow-lg">
+                        <div className="flex flex-col justify-center items-center gap-4 w-full max-w-md mx-auto">
                             
                             {/* STEP 1: VERIFY */}
                             {step === 1 && (
-                                <form onSubmit={handleVerify} className="flex flex-col gap-6">
+                                <form onSubmit={handleVerify} className="w-full space-y-4">
                                     <InputType
                                         label="Username"
                                         id="username"
                                         type="text"
                                         name="username"
                                         required
-                                        placeholder="Masukkan username kamu"
-                                        className="flex flex-col gap-2"
+                                        placeholder="john_doe"
+                                        className="flex flex-col gap-2 w-full"
                                         value={username}
                                         onChange={(e) => {
                                             setUsername(e.target.value);
@@ -214,7 +218,7 @@ export default function ForgotPasswordPage() {
                                         name="hash_id"
                                         required
                                         placeholder="Contoh: 0000"
-                                        className="flex flex-col gap-2"
+                                        className="flex flex-col gap-2 w-full"
                                         value={hashId}
                                         onChange={(e) => {
                                             setHashId(e.target.value.toUpperCase());
@@ -224,7 +228,7 @@ export default function ForgotPasswordPage() {
                                     />
 
                                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-700">
-                                        <p className="font-medium">Informasi</p>
+                                        <p className="font-medium">📌 Informasi</p>
                                         <ul className="list-disc list-inside mt-1 space-y-1 text-xs">
                                             <li>Masukkan Username dan Hash ID yang terdaftar</li>
                                             <li>Hash ID bisa dilihat di halaman profile</li>
@@ -235,28 +239,19 @@ export default function ForgotPasswordPage() {
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className={`flex justify-center items-center py-3 rounded-md font-bold text-lg text-white transition ${
-                                            loading
-                                                ? "bg-neutral-normal cursor-not-allowed"
-                                                : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"
-                                        }`}
+                                        className={`flex justify-center items-center p-8 rounded-md w-full ${
+                                            loading ? "bg-neutral-bg-active" : "bg-secondary-bg hover:bg-secondary-bg-hover"
+                                        } active:bg-secondary-bg-active h-16 font-bold text-xl text-white md:text-3xl transition-colors`}
                                     >
-                                        {loading ? (
-                                            <span className="flex items-center gap-2">
-                                                <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
-                                                Memverifikasi...
-                                            </span>
-                                        ) : (
-                                            "Verifikasi"
-                                        )}
+                                        {loading ? "Memverifikasi..." : "Verifikasi"}
                                     </button>
                                 </form>
                             )}
 
                             {/* STEP 2: RESET PASSWORD */}
                             {step === 2 && (
-                                <form onSubmit={handleResetPassword} className="flex flex-col gap-6">
-                                    {/* Username (readonly) */}
+                                <form onSubmit={handleResetPassword} className="w-full space-y-4">
+                                    {/* Info Username + Hash ID */}
                                     <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
                                         <p className="text-sm text-neutral-dark">
                                             <span className="font-semibold">Username:</span> {username}
@@ -266,10 +261,10 @@ export default function ForgotPasswordPage() {
                                         </p>
                                     </div>
 
-                                    {/* New Password */}
-                                    <div className="flex flex-col gap-2">
-                                        <label className="font-medium text-lg">
-                                            Password Baru <span className="text-red-500">*</span>
+                                    {/* Password Baru */}
+                                    <div className="flex flex-col gap-2 w-full">
+                                        <label className="font-medium text-xl">
+                                            Password Baru <span className="text-red-500 ml-0.5">*</span>
                                         </label>
                                         <div className="relative w-full">
                                             <input
@@ -287,6 +282,7 @@ export default function ForgotPasswordPage() {
                                             <button
                                                 type="button"
                                                 onClick={() => setShowNewPassword(!showNewPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none z-10"
                                             >
                                                 {showNewPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
                                             </button>
@@ -294,10 +290,10 @@ export default function ForgotPasswordPage() {
                                         {errors.newPassword && <p className="text-red-500 text-sm">{errors.newPassword}</p>}
                                     </div>
 
-                                    {/* Confirm New Password */}
-                                    <div className="flex flex-col gap-2">
-                                        <label className="font-medium text-lg">
-                                            Konfirmasi Password Baru <span className="text-red-500">*</span>
+                                    {/* Konfirmasi Password Baru */}
+                                    <div className="flex flex-col gap-2 w-full">
+                                        <label className="font-medium text-xl">
+                                            Konfirmasi Password Baru <span className="text-red-500 ml-0.5">*</span>
                                         </label>
                                         <div className="relative w-full">
                                             <input
@@ -312,6 +308,7 @@ export default function ForgotPasswordPage() {
                                             <button
                                                 type="button"
                                                 onClick={() => setShowNewPasswordConfirm(!showNewPasswordConfirm)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none z-10"
                                             >
                                                 {showNewPasswordConfirm ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
                                             </button>
@@ -319,7 +316,7 @@ export default function ForgotPasswordPage() {
                                         {errors.newPasswordConfirm && <p className="text-red-500 text-sm">{errors.newPasswordConfirm}</p>}
                                     </div>
 
-                                    <div className="flex gap-4">
+                                    <div className="flex gap-4 w-full">
                                         <button
                                             type="button"
                                             onClick={() => {
@@ -327,18 +324,16 @@ export default function ForgotPasswordPage() {
                                                 setNewPassword("");
                                                 setNewPasswordConfirm("");
                                             }}
-                                            className="flex-1 py-3 rounded-md border-2 border-neutral-normal hover:bg-neutral-normal hover:text-white transition font-bold text-lg"
+                                            className="flex-1 flex justify-center items-center p-8 rounded-md border-2 border-neutral-normal hover:bg-neutral-normal hover:text-white h-16 font-bold text-xl md:text-2xl transition-colors"
                                         >
                                             Kembali
                                         </button>
                                         <button
                                             type="submit"
                                             disabled={loading}
-                                            className={`flex-1 py-3 rounded-md font-bold text-lg text-white transition ${
-                                                loading
-                                                    ? "bg-neutral-normal cursor-not-allowed"
-                                                    : "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active"
-                                            }`}
+                                            className={`flex-1 flex justify-center items-center p-8 rounded-md ${
+                                                loading ? "bg-neutral-bg-active" : "bg-secondary-bg hover:bg-secondary-bg-hover"
+                                            } active:bg-secondary-bg-active h-16 font-bold text-xl text-white md:text-3xl transition-colors`}
                                         >
                                             {loading ? "Memproses..." : "Reset Password"}
                                         </button>

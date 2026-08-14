@@ -72,7 +72,7 @@ export default function DetailMember() {
     emergency_phone: "",
     membership_type: "",
     medical_conditions: "",
-    jersey_size: ""
+    jersey_size: "",
   });
 
   useEffect(() => {
@@ -107,7 +107,7 @@ export default function DetailMember() {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!isLoggedIn || !user) return;
-      
+
       try {
         const profileRes = await profileService.getProfile();
         const profileData = profileRes.data.data;
@@ -136,7 +136,7 @@ export default function DetailMember() {
         };
         setUserData(fullUser);
         localStorage.setItem("user", JSON.stringify(fullUser));
-        
+
         setFormData({
           name: fullUser.name ?? "",
           email: fullUser.email ?? "",
@@ -152,10 +152,9 @@ export default function DetailMember() {
           medical_conditions: fullUser.medical_conditions ?? "",
           identity_number: fullUser.identity_number ?? "",
         });
-        
+
         const status = fullUser?.membership_type || "";
         setIsMember(status !== "none");
-        
       } catch (err) {
         console.error("❌ [Profile] Error fetching profile:", err);
       }
@@ -241,6 +240,11 @@ export default function DetailMember() {
 
       setUserData(fullUser);
       localStorage.setItem("user", JSON.stringify(fullUser));
+      window.dispatchEvent(
+        new CustomEvent("user-updated", {
+          detail: { user: fullUser },
+        }),
+      );
 
       Swal.fire({
         icon: "success",
@@ -253,7 +257,8 @@ export default function DetailMember() {
       setAvatar(null);
     } catch (err) {
       console.error("Update error:", err.response?.data);
-      const message = err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
+      const message =
+        err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
       const errors = err.response?.data?.errors;
       Swal.fire({
         icon: "error",
@@ -317,14 +322,15 @@ export default function DetailMember() {
       <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
         <BatikOverlay />
         <div className="gap-y-8 px-4 md:px-0 max-w-306 mx-auto min-h-screen">
-
           {/* ====== Cek Login Status ====== */}
           {isMounted && isUserLoggedIn ? (
             <RevealSection direction="up">
               <div className="flex flex-col items-center justify-center mt-24 mb-8">
                 <div className="bg-primary-light p-8 rounded-lg shadow-lg text-center w-full border-2 border-neutral-normal">
                   <div className="flex flex-col items-center gap-4">
-                    <h1 className="text-4xl font-bold font-young text-primary-darker">Selamat Datang!</h1>
+                    <h1 className="text-4xl font-bold font-young text-primary-darker">
+                      Selamat Datang!
+                    </h1>
                     <div className="w-32 h-32 rounded-full bg-secondary-bg flex items-center justify-center overflow-hidden border-4 border-secondary-bg mx-auto mb-4">
                       {profileAvatar ? (
                         <img
@@ -347,13 +353,15 @@ export default function DetailMember() {
                       )}
                     </div>
                   </div>
-                  <p className="text-2xl font-semibold text-secondary-bg mt-4">{name}</p>
+                  <p className="text-2xl font-semibold text-secondary-bg mt-4">
+                    {name}
+                  </p>
                   {username && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      @{username}
-                    </p>
+                    <p className="text-sm text-gray-500 mt-1">@{username}</p>
                   )}
-                  <p className="text-gray-600 mt-2">{userData?.email || user?.email}</p>
+                  <p className="text-gray-600 mt-2">
+                    {userData?.email || user?.email}
+                  </p>
                   <div className="mt-6 flex gap-4 justify-center">
                     <button
                       onClick={handleLogout}
@@ -405,14 +413,29 @@ export default function DetailMember() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none z-10"
                     >
-                      {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                      {showPassword ? (
+                        <EyeSlashIcon className="w-5 h-5" />
+                      ) : (
+                        <EyeIcon className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                 </div>
-
+                <div className="flex md:flex-row flex-col gap-2">
+                  <div className="text-red-500">
+                    Jika lupa password, klik tombol dikanan ini!
+                  </div>
+                  <Link
+                    href="/auth/forgot-password"
+                    className="inline-flex items-center gap-2 px-4 py-2 border-2 border-red-500 hover:bg-red-600 hover:text-white rounded-md transition-colors text-sm text-center font-bold"
+                  >
+                    Reset Password
+                  </Link>
+                </div>
                 <button
-                  className={`flex justify-center items-center p-8 rounded-md w-full ${loading ? "bg-neutral-bg-active" : "bg-secondary-bg"
-                    } hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white m-10 md:text-3xl`}
+                  className={`flex justify-center items-center p-8 rounded-md w-full ${
+                    loading ? "bg-neutral-bg-active" : "bg-secondary-bg"
+                  } hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-xl text-white md:text-3xl`}
                   type="button"
                   disabled={loading}
                   onClick={handleSearch}
@@ -427,7 +450,9 @@ export default function DetailMember() {
           {isMounted && userData && (
             <RevealSection direction="up">
               <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 bg-primary-light border-neutral-normal rounded-md my-4">
-                <h2 className="text-3xl font-bold font-young text-neutral-normal">Data Member</h2>
+                <h2 className="text-3xl font-bold font-young text-neutral-normal">
+                  Data Member
+                </h2>
                 <hr className="border-t-2 border-neutral-normal" />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg">
@@ -439,7 +464,9 @@ export default function DetailMember() {
                   </div>
                   <div>
                     <span className="font-semibold">Status: </span>
-                    <span className="font-mono">{userData.is_active === true ? "Aktif" : "Non Aktif"}</span>
+                    <span className="font-mono">
+                      {userData.is_active === true ? "Aktif" : "Non Aktif"}
+                    </span>
                   </div>
                   <div>
                     <span className="font-semibold">Nama: </span>
@@ -451,8 +478,12 @@ export default function DetailMember() {
                   </div>
                   <div>
                     <span className="font-semibold">Tipe: </span>
-                    <span className={`font-bold ${userData.membership_type === "none" ? "text-tertiary-bg" : "text-secondary-dark"}`}>
-                      {userData.membership_type === "none" ? "Non Member" : "Member"}
+                    <span
+                      className={`font-bold ${userData.membership_type === "none" ? "text-tertiary-bg" : "text-secondary-dark"}`}
+                    >
+                      {userData.membership_type === "none"
+                        ? "Non Member"
+                        : "Member"}
                     </span>
                   </div>
                   <div>
@@ -462,13 +493,17 @@ export default function DetailMember() {
                   {isMember ? (
                     <>
                       <div>
-                        <span className="font-semibold">Membership mulai dari : </span>
+                        <span className="font-semibold">
+                          Membership mulai dari :{" "}
+                        </span>
                         <span className="font-bold text-secondary-bg">
                           {dateConverted(userData.membership_start_date)}
                         </span>
                       </div>
                       <div>
-                        <span className="font-semibold">Membership berakhir pada : </span>
+                        <span className="font-semibold">
+                          Membership berakhir pada :{" "}
+                        </span>
                         <span className="font-bold text-red-500">
                           {dateConverted(userData.membership_end_date)}
                         </span>
@@ -477,7 +512,14 @@ export default function DetailMember() {
                   ) : (
                     <div className="md:col-span-2">
                       <span className="font-semi-bold">
-                        Anda bukan Member, Jika ingin berlangganan Membership silahkan Hubungi <a className="font-bold text-red-500" href="http://wa.me/+62811588338">disini</a>
+                        Anda bukan Member, Jika ingin berlangganan Membership
+                        silahkan Hubungi{" "}
+                        <a
+                          className="font-bold text-red-500"
+                          href="http://wa.me/+62811588338"
+                        >
+                          disini
+                        </a>
                       </span>
                     </div>
                   )}
@@ -489,7 +531,8 @@ export default function DetailMember() {
                       onClick={() => setShowEditForm(true)}
                       className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active h-16 font-bold text-lg text-white mt-4 md:text-2xl font-young w-1/2 md:w-1/4"
                     >
-                      <PencilIcon className="m-2" width={24} height={24} /> Edit Profil
+                      <PencilIcon className="m-2" width={24} height={24} /> Edit
+                      Profil
                     </button>
                   </div>
                 )}
@@ -501,7 +544,9 @@ export default function DetailMember() {
           {isMounted && userData && myEvents.length > 0 && (
             <RevealSection direction="up">
               <div className="flex flex-col gap-4 bg-primary-light border-2 border-neutral-normal p-8 my-4 rounded-md">
-                <h2 className="text-3xl font-bold font-young text-neutral-normal">Riwayat Event</h2>
+                <h2 className="text-3xl font-bold font-young text-neutral-normal">
+                  Riwayat Event
+                </h2>
                 <hr className="border-t-2 border-neutral-normal" />
                 <div className="flex flex-col gap-4">
                   {myEvents.map((event, i) => (
@@ -510,23 +555,31 @@ export default function DetailMember() {
                       className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-neutral-normal pb-4 gap-2"
                     >
                       <div className="flex flex-col gap-1">
-                        <div className="font-bold text-lg text-neutral-normal">{event.title}</div>
-                        <div className="text-sm text-neutral-dark">{event.location}</div>
+                        <div className="font-bold text-lg text-neutral-normal">
+                          {event.title}
+                        </div>
+                        <div className="text-sm text-neutral-dark">
+                          {event.location}
+                        </div>
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         <span
-                          className={`text-sm font-bold px-3 py-1 rounded-md ${event.order?.status === "paid" || event.order?.status === "confirmed"
+                          className={`text-sm font-bold px-3 py-1 rounded-md ${
+                            event.order?.status === "paid" ||
+                            event.order?.status === "confirmed"
                               ? "bg-secondary-bg text-white"
                               : event.order?.status === "free"
                                 ? "bg-secondary-bg text-white"
                                 : event.order?.status === "pending"
                                   ? "bg-primary-normal text-white"
-                                  : event.order?.status === "cancelled" || event.order?.status === "rejected"
+                                  : event.order?.status === "cancelled" ||
+                                      event.order?.status === "rejected"
                                     ? "bg-red-500 text-white"
                                     : "bg-neutral-bg text-white"
-                            }`}
+                          }`}
                         >
-                          {event.order?.status === "paid" || event.order?.status === "confirmed"
+                          {event.order?.status === "paid" ||
+                          event.order?.status === "confirmed"
                             ? "Lunas"
                             : event.order?.status === "free"
                               ? "Gratis"
@@ -541,7 +594,8 @@ export default function DetailMember() {
 
                         <Link
                           href={
-                            event.status === "publish" || event.status === "ongoing"
+                            event.status === "publish" ||
+                            event.status === "ongoing"
                               ? `/events/upcoming?id=${event.id}`
                               : `/events/finished?id=${event.id}`
                           }
@@ -566,7 +620,9 @@ export default function DetailMember() {
             <RevealSection direction="up">
               <div className="flex flex-col gap-4 bg-card-bg p-8 border-2 border-neutral-normal bg-primary-light rounded-md my-4">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-3xl font-bold font-young text-neutral-normal">Edit Profil</h2>
+                  <h2 className="text-3xl font-bold font-young text-neutral-normal">
+                    Edit Profil
+                  </h2>
                   <button
                     onClick={() => setShowEditForm(false)}
                     className="cursor-pointer font-medium px-8 py-2 rounded-md bg-transparent border-2 border-neutral-normal hover:border-transparent hover:bg-neutral-normal-active hover:text-white transition-all"
@@ -579,7 +635,9 @@ export default function DetailMember() {
                 {/* 🔥 Tampilkan avatar saat ini */}
                 {userData.avatar && (
                   <div className="flex flex-col items-center gap-2">
-                    <label className="text-lg font-medium">Avatar Saat Ini</label>
+                    <label className="text-lg font-medium">
+                      Avatar Saat Ini
+                    </label>
                     <img
                       src={userData.avatar}
                       alt="Avatar"
@@ -588,7 +646,10 @@ export default function DetailMember() {
                   </div>
                 )}
 
-                <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4">
+                <form
+                  onSubmit={handleUpdateProfile}
+                  className="flex flex-col gap-4"
+                >
                   <h3 className="text-xl font-bold font-young">Data Diri</h3>
 
                   <InputType
@@ -638,7 +699,12 @@ export default function DetailMember() {
                     options={genderOptions}
                     value={formData.gender}
                     placehold="Pilih Gender..."
-                    onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        gender: e.target.value,
+                      }))
+                    }
                   />
                   <SelectInput
                     id="jersey_size"
@@ -647,7 +713,12 @@ export default function DetailMember() {
                     options={jerseySizeOptions}
                     value={formData.jersey_size}
                     placehold="Pilih Ukuran Jersey..."
-                    onChange={(e) => setFormData(prev => ({ ...prev, jersey_size: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        jersey_size: e.target.value,
+                      }))
+                    }
                   />
                   <InputType
                     label="Tanggal Lahir"
@@ -665,11 +736,18 @@ export default function DetailMember() {
                     options={bloodTypeOptions}
                     value={formData.blood_type}
                     placehold="Pilih Golongan Darah..."
-                    onChange={(e) => setFormData(prev => ({ ...prev, blood_type: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        blood_type: e.target.value,
+                      }))
+                    }
                   />
 
                   <hr className="border-t-2 border-neutral-normal" />
-                  <h3 className="text-xl font-bold font-young">Kontak Darurat</h3>
+                  <h3 className="text-xl font-bold font-young">
+                    Kontak Darurat
+                  </h3>
 
                   <InputType
                     label="Nama Kontak Darurat"
@@ -693,10 +771,14 @@ export default function DetailMember() {
                   />
 
                   <hr className="border-t-2 border-neutral-normal" />
-                  <h3 className="text-xl font-bold font-young">Info Kesehatan</h3>
+                  <h3 className="text-xl font-bold font-young">
+                    Info Kesehatan
+                  </h3>
 
                   <div className="flex flex-col gap-2">
-                    <label className="text-xl font-medium">Riwayat Alergi</label>
+                    <label className="text-xl font-medium">
+                      Riwayat Alergi
+                    </label>
                     <textarea
                       name="medical_conditions"
                       placeholder="Contoh: alergi debu, makanan laut, dll"
@@ -727,8 +809,11 @@ export default function DetailMember() {
                     <button
                       type="submit"
                       disabled={submitLoading}
-                      className={`flex-1 flex justify-center items-center ${submitLoading ? "bg-neutral-normal text-white cursor-not-allowed" : "bg-secondary-bg hover:bg-secondary-bg-hover cursor-pointer"
-                        } active:bg-secondary-bg-active h-16 font-bold text-xl text-white font-young rounded-md`}
+                      className={`flex-1 flex justify-center items-center ${
+                        submitLoading
+                          ? "bg-neutral-normal text-white cursor-not-allowed"
+                          : "bg-secondary-bg hover:bg-secondary-bg-hover cursor-pointer"
+                      } active:bg-secondary-bg-active h-16 font-bold text-xl text-white font-young rounded-md`}
                     >
                       {submitLoading ? "Menyimpan..." : "Simpan Perubahan"}
                     </button>
@@ -738,19 +823,61 @@ export default function DetailMember() {
                 {/* ====== 🔥 SECTION KEAMANAN ====== */}
                 <div className="mt-6 pt-4 border-t-2 border-neutral-normal">
                   <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-bold font-young text-neutral-normal">Keamanan</h3>
-                    <Link
-                      href="/auth/forgot-password"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-secondary-bg hover:bg-secondary-bg-hover text-white font-medium rounded-md transition-colors text-sm"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                      </svg>
-                      Reset Password
-                    </Link>
+                    <h3 className="text-xl font-bold font-young text-neutral-normal">
+                      Keamanan
+                    </h3>
+                    <div className="flex gap-3">
+                      {/* 🔥 Tombol Ganti Password (untuk user yang sudah login) */}
+                      <Link
+                        href="/members/change-password"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-secondary-bg hover:bg-secondary-bg-hover text-white font-medium rounded-md transition-colors text-sm"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                          />
+                        </svg>
+                        Ganti Password
+                      </Link>
+
+                      {/* 🔥 Tombol Reset Password (tanpa login / lupa) */}
+                      <Link
+                        href="/auth/forgot-password"
+                        className="inline-flex items-center gap-2 px-4 py-2 border-2 border-neutral-normal hover:bg-neutral-normal hover:text-white font-medium rounded-md transition-colors text-sm"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                          />
+                        </svg>
+                        Reset Password
+                      </Link>
+                    </div>
                   </div>
                   <p className="text-sm text-neutral-dark mt-2">
-                    Lupa password atau ingin mengganti? Klik tombol di atas untuk reset password via email.
+                    <span className="font-medium">Ganti Password:</span> Jika
+                    kamu masih ingat password lama.
+                    <br />
+                    <span className="font-medium">Reset Password:</span> Jika
+                    lupa password, gunakan Username + Hash ID.
                   </p>
                 </div>
               </div>

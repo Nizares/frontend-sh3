@@ -14,10 +14,71 @@ export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
 
+  // 🔥 State untuk user data (agar bisa update tanpa refresh)
+  const [localUser, setLocalUser] = useState(null);
+
   // Set mounted setelah client render
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // 🔥 Sync user dari AuthContext ke localUser
+  useEffect(() => {
+    if (user) {
+      setLocalUser(user);
+    }
+  }, [user]);
+
+  // 🔥 Event listener untuk update dari localStorage (ketika profile diupdate di halaman lain)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'user' && e.newValue) {
+        try {
+          const updatedUser = JSON.parse(e.newValue);
+          setLocalUser(updatedUser);
+        } catch (err) {
+          console.error('Error parsing user from storage:', err);
+        }
+      }
+    };
+
+    // 🔥 Custom event untuk update dari komponen lain (misal setelah update profile)
+    const handleUserUpdate = (e) => {
+      if (e.detail?.user) {
+        setLocalUser(e.detail.user);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('user-updated', handleUserUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('user-updated', handleUserUpdate);
+    };
+  }, []);
+
+  // 🔥 Polling untuk cek perubahan user (opsional, sebagai fallback)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (isMounted && isLoggedIn) {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            const parsedUser = JSON.parse(storedUser);
+            // Cek apakah ada perubahan di avatar
+            if (localUser && parsedUser.avatar !== localUser.avatar) {
+              setLocalUser(parsedUser);
+            }
+          } catch (err) {
+            // silent
+          }
+        }
+      }
+    }, 5000); // Cek setiap 5 detik
+
+    return () => clearInterval(interval);
+  }, [isMounted, isLoggedIn, localUser]);
 
   const isActive = (href) => pathname === href
   const isHome = pathname === "/";
@@ -95,6 +156,7 @@ export default function Navbar() {
     setIsDropdownOpen(false)
     if (confirm("Yakin mau logout?")) {
       logout()
+      setLocalUser(null)
       router.push("/")
     }
   }
@@ -104,8 +166,8 @@ export default function Navbar() {
     router.push("/members/detail")
   }
 
-  // Data user dari context (AMAN untuk SSR)
-  const userData = user;
+  // 🔥 Data user dari localUser (yang sudah sync)
+  const userData = localUser || user;
 
   const statusMember = () => {
     const status = userData?.membership_type || "";
@@ -118,7 +180,7 @@ export default function Navbar() {
   const status_member = statusMember();
   const name = userData?.name || "";
   const photo = userData?.avatar || "";
-  const isUserLoggedIn = isLoggedIn; // ← HANYA dari context
+  const isUserLoggedIn = isLoggedIn && !!userData;
 
   return (
     <nav className={` px-8 py-4 shadow-sm fixed top-0 left-0 w-full z-50 transition-all ${getNavBg()} `}>
@@ -166,13 +228,22 @@ export default function Navbar() {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center space-x-3 focus:outline-none hover:bg-white/50 rounded-full px-3 py-2 transition-all cursor-pointer"
               >
-                {/* Avatar */}
+                {/* 🔥 Avatar - AUTO UPDATE */}
                 <div className="w-10 h-10 rounded-full bg-secondary-bg flex items-center justify-center overflow-hidden border-2 border-secondary-bg">
                   {photo ? (
                     <img
                       src={photo}
                       alt={name}
                       className="object-cover w-full h-full"
+                      key={photo} // 🔥 Key berubah saat avatar berubah, force re-render
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        e.target.parentElement.innerHTML = `
+                          <span class="text-white font-bold text-lg">
+                            ${name ? name.charAt(0).toUpperCase() : "?"}
+                          </span>
+                        `;
+                      }}
                     />
                   ) : (
                     <span className="text-white font-bold text-lg">

@@ -12,10 +12,10 @@ import LinkButton from "../components/LinkButton";
 import { SponsorMarquee } from "../components/SponsorMarquee";
 import { eventService } from "@/src/services/eventService";
 import { HeroAnimate } from "../components/HeroAnimate";
-
 import { RevealSection } from "../components/RevealSection";
 import BatikOverlay from "../components/BatikOverlay";
 import { categoryService } from "@/src/services/categoryService";
+import Pagination from "@/src/components/Pagination";
 
 export default function Home() {
   const [events, setEvents] = useState([]);
@@ -23,6 +23,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("ongoing");
   const [activeCategory, setActiveCategory] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6; // 3 kolom x 2 baris
   const now = new Date();
 
   useEffect(() => {
@@ -38,6 +40,11 @@ export default function Home() {
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
+
+  // 🔥 Reset ke halaman 1 saat tab atau kategori berubah
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, activeCategory]);
 
   // ====== FILTER EVENTS ======
   const upcomingEvents = events
@@ -70,10 +77,35 @@ export default function Home() {
   };
 
   // ====== FILTER BERDASARKAN KATEGORI ======
-  const displayedEvents = getEventsByTab().filter(
+  const filteredEvents = getEventsByTab().filter(
     (item) =>
       activeCategory === "all" || item.category?.name === activeCategory,
   );
+
+  // 🔥 MAJOR EVENTS - TIDAK TERPENGARUH FILTER (hanya status publish/ongoing)
+  const majorEvents = events
+    .filter(
+      (item) =>
+        item.category?.name === "Major Events" &&
+        (item.status === "publish" || item.status === "ongoing")
+    )
+    .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
+    .slice(0, 4); // Maksimal 4 Major Events
+
+  // ====== EVENTS BIASA (NON-MAJOR) ======
+  const regularEvents = filteredEvents.filter(
+    (item) => item.category?.name !== "Major Events"
+  );
+
+  // ====== PAGINATION UNTUK REGULAR EVENTS ======
+  const totalRegularPages = Math.ceil(regularEvents.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedRegularEvents = regularEvents.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // ====== RENDER EMPTY STATE ======
   const getEmptyMessage = () => {
@@ -88,19 +120,20 @@ export default function Home() {
         return "Belum ada event.";
     }
   };
+
+  const hasMajorEvents = majorEvents.length > 0;
+
   return (
     <Container className="flex flex-col">
       <div className="flex flex-col flex-1 pt-8 md:pt-0 min-h-screen relative">
-        {/* <div className="absolute inset-0 bg-[url('/assets/images/batik1.jpg')] bg-repeat bg-size-[100px] opacity-15 -z-10" /> */}
         <Image
           src="/assets/images/home1.png"
           alt="Hero background"
-          fill // 2. Forces image to expand to the parent size
-          priority // 3. Preloads the image if it's above the fold // 4. Tells Next.js to serve a full-width image size
+          fill
+          priority
           className="object-cover -z-1 brightness-75 size-full absolute inset-0"
         />
         <div className="flex flex-col justify-center items-center h-full mt-16">
-          {/* Logo: muncul dari atas */}
           <HeroAnimate
             animation="fadeDown"
             delay={0}
@@ -116,7 +149,6 @@ export default function Home() {
           </HeroAnimate>
 
           <div className="flex flex-col w-full md:w-3/4 text-white">
-            {/* Judul: scale dari kecil ke normal */}
             <HeroAnimate animation="scaleUp" delay={300}>
               <h1 className="text-5xl font-bold text-center">
                 Samarinda <br className="hidden sm:inline" />
@@ -125,7 +157,6 @@ export default function Home() {
               </h1>
             </HeroAnimate>
 
-            {/* Subjudul: fade dari bawah */}
             <HeroAnimate animation="fadeUp" delay={500}>
               <h2 className="text-3xl font-semibold font-young my-4 text-center">
                 On On! - <span className="text-primary-text">#Adventure </span>
@@ -133,7 +164,6 @@ export default function Home() {
               </h2>
             </HeroAnimate>
 
-            {/* Paragraf + tombol: fade dari bawah */}
             <HeroAnimate animation="fadeUp" delay={700}>
               <p className="py-5 text-center font-semibold mx-4 md:mx-0">
                 A Drinking Club With a Running Problem, Kami mengadakan lari
@@ -164,7 +194,7 @@ export default function Home() {
       </div>
 
       <div className="bg-linear-to-t from-primary-light via-primary-light-active to-primary-light">
-        <div className="text-center text-3xl  mt-8 font-bold font-young relative heading-separator w-3/4 mx-auto">
+        <div className="text-center text-3xl mt-8 font-bold font-young relative heading-separator w-3/4 mx-auto">
           Sponsor Advertisement
         </div>
         <RevealSection direction="up">
@@ -181,71 +211,50 @@ export default function Home() {
         </div>
       </RevealSection>
 
+      {/* ====== EVENTS SECTION ====== */}
       <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light p-4 md:p-8">
         <BatikOverlay />
         <div className="max-w-306 mx-auto px-4 md:px-0">
           <RevealSection direction="up">
-            <div className="flex flex-col items-center justify-center pt-24 pb-8">
-              <h1 className="text-5xl font-bold font-young ">Events</h1>
+            <div className="flex flex-col items-center justify-center pb-8">
+              <h1 className="text-5xl font-bold font-young">Events</h1>
             </div>
           </RevealSection>
 
-          <div className="flex flex-col mb-4 md:mb-4">
-            <h2 className="text-5xl font-bold font-young text-center">
-              Major Events
-            </h2>
-            <div className="flex md:flex-row justify-center gap-8 flex-col my-4">
-              {loading ? (
-                <p className="text-xl w-full text-center">Loading...</p>
-              ) : (
-                (() => {
-                  const bigEvents = events
-                    .filter(
-                      (item) =>
-                        
-                        new Date(item.end_date) >= now &&
-                        item.category?.name === "Major Events",
-                    )
-                    .sort(
-                      (a, b) => new Date(a.start_date) - new Date(b.start_date),
-                    )
-                    .slice(0, 4);
-
-                  return bigEvents.length === 0 ? (
-                    <p className="text-xl text-center text-neutral-dark py-12 w-full">
-                      Belum ada Major Events. Pantau terus ya!
-                    </p>
-                  ) : (
-                    bigEvents.map((item, i) => (
-                      <RevealSection
-                        key={i}
-                        direction="up"
-                        delay={i * 100}
-                        className="flex justify-center w-full"
-                      >
-                        <BigEventCard
-                          key={item.id}
-                          id={item.id}
-                          title={item.title}
-                          start_date={item.start_date}
-                          end_date={item.end_date}
-                          category={item.category?.name}
-                          img={item.image_url}
-                          status={item.status}
-                        />
-                      </RevealSection>
-                    ))
-                  );
-                })()
-              )}
+          {/* 🔥 MAJOR EVENTS - TIDAK TERPENGARUH FILTER */}
+          {hasMajorEvents && (
+            <div className="flex flex-col mb-8">
+              <h2 className="text-5xl font-bold font-young text-center mb-4">
+                Major Events
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {majorEvents.map((item, i) => (
+                  <RevealSection
+                    key={i}
+                    direction="up"
+                    delay={i * 100}
+                    className="flex justify-center w-full"
+                  >
+                    <BigEventCard
+                      id={item.id}
+                      title={item.title}
+                      start_date={item.start_date}
+                      end_date={item.end_date}
+                      category={item.category?.name}
+                      img={item.image_url}
+                      status={item.status}
+                    />
+                  </RevealSection>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* ====== TAB FILTER ====== */}
-          <div className="flex flex-row gap-4 border-b-2 border-neutral-normal mb-4">
+          <div className="flex flex-row gap-4 border-b-2 border-neutral-normal mb-4 overflow-x-auto">
             <button
               onClick={() => setActiveTab("ongoing")}
-              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all whitespace-nowrap ${
                 activeTab === "ongoing"
                   ? "text-secondary-bg border-b-4 border-secondary-bg"
                   : "text-neutral-dark hover:text-secondary-bg"
@@ -260,7 +269,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => setActiveTab("upcoming")}
-              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all whitespace-nowrap ${
                 activeTab === "upcoming"
                   ? "text-secondary-bg border-b-4 border-secondary-bg"
                   : "text-neutral-dark hover:text-secondary-bg"
@@ -270,7 +279,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => setActiveTab("past")}
-              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all ${
+              className={`cursor-pointer pb-3 px-2 font-bold text-xl font-young transition-all whitespace-nowrap ${
                 activeTab === "past"
                   ? "text-secondary-bg border-b-4 border-secondary-bg"
                   : "text-neutral-dark hover:text-secondary-bg"
@@ -313,28 +322,45 @@ export default function Home() {
           {/* ====== EVENTS GRID ====== */}
           {loading ? (
             <div className="flex justify-center py-16 text-xl">Loading...</div>
-          ) : displayedEvents.length === 0 ? (
+          ) : filteredEvents.length === 0 ? (
             <div className="flex justify-center py-16 text-xl text-neutral-dark">
               {getEmptyMessage()}
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-16">
-              {displayedEvents.map((item, i) => (
-                <RevealSection key={i} direction="up" delay={i * 50}>
-                  <EventCard
-                    id={item.id}
-                    title={item.title}
-                    start_date={item.start_date}
-                    end_date={item.end_date}
-                    category={item.category?.name}
-                    description={item.description}
-                    location={item.location}
-                    img={item.image_url}
-                    status={item.status}
-                  />
-                </RevealSection>
-              ))}
+          ) : regularEvents.length === 0 ? (
+            <div className="flex justify-center py-16 text-xl text-neutral-dark">
+              {majorEvents.length > 0 
+                ? "Tidak ada event reguler untuk kategori ini." 
+                : getEmptyMessage()}
             </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-4">
+                {paginatedRegularEvents.map((item, i) => (
+                  <RevealSection key={i} direction="up" delay={i * 50}>
+                    <EventCard
+                      id={item.id}
+                      title={item.title}
+                      start_date={item.start_date}
+                      end_date={item.end_date}
+                      category={item.category?.name}
+                      description={item.description}
+                      location={item.location}
+                      img={item.image_url}
+                      status={item.status}
+                    />
+                  </RevealSection>
+                ))}
+              </div>
+
+              {/* 🔥 PAGINATION */}
+              {totalRegularPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalRegularPages}
+                  onPageChange={handlePageChange}
+                />
+              )}
+            </>
           )}
         </div>
       </div>

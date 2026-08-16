@@ -1,7 +1,9 @@
 // components/SponsorList.js
 "use client"
 
+import { useState, useEffect } from "react";
 import { useSponsor } from "../hooks/useSponsor";
+import Pagination from "@/src/components/Pagination";
 
 function SponsorCard({ sponsor }) {
     const inner = (
@@ -50,6 +52,13 @@ function SponsorCard({ sponsor }) {
 
 export function SponsorList({ selectedYear = "all" }) {
     const { sponsors, loading, error } = useSponsor();
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 12;
+
+    // 🔥 Reset ke halaman 1 saat filter berubah (menggunakan useEffect)
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedYear]);
 
     if (loading) return <p className="min-h-screen text-center text-2xl p-16">Loading ....</p>;
     if (error) return <p className="min-h-screen text-center text-2xl p-16">Gagal Memuat Sponsor</p>;
@@ -59,7 +68,7 @@ export function SponsorList({ selectedYear = "all" }) {
 
     if (allSponsors.length === 0) return <p className="min-h-screen text-center text-2xl p-16">Belum ada Sponsor</p>;
 
-    // 🔥 Filter berdasarkan tahun
+    // 🔥 Filter berdasarkan tahun yang dipilih
     let filteredSponsors = allSponsors;
     if (selectedYear !== "all") {
         if (selectedYear === "Lainnya") {
@@ -77,15 +86,26 @@ export function SponsorList({ selectedYear = "all" }) {
         );
     }
 
+    // 🔥 Pagination logic
+    const totalItems = filteredSponsors.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentItems = filteredSponsors.slice(startIndex, startIndex + itemsPerPage);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
     // 🔥 Group by year
-    const groupedByYear = filteredSponsors.reduce((acc, sponsor) => {
+    const groupedByYear = currentItems.reduce((acc, sponsor) => {
         const year = sponsor.year ?? "Lainnya";
         if (!acc[year]) acc[year] = [];
         acc[year].push(sponsor);
         return acc;
     }, {});
 
-    // 🔥 Urutkan tahun (terbaru dulu)
+    // 🔥 Urutkan tahun (terbaru dulu, "Lainnya" di akhir)
     const sortedYears = Object.keys(groupedByYear).sort((a, b) => {
         if (a === "Lainnya") return 1;
         if (b === "Lainnya") return -1;
@@ -101,7 +121,7 @@ export function SponsorList({ selectedYear = "all" }) {
                 {sortedYears.map((year) => (
                     <div key={year} className="flex flex-col gap-4">
                         <div className="flex items-center justify-center gap-3">
-                            <h3 className="text-lg font-semibold relative text-primary-darker">
+                            <h3 className="text-lg font-semibold text-primary-darker">
                                 {year === "Lainnya" ? "Lainnya" : `${year}`}
                             </h3>
                             <span className="text-sm text-neutral-dark bg-primary-light px-2 py-0.5 rounded-full border border-neutral-normal">
@@ -116,6 +136,15 @@ export function SponsorList({ selectedYear = "all" }) {
                     </div>
                 ))}
             </div>
+
+            {/* 🔥 Pagination */}
+            {totalPages > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
+            )}
         </section>
     )
 }

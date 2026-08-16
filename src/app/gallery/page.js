@@ -103,34 +103,54 @@ export default function Gallery() {
         galleryService
             .getAll()
             .then((res) => {
-                
                 const galleries = res.data?.data || [];
                 
                 const mappedImages = galleries
                     .filter((g) => g.type === "image" || !g.type)
                     .map((gallery) => {
-                        // 🔥 Ambil status dari event
                         const status = gallery.event?.status || "";
+                        const event = gallery.event || {};
+                        
+                        // 🔥 Ambil tanggal event (start_date atau created_at)
+                        const eventDate = event.start_date || event.created_at || gallery.created_at || "";
                         
                         return {
                             id: gallery.id,
                             url: gallery.url || gallery.thumb || "",
                             title: gallery.title || "Foto Event",
-                            subtitle: gallery.event?.title || "",
+                            subtitle: event.title || "",
                             status: status,
                             is_featured: gallery.is_featured || false,
-                            event_id: gallery.event?.id || null,
-                            event_title: gallery.event?.title || "",
+                            event_id: event.id || null,
+                            event_title: event.title || "",
+                            // 🔥 Untuk sorting
+                            event_date: eventDate,
                         };
                     })
                     .filter((img) => img.url && img.url !== "");
                 
+                // 🔥 SORTING: Featured first, then by latest event date
+                const sortedImages = mappedImages.sort((a, b) => {
+                    // 1. Featured diutamakan
+                    if (a.is_featured && !b.is_featured) return -1;
+                    if (!a.is_featured && b.is_featured) return 1;
+                    
+                    // 2. Urutkan berdasarkan tanggal event terbaru
+                    const dateA = new Date(a.event_date);
+                    const dateB = new Date(b.event_date);
+                    
+                    // Jika salah satu tidak punya tanggal, taruh di akhir
+                    if (!a.event_date) return 1;
+                    if (!b.event_date) return -1;
+                    
+                    return dateB - dateA; // Descending (terbaru dulu)
+                });
                 
-                setAllImages(mappedImages);
-                setFilteredImages(mappedImages);
+                setAllImages(sortedImages);
+                setFilteredImages(sortedImages);
                 
                 // 🔥 Generate list status yang tersedia
-                const statuses = [...new Set(mappedImages.map(img => img.status).filter(s => s !== ""))];
+                const statuses = [...new Set(sortedImages.map(img => img.status).filter(s => s !== ""))];
                 setAvailableStatuses(statuses);
                 
                 setError(null);

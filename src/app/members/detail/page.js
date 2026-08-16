@@ -17,6 +17,8 @@ import BatikOverlay from "@/src/components/BatikOverlay";
 import { useAuth } from "@/src/contexts/AuthContext";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { PencilIcon } from "@heroicons/react/24/outline";
+import QRCode from 'qrcode';
+import { StarIcon } from "@heroicons/react/24/solid";
 
 const genderOptions = [
   { value: "male", label: "Laki-laki" },
@@ -60,6 +62,13 @@ export default function DetailMember() {
   const [avatar, setAvatar] = useState(null);
   const [isMember, setIsMember] = useState(false);
   const [myEvents, setMyEvents] = useState([]);
+  
+  // 🔥 State untuk QR Code Member
+  const [memberQRCode, setMemberQRCode] = useState(null);
+  const [qrLoading, setQrLoading] = useState(false);
+
+  // 🔥 State untuk Poin (placeholder)
+  const [points, setPoints] = useState(0);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -78,6 +87,50 @@ export default function DetailMember() {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // 🔥 Generate QR Code Member (HashID|Nama)
+  useEffect(() => {
+    const generateMemberQR = async () => {
+      if (!userData) return;
+      
+      const hashId = userData.hash_id || userData.id || "";
+      const name = userData.name || "";
+      
+      if (!hashId || !name) return;
+      
+      const qrContent = `${hashId}|${name}`;
+      
+      setQrLoading(true);
+      try {
+        const qrDataUrl = await QRCode.toDataURL(qrContent, {
+          width: 200,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#ffffff',
+          }
+        });
+        setMemberQRCode(qrDataUrl);
+      } catch (err) {
+        console.error("Gagal generate QR Member:", err);
+      } finally {
+        setQrLoading(false);
+      }
+    };
+
+    generateMemberQR();
+  }, [userData]);
+
+  // 🔥 Download QR Member
+  const handleDownloadMemberQR = () => {
+    if (!memberQRCode) return;
+    
+    const hashId = userData?.hash_id || userData?.id || "member";
+    const link = document.createElement("a");
+    link.href = memberQRCode;
+    link.download = `qr-${hashId}.png`;
+    link.click();
+  };
 
   // 🔥 AUTO UPDATE DATA DARI AUTHCONTEXT
   useEffect(() => {
@@ -316,6 +369,7 @@ export default function DetailMember() {
   const profileAvatar = userData?.avatar || "";
   const name = userData?.name || user?.name || "";
   const username = userData?.username || user?.username || "";
+  const hashId = userData?.hash_id || "";
 
   return (
     <Container className="flex flex-col w-full">
@@ -327,48 +381,97 @@ export default function DetailMember() {
             <RevealSection direction="up">
               <div className="flex flex-col items-center justify-center mt-24 mb-8">
                 <div className="bg-primary-light p-8 rounded-lg shadow-lg text-center w-full border-2 border-neutral-normal">
-                  <div className="flex flex-col items-center gap-4">
-                    <h1 className="text-4xl font-bold font-young text-primary-darker">
-                      Selamat Datang!
-                    </h1>
-                    <div className="w-32 h-32 rounded-full bg-secondary-bg flex items-center justify-center overflow-hidden border-4 border-secondary-bg mx-auto mb-4">
-                      {profileAvatar ? (
-                        <img
-                          src={profileAvatar}
-                          alt={name}
-                          className="object-cover w-full h-full"
-                          onError={(e) => {
-                            e.target.style.display = "none";
-                            e.target.parentElement.innerHTML = `
-                              <span class="text-white font-bold text-4xl">
-                                ${name ? name.charAt(0).toUpperCase() : "?"}
-                              </span>
-                            `;
-                          }}
-                        />
-                      ) : (
-                        <span className="text-white font-bold text-4xl">
-                          {name ? name.charAt(0).toUpperCase() : "?"}
-                        </span>
+                  {/* 🔥 2 KOLOM: Kiri (Avatar & Info) | Kanan (QR Code) */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    {/* Kolom Kiri - Avatar & Info */}
+                    <div className="flex flex-col items-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <h1 className="text-4xl font-bold font-young text-primary-darker">
+                          Selamat Datang!
+                        </h1>
+                        <div className="w-32 h-32 rounded-full bg-secondary-bg flex items-center justify-center overflow-hidden border-4 border-secondary-bg">
+                          {profileAvatar ? (
+                            <img
+                              src={profileAvatar}
+                              alt={name}
+                              className="object-cover w-full h-full"
+                              onError={(e) => {
+                                e.target.style.display = "none";
+                                e.target.parentElement.innerHTML = `
+                                  <span class="text-white font-bold text-4xl">
+                                    ${name ? name.charAt(0).toUpperCase() : "?"}
+                                  </span>
+                                `;
+                              }}
+                            />
+                          ) : (
+                            <span className="text-white font-bold text-4xl">
+                              {name ? name.charAt(0).toUpperCase() : "?"}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-2xl font-semibold text-secondary-bg mt-4">
+                        {name}
+                      </p>
+                      {username && (
+                        <p className="text-sm text-gray-500 mt-1">@{username}</p>
                       )}
+                      <p className="text-gray-600 mt-2">
+                        {userData?.email || user?.email}
+                      </p>
+                      {hashId && (
+                        <p className="text-sm font-mono text-gray-400 mt-1">
+                          Hash ID: {hashId}
+                        </p>
+                      )}
+                      <div className="mt-6 flex gap-4 justify-center">
+                        <button
+                          onClick={handleLogout}
+                          className="cursor-pointer px-8 py-3 border-red-500 hover:bg-red-600/10 active:bg-red-700/10 text-red-600 font-bold border-2 rounded-md transition-all"
+                        >
+                          Logout
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-2xl font-semibold text-secondary-bg mt-4">
-                    {name}
-                  </p>
-                  {username && (
-                    <p className="text-sm text-gray-500 mt-1">@{username}</p>
-                  )}
-                  <p className="text-gray-600 mt-2">
-                    {userData?.email || user?.email}
-                  </p>
-                  <div className="mt-6 flex gap-4 justify-center">
-                    <button
-                      onClick={handleLogout}
-                      className="cursor-pointer px-8 py-3 border-red-500 hover:bg-red-600/10 active:bg-red-700/10 text-red-600 font-bold border-2 rounded-md transition-all"
-                    >
-                      Logout
-                    </button>
+
+                    {/* 🔥 Kolom Kanan - QR Code Member */}
+                    <div className="flex flex-col items-center justify-center border-l-0 md:border-l-2 border-neutral-normal/30 pl-0 md:pl-6">
+                      <div className="text-center">
+                        <h3 className="text-lg font-bold text-neutral-dark mb-2">
+                          QR Code Member
+                        </h3>
+                        {qrLoading ? (
+                          <div className="w-48 h-48 flex items-center justify-center bg-gray-100 rounded-lg">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                          </div>
+                        ) : memberQRCode ? (
+                          <div className="flex flex-col items-center gap-3">
+                            <img
+                              src={memberQRCode}
+                              alt="QR Code Member"
+                              className="w-48 h-48 rounded-lg border-2 border-neutral-normal p-2 bg-white"
+                            />
+                            <div className="text-xs text-neutral-dark">
+                              {hashId} | {name}
+                            </div>
+                            <button
+                              onClick={handleDownloadMemberQR}
+                              className="px-4 py-2 bg-secondary-bg hover:bg-secondary-bg-hover text-white font-medium rounded-md transition-colors text-sm"
+                            >
+                              Download QR
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="text-sm text-neutral-dark">
+                            Data tidak lengkap
+                          </div>
+                        )}
+                        <p className="text-xs text-neutral-dark mt-2">
+                          Scan QR ini untuk absensi member
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -442,6 +545,41 @@ export default function DetailMember() {
                 >
                   {loading ? "Mencari..." : "Login"}
                 </button>
+              </div>
+            </RevealSection>
+          )}
+
+          {/* ====== 🔥 SECTION POIN (Placeholder) ====== */}
+          {isMounted && isUserLoggedIn && (
+            <RevealSection direction="up">
+              <div className="bg-primary-light border-2 border-neutral-normal rounded-lg p-6 my-4 shadow-sm">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-primary-bg rounded-full flex items-center justify-center">
+                      <StarIcon className="w-7 h-7 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-secondary-bg">Poin SH3</h3>
+                      <p className="text-sm text-neutral-text">Kumpulkan poin dari setiap event yang diikuti!</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center md:items-end">
+                    <div className="text-4xl font-bold font-young text-primary-bg tracking-wider">
+                      {String(points).padStart(3, '0')}
+                    </div>
+                    <div className="text-xs text-primary-dark font-medium">Total Poin</div>
+                  </div>
+                </div>
+                {/* Progress bar placeholder */}
+                <div className="mt-4 w-full bg-amber-200 rounded-full h-2">
+                  <div 
+                    className="bg-amber-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(points / 100 * 100, 100)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-neutral-normal-active mt-2 text-center">
+                  *Sistem poin sedang dalam pengembangan
+                </p>
               </div>
             </RevealSection>
           )}
@@ -827,9 +965,6 @@ export default function DetailMember() {
                       Keamanan
                     </h3>
                     <div className="flex gap-3">
-                      {/* 🔥 Tombol Ganti Password (untuk user yang sudah login) */}
-
-                      {/* 🔥 Tombol Reset Password (tanpa login / lupa) */}
                       <Link
                         href="/auth/forgot-password"
                         className="inline-flex items-center gap-2 px-4 py-2 border-2 border-neutral-normal hover:bg-neutral-normal hover:text-white font-medium rounded-md transition-colors text-sm"

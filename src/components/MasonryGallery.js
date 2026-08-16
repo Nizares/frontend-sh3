@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import { RevealSection } from "@/src/components/RevealSection"
+import Pagination from "@/src/components/Pagination"
 
 const ITEMS_PER_PAGE = 8
 const ITEMS_PER_SECTION = 4
@@ -40,73 +41,6 @@ export default function MasonryGallery({ images = [] }) {
           onPageChange={handlePageChange}
         />
       )}
-    </div>
-  )
-}
-
-function Pagination({ currentPage, totalPages, onPageChange }) {
-  const getPageNumbers = () => {
-    const pages = []
-
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i)
-      return pages
-    }
-
-    pages.push(1)
-    if (currentPage > 3) pages.push("...")
-
-    const start = Math.max(2, currentPage - 1)
-    const end = Math.min(totalPages - 1, currentPage + 1)
-    for (let i = start; i <= end; i++) pages.push(i)
-
-    if (currentPage < totalPages - 2) pages.push("...")
-    pages.push(totalPages)
-
-    return pages
-  }
-
-  return (
-    <div className="flex justify-center items-center gap-2 mt-6">
-      <button
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="px-3 py-1.5 text-sm font-medium transition-colors
-          disabled:opacity-40 disabled:cursor-not-allowed
-          hover:bg-primary-light active:bg-primary-light"
-      >
-        Prev
-      </button>
-
-      {getPageNumbers().map((page, idx) =>
-        page === "..." ? (
-          <span key={`ellipsis-${idx}`} className="px-2 text-neutral-400 select-none">
-            ...
-          </span>
-        ) : (
-          <button
-            key={page}
-            onClick={() => onPageChange(page)}
-            className={`w-9 h-9 text-sm font-medium transition-colors 
-              ${currentPage === page
-                ? "bg-primary text-neutral-dark shadow-sm border-2 border-neutral-normal"
-                : "hover:bg-neutral-bg-active active:bg-neutral-200 text-neutral-lighter"
-              }`}
-          >
-            {page}
-          </button>
-        )
-      )}
-
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="px-3 py-1.5 text-sm font-medium transition-colors
-          disabled:opacity-40 disabled:cursor-not-allowed
-          hover:bg-primary-light active:bg-primary-light"
-      >
-        Next
-      </button>
     </div>
   )
 }

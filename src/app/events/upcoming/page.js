@@ -5,13 +5,15 @@ import Container from "@/src/components/Container";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
-import { MapPinIcon } from "@heroicons/react/24/solid";
+import { MapPinIcon, CalendarDaysIcon } from "@heroicons/react/24/solid";
 import { concateDate, formatRupiah } from "@/src/lib/utils";
 import { eventService } from "@/src/services/eventService";
 import SponsorSection from "@/src/components/SponsorSection";
 import BatikOverlay from "@/src/components/BatikOverlay";
 import QRCode from 'qrcode';
-import Swal from "sweetalert2"; // 🔥 IMPORT SWAL
+import Swal from "sweetalert2";
+import EventGallery from "@/src/components/EventGallery";
+import Pagination from "@/src/components/Pagination";
 
 export default function UpcomingEvents() {
   const [event, setEvent] = useState(null);
@@ -22,7 +24,10 @@ export default function UpcomingEvents() {
   const [attendanceCode, setAttendanceCode] = useState(null);
   const [eventId, setEventId] = useState(null);
 
-  // 🔥 Fungsi untuk generate QR dari string
+  // 🔥 Pagination untuk gallery
+  const [galleryPage, setGalleryPage] = useState(1);
+  const itemsPerPage = 6;
+
   const generateQR = async (qrString) => {
     if (!qrString) return null;
     try {
@@ -40,7 +45,6 @@ export default function UpcomingEvents() {
     }
   };
 
-  // 🔥 Fungsi untuk set QR dari berbagai sumber
   const setQRFromData = async (data) => {
     const qrImage = data?.attendance?.qr_code_image || data?.qr_code_image || null;
     const qrString = data?.attendance?.qr_code || data?.qr_code || data?.ticket_code || null;
@@ -63,18 +67,16 @@ export default function UpcomingEvents() {
     return false;
   };
 
-  // 🔥 CEK APAKAH REGISTRASI SUDAH DIBUKA
   const isRegistrationOpen = () => {
     if (!event) return false;
-    
+
     const now = new Date();
     const regStart = new Date(event.registration_start_date);
     const regEnd = new Date(event.registration_end_date);
-    
+
     return now >= regStart && now <= regEnd;
   };
 
-  // 🔥 CEK APAKAH EVENT SUDAH SELESAI
   const isEventCompleted = () => {
     if (!event) return false;
     const now = new Date();
@@ -82,24 +84,23 @@ export default function UpcomingEvents() {
     return now > endDate;
   };
 
-  // 🔥 DAPATKAN STATUS REGISTRASI
   const getRegistrationStatus = () => {
     if (!event) return { text: "Daftar Sekarang", disabled: false };
-    
+
     const now = new Date();
     const regStart = new Date(event.registration_start_date);
     const regEnd = new Date(event.registration_end_date);
-    
+
     if (now < regStart) {
-      return { 
+      return {
         text: `Pendaftaran dibuka ${new Date(regStart).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`,
-        disabled: true 
+        disabled: true
       };
     }
     if (now > regEnd) {
-      return { 
+      return {
         text: "Pendaftaran sudah ditutup",
-        disabled: true 
+        disabled: true
       };
     }
     return { text: "Daftar Sekarang", disabled: false };
@@ -110,13 +111,11 @@ export default function UpcomingEvents() {
     const id = params.get("id") ?? 1;
     setEventId(id);
 
-    // Ambil detail event
     eventService
       .getById(id)
       .then((res) => setEvent(res.data.data))
       .catch(console.error);
 
-    // Cek apakah user sudah join
     const token = localStorage.getItem("token");
     if (token) {
       eventService
@@ -130,7 +129,7 @@ export default function UpcomingEvents() {
             }
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }, []);
 
@@ -180,6 +179,64 @@ export default function UpcomingEvents() {
     link.click();
   }
 
+  // 🔥 Cek apakah address adalah link/iframe
+  const isAddressLink = (address) => {
+    if (!address) return false;
+    return address.startsWith('http') ||
+      address.includes('google.com/maps') ||
+      address.includes('iframe') ||
+      address.includes('embed');
+  };
+
+  // 🔥 Extract embed URL dari address jika berupa iframe HTML
+  const extractEmbedUrl = (address) => {
+    if (!address) return null;
+
+    if (address.startsWith('http')) {
+      return address;
+    }
+
+    const srcMatch = address.match(/src=["']([^"']+)["']/);
+    if (srcMatch) {
+      return srcMatch[1];
+    }
+
+    return null;
+  };
+
+  // 🔥 Format maps link untuk tombol
+  const getMapsLinkFromAddress = (address) => {
+    if (!address) return "#";
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  };
+
+  // 🔥 Format tanggal dengan end date
+  const formatEventDate = () => {
+    if (!event) return "";
+
+    const start = new Date(event.start_date);
+    const end = new Date(event.end_date);
+
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+
+    const startDate = start.toLocaleDateString('id-ID', options);
+    const startTime = start.toLocaleTimeString('id-ID', timeOptions);
+    const endDate = end.toLocaleDateString('id-ID', options);
+    const endTime = end.toLocaleTimeString('id-ID', timeOptions);
+
+    if (startDate === endDate) {
+      return `${startDate} · ${startTime} - ${endTime} WITA`;
+    }
+
+    return `${startDate} ${startTime} - ${endDate} ${endTime} WITA`;
+  };
+
+  // 🔥 Gallery pagination handler
+  const handleGalleryPageChange = (page) => {
+    setGalleryPage(page);
+  };
+
   if (!event)
     return <div className="flex justify-center p-16 text-2xl mt-16 h-screen">Loading...</div>;
 
@@ -187,10 +244,22 @@ export default function UpcomingEvents() {
   const isPaid = myOrder?.status === "paid" || myOrder?.status === "confirmed" || myOrder?.status === "free";
   const isPending = myOrder?.status === "pending";
   const isCancelled = myOrder?.status === "cancelled" || myOrder?.status === "rejected";
-  
-  // 🔥 Ambil status registrasi
+
   const regStatus = getRegistrationStatus();
   const isRegistrationAvailable = isRegistrationOpen() && !isEventCompleted();
+
+  const bannerImage = event.banner_url || event.image_url || "/assets/images/placeholder-event.jpg";
+  const detailImage = event.image_url || event.banner_url || "/assets/images/placeholder-event.jpg";
+  const hasDetailImage = detailImage && detailImage !== "/assets/images/placeholder-event.jpg";
+
+  const addressIsLink = isAddressLink(event.address);
+  const embedUrl = extractEmbedUrl(event.address);
+
+  // 🔥 Gallery data
+  const galleries = event.galleries || [];
+  const totalGalleryPages = Math.ceil(galleries.length / itemsPerPage);
+  const startIndex = (galleryPage - 1) * itemsPerPage;
+  const paginatedGalleries = galleries.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <Container className="flex flex-col gap-y-4 w-full">
@@ -204,48 +273,119 @@ export default function UpcomingEvents() {
             <h1 className="text-4xl font-bold mt-16">{event.title}</h1>
           </div>
 
-          <div className="flex flex-row justify-between gap-x-2 mt-8">
-            <div className="flex flex-row justify-center gap-x-2 w-1/2">
-              <MapPinIcon className="w-8 h-8" />
-              <div className="text-lg font-bold">{event.location}</div>
+          {/* 🔥 Location & Date - 2 Kolom SAMA UKURAN */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            {/* Kolom Kiri - Lokasi */}
+            <div className="flex flex-col p-3 bg-primary-light/50 rounded-lg border border-neutral-normal/50">
+              <div className="flex flex-row items-start gap-x-3">
+                <MapPinIcon className="w-6 h-6 text-secondary-bg flex-shrink-0 mt-0.5" />
+                <div className="flex flex-col flex-1">
+                  <span className="text-sm font-semibold">{event.location}</span>
+                  {event.address && !addressIsLink && (
+                    <span className="text-xs text-neutral-dark line-clamp-2">
+                      {event.address}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* 🔥 Iframe Maps - di dalam kolom lokasi */}
+              {addressIsLink && embedUrl && (
+                <div className="mt-3 rounded-lg overflow-hidden border border-neutral-normal/50 w-full">
+                  <iframe
+                    src={embedUrl}
+                    width="100%"
+                    height="256"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Google Maps"
+                    className="w-full"
+                  />
+                </div>
+              )}
             </div>
-            <div className="text-lg font-bold">
-              {concateDate(event.start_date, event.end_date)}
+
+            {/* 🔥 Kolom Kanan - Tanggal & Waktu + Detail Image (Titik Kumpul) */}
+            <div className="flex flex-col p-3 bg-primary-light/50 rounded-lg border border-neutral-normal/50">
+              <div className="flex flex-row items-start gap-x-3">
+                <CalendarDaysIcon className="w-6 h-6 text-secondary-bg flex-shrink-0 mt-0.5" />
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold">Tanggal & Waktu</span>
+                  <span className="text-sm text-neutral-dark">
+                    {formatEventDate()}
+                  </span>
+                  {event.start_date && event.end_date && (
+                    <span className="text-xs text-neutral-dark/60 mt-0.5">
+                      {new Date(event.start_date).toLocaleDateString('id-ID', { weekday: 'long' })}
+                      {new Date(event.start_date).toLocaleDateString('id-ID', { weekday: 'long' }) !==
+                        new Date(event.end_date).toLocaleDateString('id-ID', { weekday: 'long' }) &&
+                        ` - ${new Date(event.end_date).toLocaleDateString('id-ID', { weekday: 'long' })}`}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* 🔥 Detail Image - Meeting Point / Titik Kumpul */}
+              {hasDetailImage && (
+                <div className="mt-3 rounded-lg overflow-hidden border border-neutral-normal/50 w-full">
+                  <div className="relative w-full h-64">
+                    <img
+                      src={detailImage}
+                      alt="Titik Kumpul"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = "/assets/images/placeholder-event.jpg";
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          <Image
-            src={event.image_url}
-            alt={event.title}
-            width={600}
-            height={450}
-            className="h-128 w-full flex object-cover mt-4"
-          />
+          {/* 🔥 Banner Image */}
+          <div className="relative w-full h-64 md:h-80 mt-4 rounded-lg overflow-hidden bg-gray-200">
+            <img
+              src={bannerImage}
+              alt={`${event.title} - Banner`}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.src = "/assets/images/placeholder-event.jpg";
+              }}
+            />
+          </div>
 
-          <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3 my-8 mx-4 md:mx-0">
+          {/* 🔥 Title & Category */}
+          <div className="mt-4">
+            <h2 className="text-2xl font-bold">{event.title}</h2>
+            <p className="text-sm text-neutral-dark">{event.category?.name || "Event"}</p>
+          </div>
+
+          <div className="grid grid-rows-1 gap-x-16 md:grid-cols-3 my-6 mx-4 md:mx-0">
             <div className="col-span-1 flex flex-col md:col-span-2">
-              <h2 className="text-2xl font-bold">Tentang Event</h2>
-              <div className="text-sm">{event.description}</div>
+              <h2 className="text-xl font-bold mt-2">Tentang Event</h2>
+              <div className="text-sm text-justify">{event.description}</div>
 
-              {/* 🔥 INFO STATUS REGISTRASI (jika belum dibuka atau sudah ditutup) */}
               {!myOrder && !isRegistrationAvailable && (
                 <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md text-center">
                   <p className="text-yellow-700 font-medium">
                     {regStatus.text}
                   </p>
                   <p className="text-sm text-gray-500 mt-1">
-                    Pendaftaran dibuka: {new Date(event.registration_start_date).toLocaleDateString('id-ID', { 
-                      day: 'numeric', 
-                      month: 'long', 
+                    Pendaftaran dibuka: {new Date(event.registration_start_date).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'long',
                       year: 'numeric',
                       hour: '2-digit',
                       minute: '2-digit'
                     })}
                   </p>
                   <p className="text-sm text-gray-500">
-                    Ditutup: {new Date(event.registration_end_date).toLocaleDateString('id-ID', { 
-                      day: 'numeric', 
-                      month: 'long', 
+                    Ditutup: {new Date(event.registration_end_date).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'long',
                       year: 'numeric',
                       hour: '2-digit',
                       minute: '2-digit'
@@ -254,9 +394,8 @@ export default function UpcomingEvents() {
                 </div>
               )}
 
-              {/* 🔥 BELUM JOIN → TOMBOL DAFTAR (dengan validasi) */}
               {!myOrder && (
-                <Link 
+                <Link
                   href={isRegistrationAvailable ? `/events/register?id=${event.id}` : "#"}
                   onClick={(e) => {
                     if (!isRegistrationAvailable) {
@@ -270,21 +409,19 @@ export default function UpcomingEvents() {
                     }
                   }}
                 >
-                  <div 
-                    className={`flex justify-center items-center rounded-md h-32 font-bold text-2xl m-10 md:text-5xl transition-colors text-center ${
-                      isRegistrationAvailable 
-                        ? "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active cursor-pointer text-white" 
+                  <div
+                    className={`flex justify-center items-center rounded-md h-32 font-bold text-2xl m-6 md:m-10 md:text-5xl transition-colors text-center ${isRegistrationAvailable
+                        ? "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active cursor-pointer text-white"
                         : "bg-neutral-normal cursor-not-allowed text-white/70"
-                    }`}
+                      }`}
                   >
                     {regStatus.text}
                   </div>
                 </Link>
               )}
 
-              {/* Sudah join tapi belum dikonfirmasi admin */}
               {isPending && (
-                <div className="flex flex-col gap-2 m-10">
+                <div className="flex flex-col gap-2 m-6 md:m-10">
                   <div className="flex justify-center items-center bg-neutral-normal-active h-20 font-bold text-xl text-white cursor-not-allowed rounded-md text-center">
                     Menunggu Konfirmasi Admin
                   </div>
@@ -296,7 +433,7 @@ export default function UpcomingEvents() {
 
               {isCancelled && (
                 <>
-                  <div className="flex flex-col gap-2 m-10">
+                  <div className="flex flex-col gap-2 m-6 md:m-10">
                     <div className="flex justify-center items-center bg-red-500 h-20 font-bold text-xl text-white cursor-not-allowed rounded-md">
                       Ordermu Telah dibatalkan
                     </div>
@@ -305,16 +442,15 @@ export default function UpcomingEvents() {
                     </p>
                   </div>
                   <Link href={`/events/register?id=${event.id}`}>
-                    <div className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-10 md:text-5xl active:bg-secondary-bg-active">
+                    <div className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-6 md:m-10 md:text-5xl active:bg-secondary-bg-active">
                       Daftar Sekarang
                     </div>
                   </Link>
                 </>
               )}
 
-              {/* Sudah dikonfirmasi → QR + Lihat Peserta */}
               {isPaid && (
-                <div className="flex flex-col gap-4 m-10">
+                <div className="flex flex-col gap-4 m-6 md:m-10">
                   <button
                     onClick={handleLihatQR}
                     disabled={qrLoading}
@@ -337,7 +473,7 @@ export default function UpcomingEvents() {
               )}
             </div>
 
-            <div className="bg-primary-light gap-x-4 p-4 border-4 border-primary-normal text-primary-normal rounded-md">
+            <div className="bg-primary-light gap-x-4 p-4 border-4 border-primary-normal text-primary-normal rounded-md mt-4 md:mt-0">
               <div className="flex flex-col">
                 <h3 className="text-2xl font-bold font-young">Early Bid</h3>
                 <div className="text-sm line-through">
@@ -353,13 +489,13 @@ export default function UpcomingEvents() {
                     <li key={i}>{point}</li>
                   ))}
                 </ol>
-                <div className="text-xl font-bold">Event Organizer</div>
+                <div className="text-xl font-bold mt-2">Event Organizer</div>
                 <div className="text-lg font-semibold">{event.creator?.name}</div>
               </div>
             </div>
           </div>
 
-          {/* Tampilan QR Code */}
+          {/* QR Code */}
           {isPaid && showQR && (
             <div className="flex flex-col items-center gap-4 bg-primary-light border-2 border-neutral-normal p-8 mb-10 mt-8 rounded-md">
               <div className="text-xl font-bold">Tiket QR Kamu</div>
@@ -398,7 +534,30 @@ export default function UpcomingEvents() {
             </div>
           )}
 
-          {/* Merchandise Event */}
+          {/* 🔥 Gallery Section with Pagination Component */}
+          {galleries.length > 0 && (
+            <div className="mt-8 mb-10">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold font-young">Galeri Event</h2>
+                {totalGalleryPages > 1 && (
+                  <span className="text-sm text-neutral-dark">
+                    Halaman {galleryPage} dari {totalGalleryPages}
+                  </span>
+                )}
+              </div>
+              
+              <EventGallery images={paginatedGalleries} />
+
+              {/* 🔥 PAKAI KOMPONEN PAGINATION */}
+              <Pagination 
+                currentPage={galleryPage}
+                totalPages={totalGalleryPages}
+                onPageChange={handleGalleryPageChange}
+              />
+            </div>
+          )}
+
+          {/* Merchandise */}
           {event.merchandise?.length > 0 && (
             <div className="mt-8 mb-10">
               <h2 className="text-2xl font-bold font-young mb-4 text-primary-darker">Merchandise Event</h2>
@@ -464,7 +623,7 @@ export default function UpcomingEvents() {
                               </div>
                               {!isPaid && (
                                 <div className="text-xs text-secondary-bg font-medium mt-1">
-                                  🔒 Harga spesial untuk peserta event
+                                  Harga spesial untuk peserta event
                                 </div>
                               )}
                             </div>

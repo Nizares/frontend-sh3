@@ -7,11 +7,16 @@ import BatikOverlay from "@/src/components/BatikOverlay";
 import { useState, useEffect } from "react";
 import { organisationService } from "@/src/services/organisationService";
 import { EyeIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import Pagination from "@/src/components/Pagination";
 
 export default function About() {
   const [organizationData, setOrganizationData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // 🔥 Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // 🔥 Data dokumen
   const documents = [
@@ -61,6 +66,22 @@ export default function About() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  // 🔥 Reset ke halaman 1 saat data berubah
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [organizationData]);
+
+  // 🔥 Pagination logic
+  const totalItems = organizationData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = organizationData.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // 🔥 Format period untuk display
   const formatPeriod = (start, end) => {
@@ -294,7 +315,7 @@ export default function About() {
                   Struktur Organisasi
                 </div>
                 <span className="text-sm text-neutral-dark bg-primary-light px-3 py-1 rounded-full border border-neutral-normal">
-                  {organizationData.length} anggota
+                  {totalItems} anggota
                 </span>
               </div>
 
@@ -323,57 +344,71 @@ export default function About() {
 
               {/* Tabel organisasi */}
               {!loading && !error && (
-                <div className="overflow-x-auto rounded-lg border border-neutral-normal">
-                  <table className="w-full border-collapse bg-white">
-                    <thead>
-                      <tr className="bg-primary-light border-b-2 border-neutral-normal">
-                        <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">#</th>
-                        <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">NAMA</th>
-                        <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">JABATAN</th>
-                        <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">AKTIF</th>
-                        <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">PERIODE</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {organizationData.length === 0 ? (
-                        <tr>
-                          <td colSpan="5" className="px-4 py-8 text-center text-neutral-dark">
-                            Belum ada data organisasi.
-                          </td>
+                <>
+                  <div className="overflow-x-auto rounded-lg border border-neutral-normal">
+                    <table className="w-full border-collapse bg-white">
+                      <thead>
+                        <tr className="bg-primary-light border-b-2 border-neutral-normal">
+                          <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">#</th>
+                          <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">NAMA</th>
+                          <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">JABATAN</th>
+                          <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">AKTIF</th>
+                          <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">PERIODE</th>
                         </tr>
-                      ) : (
-                        organizationData.map((member, index) => (
-                          <tr
-                            key={member.id}
-                            className="border-b border-neutral-light hover:bg-primary-light/50 transition-colors"
-                          >
-                            <td className="px-4 py-3 text-sm font-medium text-neutral-dark">
-                              {index + 1}
-                            </td>
-                            <td className="px-4 py-3 text-sm font-medium text-gray-800">
-                              {member.holder?.name || member.name || "-"}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-neutral-dark">
-                              {member.position || "-"}
-                            </td>
-                            <td className="px-4 py-3 text-sm">
-                              <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
-                                member.is_active 
-                                  ? "bg-green-100 text-green-700" 
-                                  : "bg-red-100 text-red-700"
-                              }`}>
-                                {member.is_active ? "Aktif" : "Nonaktif"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-sm text-neutral-dark">
-                              {formatPeriod(member.period_start, member.period_end)}
+                      </thead>
+                      <tbody>
+                        {paginatedData.length === 0 ? (
+                          <tr>
+                            <td colSpan="5" className="px-4 py-8 text-center text-neutral-dark">
+                              Belum ada data organisasi.
                             </td>
                           </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                        ) : (
+                          paginatedData.map((member, index) => {
+                            const globalIndex = startIndex + index + 1;
+                            return (
+                              <tr
+                                key={member.id}
+                                className="border-b border-neutral-light hover:bg-primary-light/50 transition-colors"
+                              >
+                                <td className="px-4 py-3 text-sm font-medium text-neutral-dark">
+                                  {globalIndex}
+                                </td>
+                                <td className="px-4 py-3 text-sm font-medium text-gray-800">
+                                  {member.holder?.name || member.name || "-"}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-neutral-dark">
+                                  {member.position || "-"}
+                                </td>
+                                <td className="px-4 py-3 text-sm">
+                                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                                    member.is_active 
+                                      ? "bg-green-100 text-green-700" 
+                                      : "bg-red-100 text-red-700"
+                                  }`}>
+                                    {member.is_active ? "Aktif" : "Nonaktif"}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3 text-sm text-neutral-dark">
+                                  {formatPeriod(member.period_start, member.period_end)}
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* 🔥 PAGINATION */}
+                  {totalPages > 1 && (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  )}
+                </>
               )}
             </div>
           </div>

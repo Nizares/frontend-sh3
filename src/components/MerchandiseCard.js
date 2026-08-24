@@ -14,9 +14,14 @@ export default function MerchandiseCard({ id, name, price, image_url, stock, siz
                         className="w-full h-full object-cover"
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-neutral-dark text-4xl font-bold font-young">
-                        {name.slice(0, 2).toUpperCase()}
-                    </div>
+                    // <div className="w-full h-full flex items-center justify-center text-neutral-dark text-4xl font-bold font-young">
+                    //     {name.slice(0, 2).toUpperCase()}
+                    // </div>
+                    <img
+                        src="assets/images/placeholder.png"
+                        alt={name}
+                        className="w-full h-full object-cover"
+                    />
                 )}
                 {stock <= 10 && stock > 0 && (
                     <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1">

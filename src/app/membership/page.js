@@ -25,7 +25,7 @@ export default function MembershipPage() {
     const [paymentProof, setPaymentProof] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
-    // 🔥 Ambil data membership
+    // Ambil data membership
     useEffect(() => {
         if (!isLoggedIn) {
             router.push("/members/detail");
@@ -41,12 +41,16 @@ export default function MembershipPage() {
                     membershipService.getPlans(),
                 ]);
 
+                // ✅ AMAN: pastikan plans adalah array
                 const plansData = plansRes.data?.data || [];
-                setPlans(plansData);
+                setPlans(Array.isArray(plansData) ? plansData : []);
+                console.log(plansRes.data)
+                
                 setStatus(statusRes.data?.data || null);
                 setHistory(historyRes.data?.data || []);
             } catch (err) {
                 console.error("Error fetching membership data:", err);
+                setPlans([]); // ✅ Reset ke array kosong jika error
                 Swal.fire({
                     icon: "error",
                     title: "Gagal Memuat Data",
@@ -60,11 +64,11 @@ export default function MembershipPage() {
         fetchData();
     }, [isLoggedIn, router]);
 
-    // 🔥 Handle subscribe
+    // Handle subscribe
     const handleSubscribe = async (e) => {
         e.preventDefault();
 
-        // 🔥 Validasi
+        // Validasi
         if (!selectedPlan) {
             Swal.fire({ icon: "warning", title: "Pilih paket membership!" });
             return;
@@ -75,7 +79,7 @@ export default function MembershipPage() {
             return;
         }
 
-        // 🔥 Cari plan yang dipilih
+        // Cari plan yang dipilih
         const selectedPlanData = plans.find(p => {
             return p.key === selectedPlan || 
                    p.id === selectedPlan || 
@@ -92,7 +96,7 @@ export default function MembershipPage() {
             return;
         }
 
-        // 🔥 Cek apakah paket berbayar
+        // Cek apakah paket berbayar
         const isPaidPlan = selectedPlanData.price > 0;
 
         if (isPaidPlan && !paymentProof) {
@@ -107,32 +111,38 @@ export default function MembershipPage() {
         setSubmitting(true);
 
         try {
+            // ✅ PERBAIKAN: Gunakan FormData dengan benar
             const formData = new FormData();
             
-            // 🔥 Kirim key dari plan
+            // Kirim key dari plan
             const membershipType = selectedPlanData.key || selectedPlanData.type || String(selectedPlanData.id);
             formData.append("membership_type", membershipType);
             formData.append("payment_method", paymentMethod);
             
-            // 🔥 APPEND FILE DENGAN CARA YANG BENAR
+            // ✅ PERBAIKAN: Append file dengan benar
             if (paymentProof) {
-                // 🔥 Pastikan file adalah File object
+                // Pastikan file adalah File object
                 if (paymentProof instanceof File) {
                     formData.append("payment_proof", paymentProof);
                 } else if (typeof paymentProof === 'string') {
-                    // 🔥 Jika string (misal base64), konversi ke blob
-                    const response = await fetch(paymentProof);
-                    const blob = await response.blob();
-                    const file = new File([blob], "payment-proof.jpg", { type: "image/jpeg" });
-                    formData.append("payment_proof", file);
+                    // Jika string (misal base64 atau URL), konversi ke blob
+                    try {
+                        const response = await fetch(paymentProof);
+                        const blob = await response.blob();
+                        const file = new File([blob], "payment-proof.jpg", { type: blob.type || "image/jpeg" });
+                        formData.append("payment_proof", file);
+                    } catch (err) {
+                        console.warn("Failed to convert payment proof:", err);
+                        // Jika gagal konversi, kirim string biasa
+                        formData.append("payment_proof", paymentProof);
+                    }
+                } else {
+                    // Jika bukan File atau string, log warning
+                    console.warn("⚠️ Unexpected paymentProof type:", typeof paymentProof);
                 }
             }
 
-            // 🔥 DEBUG: Log semua data FormData
-            for (let pair of formData.entries()) {
-                const value = pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1];
-            }
-
+            // ✅ PERBAIKAN: Kirim dengan header yang benar (multipart/form-data)
             const response = await membershipService.subscribe(formData);
             
             Swal.fire({
@@ -172,7 +182,7 @@ export default function MembershipPage() {
         }
     };
 
-    // 🔥 Handle cancel membership
+    // Handle cancel membership
     const handleCancel = async () => {
         const confirm = await Swal.fire({
             title: "Batalkan Membership?",
@@ -208,9 +218,13 @@ export default function MembershipPage() {
         }
     };
 
-    // 🔥 Handle file change
+    // Handle file change
     const handleFileChange = (file) => {
+        console.log("📎 File received:", file);
         if (file && file instanceof File) {
+            setPaymentProof(file);
+        } else if (file && typeof file === 'string') {
+            // Jika ImageUpload mengembalikan string (base64/URL)
             setPaymentProof(file);
         } else {
             console.warn("⚠️ Invalid file:", file);
@@ -221,10 +235,13 @@ export default function MembershipPage() {
     if (loading) {
         return (
             <Container className="flex flex-col w-full">
-                <div className="flex justify-center items-center min-h-screen">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                        <p className="mt-4 text-lg">Memuat data membership...</p>
+                <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light min-h-screen">
+                    <BatikOverlay />
+                    <div className="flex justify-center items-center min-h-screen">
+                        <div className="text-center">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                            <p className="mt-4 text-lg">Memuat data membership...</p>
+                        </div>
                     </div>
                 </div>
             </Container>
@@ -240,7 +257,6 @@ export default function MembershipPage() {
                 <BatikOverlay />
                 <div className="px-4 md:px-0 max-w-306 mx-auto py-8">
                     
-
                     {/* Header */}
                     <RevealSection direction="up">
                         <div className="flex flex-col items-center justify-center mt-16 mb-8">
@@ -301,18 +317,20 @@ export default function MembershipPage() {
                         <div className="max-w-3xl mx-auto bg-primary-light border-2 border-neutral-normal rounded-lg p-6 md:p-8 shadow-lg mb-6">
                             <h2 className="text-2xl font-bold font-young mb-4">Paket Membership</h2>
                             
-                            {plans.length === 0 ? (
+                            {/* ✅ PERBAIKAN: Pastikan plans adalah array sebelum map */}
+                            {!plans || plans.length === 0 ? (
                                 <p className="text-neutral-dark">Belum ada paket membership tersedia.</p>
                             ) : (
                                 <form onSubmit={handleSubscribe} className="flex flex-col gap-4">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         {plans.map((plan, index) => {
-                                            const planKey = plan.key || plan.type || String(plan.id);
+                                            // ✅ PERBAIKAN: Gunakan key yang aman
+                                            const planKey = plan.key || plan.type || String(plan.id || index);
                                             const isSelected = selectedPlan === planKey || selectedPlan === plan.id;
                                             
                                             return (
                                                 <label
-                                                    key={plan.id || index}
+                                                    key={planKey}
                                                     className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
                                                         isSelected
                                                             ? "border-secondary-bg bg-secondary-bg/10 ring-2 ring-secondary-bg"
@@ -332,13 +350,13 @@ export default function MembershipPage() {
                                                             className="mt-1 w-4 h-4 accent-secondary-bg cursor-pointer"
                                                         />
                                                         <div className="flex-1">
-                                                            <h3 className="font-bold text-lg">{plan.name}</h3>
+                                                            <h3 className="font-bold text-lg">{plan.name || "Paket"}</h3>
                                                             <p className="text-sm text-neutral-dark">{plan.description || "-"}</p>
                                                             <p className="text-xl font-bold text-secondary-bg mt-2">
                                                                 Rp {formatRupiah(plan.price || 0)}
                                                             </p>
                                                             <p className="text-xs text-neutral-dark">
-                                                                Durasi: {plan.duration} {plan.duration_unit}
+                                                                Durasi: {plan.duration || 0} {plan.duration_unit || "bulan"}
                                                             </p>
                                                             {plan.discount_percentage > 0 && (
                                                                 <span className="inline-block mt-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
@@ -375,7 +393,7 @@ export default function MembershipPage() {
                                         required
                                     />
 
-                                    {/* 🔥 Upload Bukti */}
+                                    {/* Upload Bukti */}
                                     <ImageUpload
                                         id="payment_proof"
                                         label="Upload Bukti Pembayaran"

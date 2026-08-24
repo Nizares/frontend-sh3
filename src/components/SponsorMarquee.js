@@ -10,13 +10,19 @@ function SponsorCard({ sponsor }) {
                 <img
                     src={sponsor.logo_url}
                     alt={sponsor.name}
-                    className="w-20 h-20 object-contain"
+                    className="w-20 h-20 rounded-full shrink-0"
                     draggable={false}
                 />
             ) : (
-                <div className="flex items-center justify-center bg-neutral-bg text-neutral-dark text-xl font-bold font-young w-20 h-20 rounded-full shrink-0">
-                    {sponsor.name.slice(0, 2).toUpperCase()}
-                </div>
+                <img
+                    src="assets/images/placeholder.png"
+                    alt={sponsor.name}
+                    className="w-20 h-20 rounded-full shrink-0"
+                    draggable={false}
+                />
+                // <div className="flex items-center justify-center bg-neutral-bg text-neutral-dark text-xl font-bold font-young w-20 h-20 rounded-full shrink-0">
+                //     {sponsor.name.slice(0, 2).toUpperCase()}
+                // </div>
             )}
             <div className="text-sm font-semibold text-center text-neutral-dark whitespace-nowrap">
                 {sponsor.name}

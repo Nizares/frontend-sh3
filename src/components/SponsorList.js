@@ -12,12 +12,17 @@ function SponsorCard({ sponsor }) {
                 <img
                     src={sponsor.logo_url}
                     alt={sponsor.name}
-                    className="w-20 h-20 object-contain"
+                    className="w-20 h-20 object-contain rounded-full"
                 />
             ) : (
-                <div className="flex items-center justify-center bg-neutral-bg text-neutral-dark text-xl font-bold font-young w-20 h-20 rounded-full">
-                    {sponsor.name.slice(0, 2).toUpperCase()}
-                </div>
+                // <div className="flex items-center justify-center bg-neutral-bg text-neutral-dark text-xl font-bold font-young w-20 h-20 rounded-full">
+                //     {sponsor.name.slice(0, 2).toUpperCase()}
+                // </div>
+                <img
+                    src="assets/images/placeholder.png"
+                    alt={sponsor.name}
+                    className="w-20 h-20 rounded-full"
+                />
             )}
             <div className="text-sm font-semibold text-center">{sponsor.name}</div>
             {sponsor.tier && (

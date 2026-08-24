@@ -1,3 +1,4 @@
+// src/app/gallery/page.js
 "use client"
 
 import { useState, useEffect } from "react";
@@ -7,91 +8,19 @@ import { galleryService } from "@/src/services/galleryService";
 import BatikOverlay from "@/src/components/BatikOverlay";
 import Link from "next/link";
 
-// 🔥 Komponen Card
-function GalleryCard({ image }) {
-    let link = null;
-    if (image.event_id) {
-        if (image.status === "ongoing" || image.status === "upcoming") {
-            link = `/events/upcoming?id=${image.event_id}`;
-        } else {
-            link = `/events/finished?id=${image.event_id}`;
-        }
-    }
+import AlbumCard from "@/src/components/AlbumCard";
 
-    return (
-        <Link
-            href={link || "#"}
-            className={`block group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 ${
-                !link ? "cursor-default" : "cursor-pointer"
-            }`}
-            onClick={(e) => {
-                if (!link) {
-                    e.preventDefault();
-                }
-            }}
-        >
-            <div className="relative w-full overflow-hidden bg-gray-100">
-                <img
-                    src={image.url}
-                    alt={image.title}
-                    className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
-                    onError={(e) => {
-                        e.target.src = "/images/placeholder-image.jpg";
-                    }}
-                />
-                
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                    <h3 className="text-white font-bold text-sm md:text-base">
-                        {image.title}
-                    </h3>
-                    {image.subtitle && (
-                        <p className="text-white/80 text-xs md:text-sm">
-                            {image.subtitle}
-                        </p>
-                    )}
-                    {link && (
-                        <span className="text-white/60 text-xs mt-1 flex items-center gap-1">
-                            Lihat Event →
-                        </span>
-                    )}
-                </div>
-            </div>
-            
-            {image.status && (
-                <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-[10px] font-bold text-white ${
-                    image.status === "ongoing" ? "bg-green-500" :
-                    image.status === "upcoming" ? "bg-blue-500" :
-                    image.status === "publish" ? "bg-blue-500" :
-                    image.status === "completed" ? "bg-purple-500" :
-                    image.status === "cancelled" ? "bg-red-500" :
-                    "bg-gray-500"
-                }`}>
-                    {image.status === "ongoing" ? "Berlangsung" :
-                     image.status === "upcoming" || image.status === "publish" ? "Akan Datang" :
-                     image.status === "completed" ? "✅ Selesai" :
-                     image.status === "cancelled" ? "❌ Dibatalkan" :
-                     image.status}
-                </div>
-            )}
-            
-            {image.is_featured && (
-                <div className="absolute top-2 left-2 px-2 py-1 rounded-full text-[10px] font-bold bg-yellow-400 text-black">
-                    ⭐ Featured
-                </div>
-            )}
-        </Link>
-    );
-}
 
 export default function Gallery() {
     const [allImages, setAllImages] = useState([]);
     const [filteredImages, setFilteredImages] = useState([]);
+    const [albums, setAlbums] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadingAlbums, setLoadingAlbums] = useState(true);
     const [error, setError] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState("all");
     const [availableStatuses, setAvailableStatuses] = useState([]);
 
-    // 🔥 Status options
     const statusOptions = [
         { value: "publish", label: "Akan Datang" },
         { value: "ongoing", label: "Berlangsung" },
@@ -99,6 +28,7 @@ export default function Gallery() {
         { value: "cancelled", label: "Dibatalkan" },
     ];
 
+    // 🔥 Fetch Galleries
     useEffect(() => {
         galleryService
             .getAll()
@@ -110,8 +40,6 @@ export default function Gallery() {
                     .map((gallery) => {
                         const status = gallery.event?.status || "";
                         const event = gallery.event || {};
-                        
-                        // 🔥 Ambil tanggal event (start_date atau created_at)
                         const eventDate = event.start_date || event.created_at || gallery.created_at || "";
                         
                         return {
@@ -123,33 +51,28 @@ export default function Gallery() {
                             is_featured: gallery.is_featured || false,
                             event_id: event.id || null,
                             event_title: event.title || "",
-                            // 🔥 Untuk sorting
                             event_date: eventDate,
                         };
                     })
                     .filter((img) => img.url && img.url !== "");
                 
-                // 🔥 SORTING: Featured first, then by latest event date
+                // 🔥 Sorting: featured first, then latest event date
                 const sortedImages = mappedImages.sort((a, b) => {
-                    // 1. Featured diutamakan
                     if (a.is_featured && !b.is_featured) return -1;
                     if (!a.is_featured && b.is_featured) return 1;
                     
-                    // 2. Urutkan berdasarkan tanggal event terbaru
                     const dateA = new Date(a.event_date);
                     const dateB = new Date(b.event_date);
                     
-                    // Jika salah satu tidak punya tanggal, taruh di akhir
                     if (!a.event_date) return 1;
                     if (!b.event_date) return -1;
                     
-                    return dateB - dateA; // Descending (terbaru dulu)
+                    return dateB - dateA;
                 });
                 
                 setAllImages(sortedImages);
                 setFilteredImages(sortedImages);
                 
-                // 🔥 Generate list status yang tersedia
                 const statuses = [...new Set(sortedImages.map(img => img.status).filter(s => s !== ""))];
                 setAvailableStatuses(statuses);
                 
@@ -162,6 +85,21 @@ export default function Gallery() {
                 setFilteredImages([]);
             })
             .finally(() => setLoading(false));
+    }, []);
+
+    // 🔥 Fetch Albums (Baru!)
+    useEffect(() => {
+        galleryService
+            .getAlbums()
+            .then((res) => {
+                const albumData = res.data?.data || [];
+                setAlbums(albumData);
+            })
+            .catch((err) => {
+                console.error("Error fetching albums:", err);
+                // Tidak set error global, hanya log
+            })
+            .finally(() => setLoadingAlbums(false));
     }, []);
 
     // 🔥 Filter berdasarkan status
@@ -178,7 +116,6 @@ export default function Gallery() {
         setSelectedStatus(e.target.value);
     };
 
-    // 🔥 Helper untuk mendapatkan label status
     const getStatusLabel = (status) => {
         const found = statusOptions.find(s => s.value === status);
         return found ? found.label : status;
@@ -209,9 +146,34 @@ export default function Gallery() {
                         Cerita Kami saat Berlari!
                     </h1>
 
+                    {/* 🔥 SECTION ALBUM (Baru!) */}
+                    {!loadingAlbums && albums.length > 0 && (
+                        <div className="mb-12">
+                            <div className="flex items-center justify-between mb-4 px-4">
+                                <h2 className="text-2xl font-bold">📁 Album Galeri</h2>
+                                <Link 
+                                    href="/gallery/albums" 
+                                    className="text-blue-600 hover:underline text-sm"
+                                >
+                                    Lihat Semua →
+                                </Link>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                {albums.slice(0, 4).map((album) => (
+                                    <AlbumCard key={album.id} album={album} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 🔥 SECTION FEATURED PHOTOS */}
+                    <div className="px-4">
+                        <h2 className="text-2xl font-bold mb-4">📸 Foto Pilihan</h2>
+                    </div>
+
                     {/* 🔥 FILTER STATUS */}
                     {availableStatuses.length > 0 && (
-                        <div className="flex flex-wrap justify-center items-center gap-4 mb-6">
+                        <div className="flex flex-wrap justify-center items-center gap-4 mb-6 px-4">
                             <label className="font-medium text-lg">Filter Status:</label>
                             <select
                                 value={selectedStatus}

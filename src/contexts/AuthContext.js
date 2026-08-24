@@ -1,7 +1,9 @@
 "use client";
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authService } from '@/src/services/authService';
 import { profileService } from '@/src/services/profileService';
+import { guestSponsorService } from '@/src/services/guestSponsorService';
 import api from '@/src/services/api';
 
 const AuthContext = createContext();
@@ -19,12 +21,12 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // 🔥 LOGIN DENGAN USERNAME
+    // 🔥 LOGIN UNTUK MEMBER (username + password)
     const login = async (username, password) => {
         setLoading(true);
         try {
             const response = await api.post('/auth/login', { 
-                username,  // ← username, bukan email
+                username, 
                 password 
             });
             
@@ -34,13 +36,14 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', token);
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             
-            // Ambil profile lengkap
+            // Ambil profile lengkap (untuk member)
             const profileRes = await profileService.getProfile();
             const profile = profileRes.data.data;
             const participant = profile.participant ?? {};
             
             const fullUser = {
                 ...profile.user,
+                role: profile.user?.role || 'participant',
                 participant_id: participant.id,
                 phone: participant.phone,
                 gender: participant.gender,
@@ -72,16 +75,95 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // 🔥 LOGIN UNTUK GUEST SPONSOR (username + password)
+    const loginGuestSponsor = async (username, password) => {
+        setLoading(true);
+        try {
+            const response = await guestSponsorService.login(username, password);
+            const { token, user: userData } = response.data.data || response.data;
+            
+            // Simpan token
+            localStorage.setItem('token', token);
+            localStorage.setItem('role', 'guest_sponsor');
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            
+            // 🔥 Guest sponsor tidak punya participant, langsung pakai data dari response
+            const fullUser = {
+                ...userData,
+                role: 'guest_sponsor',
+                // Guest sponsor tidak punya field membership
+                membership_type: null,
+                membership_start_date: null,
+                membership_end_date: null,
+                is_active: userData.is_active ?? true,
+            };
+            
+            setUser(fullUser);
+            localStorage.setItem('user', JSON.stringify(fullUser));
+            
+            return fullUser;
+            
+        } catch (error) {
+            console.error('Guest Sponsor Login error:', error.response?.data);
+            const message = error.response?.data?.message || 'Username atau password salah.';
+            throw new Error(message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 🔥 CEK TOKEN SAAT MOUNT
     useEffect(() => {
         const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        
         if (token) {
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            
+            // 🔥 Jika guest sponsor, langsung ambil dari localStorage
+            if (role === 'guest_sponsor') {
+                const storedUser = localStorage.getItem('user');
+                if (storedUser) {
+                    try {
+                        const parsedUser = JSON.parse(storedUser);
+                        setUser(parsedUser);
+                        setLoading(false);
+                        return;
+                    } catch (err) {
+                        console.error('Error parsing guest sponsor user:', err);
+                    }
+                }
+                
+                // Jika tidak ada user di localStorage, fetch dari API
+                guestSponsorService.getProfile()
+                    .then(res => {
+                        const userData = res.data.data;
+                        const fullUser = {
+                            ...userData,
+                            role: 'guest_sponsor',
+                        };
+                        setUser(fullUser);
+                        localStorage.setItem('user', JSON.stringify(fullUser));
+                    })
+                    .catch(() => {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        localStorage.removeItem('role');
+                        delete api.defaults.headers.common['Authorization'];
+                        setUser(null);
+                    })
+                    .finally(() => setLoading(false));
+                return;
+            }
+            
+            // 🔥 Member: fetch profile via profileService
             profileService.getProfile()
                 .then(res => {
                     const profile = res.data.data;
                     const participant = profile.participant ?? {};
                     const fullUser = {
                         ...profile.user,
+                        role: profile.user?.role || 'participant',
                         participant_id: participant.id,
                         phone: participant.phone,
                         gender: participant.gender,
@@ -104,6 +186,7 @@ export const AuthProvider = ({ children }) => {
                 .catch(() => {
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
+                    localStorage.removeItem('role');
                     delete api.defaults.headers.common['Authorization'];
                     setUser(null);
                 })
@@ -113,10 +196,13 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
+    // 🔥 LOGOUT
     const logout = () => {
         authService.logout().catch(() => {});
+        guestSponsorService.logout?.().catch(() => {});
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('role');
         delete api.defaults.headers.common['Authorization'];
         setUser(null);
     };
@@ -125,7 +211,8 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider value={{
             user,
             loading,
-            login,           // ← tambahkan login ke context
+            login,
+            loginGuestSponsor,  // ✅ Tambahkan untuk guest sponsor
             logout,
             setAuthUser,
             isLoggedIn: !!user,

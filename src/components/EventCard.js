@@ -24,12 +24,18 @@ export default function EventCard({
           alt={title}
           width={250}
           height={250}
+          unoptimized={true}
           className="w-full h-full object-cover rounded-t-md aspect-2/1"
         />
       ) : (
-        <div className="w-full h-full object-cover flex items-center justify-center bg-neutral-bg text-neutral-dark text-5xl font-bold font-young rounded-t-md aspect-square">
-          {title.slice(0, 2).toUpperCase()}
-        </div>
+        <Image
+          src="assets/images/placeholder.png"
+          alt={title}
+          width={250}
+          height={250}
+          unoptimized={true}
+          className="w-full h-full object-cover rounded-t-md aspect-2/1"
+        />
       )}
       <div className="flex flex-col gap-4 p-8 justify-between h-full w-full">
         <div className="text-lg">{concateDate(start_date, end_date, isOngoing)}</div>

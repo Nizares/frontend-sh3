@@ -241,7 +241,7 @@ export default function Home() {
                       start_date={item.start_date}
                       end_date={item.end_date}
                       category={item.category?.name}
-                      img={item.image_url}
+                      img={item.banner_url}
                       status={item.status}
                     />
                   </RevealSection>
@@ -345,7 +345,7 @@ export default function Home() {
                       category={item.category?.name}
                       description={item.description}
                       location={item.location}
-                      img={item.image_url}
+                      img={item.banner_url}
                       status={item.status}
                     />
                   </RevealSection>

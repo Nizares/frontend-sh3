@@ -177,16 +177,6 @@ export default function Navbar() {
     return status === "none" ? "Bukan Member" : "Member";
   };
 
-  console.log("🔍 Navbar Debug:", {
-    isMounted,
-    isLoggedIn,
-    userData,
-    localUser,
-    user,
-    isGuestSponsor,
-    isUserLoggedIn
-});
-
   // ================ RENDER ================
   return (
     <nav className={`px-8 py-4 shadow-sm fixed top-0 left-0 w-full z-50 transition-all ${getNavBg()}`}>

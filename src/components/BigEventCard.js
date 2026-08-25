@@ -21,6 +21,7 @@ export default function BigEventCard({
         alt="image"
         width={250}
         height={250}
+        unoptimized={true}
         className="w-full object-cover md:rounded-l-md h-full overflow-hidden"
       />
       <div className="flex flex-col gap-4 justify-between h-full p-8">  

@@ -4,8 +4,6 @@ import api from "./api";
 export const guestSponsorService = {
     /**
      * POST /guest-sponsor/auth/login - Login guest sponsor
-     * @param {string} username - Username guest sponsor (format: gs_{slug})
-     * @param {string} password - Password guest sponsor
      */
     login: (username, password) => {
         return api.post("/guest-sponsor/auth/login", { username, password });
@@ -19,8 +17,21 @@ export const guestSponsorService = {
     },
 
     /**
+     * GET /guest-sponsor/events - Event yang disponsori (khusus guest sponsor)
+     */
+    getMyEvents: () => {
+        return api.get("/guest-sponsor/events");
+    },
+
+    /**
+     * GET /guest-sponsor/events/{id} - Detail event guest sponsor
+     */
+    getEventDetail: (id) => {
+        return api.get(`/guest-sponsor/events/${id}`);
+    },
+
+    /**
      * POST /guest-sponsor/attendance/check-in - Check-in guest sponsor
-     * @param {Object} data - { event_id, qr_code, latitude?, longitude? }
      */
     checkIn: (data) => {
         return api.post("/guest-sponsor/attendance/check-in", data);
@@ -28,7 +39,6 @@ export const guestSponsorService = {
 
     /**
      * POST /guest-sponsor/attendance/check-out - Check-out guest sponsor
-     * @param {Object} data - { event_id, qr_code, latitude?, longitude? }
      */
     checkOut: (data) => {
         return api.post("/guest-sponsor/attendance/check-out", data);
@@ -36,16 +46,22 @@ export const guestSponsorService = {
 
     /**
      * POST /guest-sponsor/attendance/scan - Scan QR guest sponsor
-     * @param {Object} data - { qr_code, event_id }
      */
     scan: (data) => {
         return api.post("/guest-sponsor/attendance/scan", data);
     },
 
     /**
-     * GET /guest-sponsor/attendance/my - Riwayat attendance guest sponsor
+     * GET /guest-sponsor/attendance/my - Riwayat attendance
      */
     getMyAttendance: () => {
         return api.get("/guest-sponsor/attendance/my");
+    },
+
+    /**
+     * POST /guest-sponsor/auth/logout - Logout guest sponsor
+     */
+    logout: () => {
+        return api.post("/guest-sponsor/auth/logout").catch(() => {});
     },
 };

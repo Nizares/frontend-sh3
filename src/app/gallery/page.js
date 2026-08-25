@@ -150,7 +150,7 @@ export default function Gallery() {
                     {!loadingAlbums && albums.length > 0 && (
                         <div className="mb-12">
                             <div className="flex items-center justify-between mb-4 px-4">
-                                <h2 className="text-2xl font-bold">📁 Album Galeri</h2>
+                                <h2 className="text-2xl font-bold">Album Galeri</h2>
                                 <Link 
                                     href="/gallery/albums" 
                                     className="text-blue-600 hover:underline text-sm"
@@ -168,7 +168,7 @@ export default function Gallery() {
 
                     {/* 🔥 SECTION FEATURED PHOTOS */}
                     <div className="px-4">
-                        <h2 className="text-2xl font-bold mb-4">📸 Foto Pilihan</h2>
+                        <h2 className="text-2xl font-bold mb-4">Foto Pilihan</h2>
                     </div>
 
                     {/* 🔥 FILTER STATUS */}

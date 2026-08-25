@@ -6,7 +6,7 @@ import Container from "@/src/components/Container";
 import Link from "next/link";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon, CalendarDaysIcon, UserGroupIcon, TagIcon } from "@heroicons/react/24/solid";
-import { concateDate, formatRupiah } from "@/src/lib/utils";
+import { formatRupiah } from "@/src/lib/utils";
 import { eventService } from "@/src/services/eventService";
 import { galleryService } from "@/src/services/galleryService";
 import { RevealSection } from "@/src/components/RevealSection";
@@ -67,6 +67,45 @@ export default function PastEvents() {
         setGalleryPage(page);
     };
 
+    // Cek apakah address adalah link/iframe
+    const isAddressLink = (address) => {
+        if (!address) return false;
+        return address.startsWith('http') ||
+            address.includes('google.com/maps') ||
+            address.includes('iframe') ||
+            address.includes('embed');
+    };
+
+    // 🔥 Extract embed URL dari address - LEBIH ROBUST
+    const extractEmbedUrl = (address) => {
+        if (!address) return null;
+
+        // Jika address adalah URL langsung
+        if (address.startsWith('http')) {
+            return address;
+        }
+
+        // Pattern 1: src="URL"
+        let match = address.match(/src=["']([^"']+)["']/);
+        if (match) {
+            return match[1];
+        }
+
+        // Pattern 2: src=URL (tanpa quotes)
+        match = address.match(/src=([^\s"']+)/);
+        if (match) {
+            return match[1];
+        }
+
+        // Pattern 3: Ambil URL dari dalam teks (fallback)
+        match = address.match(/(https?:\/\/[^\s"']+)/);
+        if (match) {
+            return match[1];
+        }
+
+        return null;
+    };
+
     if (loading) {
         return (
             <Container className="flex flex-col w-full">
@@ -102,6 +141,14 @@ export default function PastEvents() {
     const bannerImage = event.banner_url || event.image_url || "/assets/images/placeholder-event.jpg";
     const detailImage = event.image_url || event.banner_url || "/assets/images/placeholder-event.jpg";
     const hasDetailImage = detailImage && detailImage !== "/assets/images/placeholder-event.jpg";
+
+    const addressIsLink = isAddressLink(event.address);
+    const embedUrl = extractEmbedUrl(event.address);
+
+    // 🔥 Debug - cek di console browser
+    console.log("🔍 address:", event.address);
+    console.log("🔍 addressIsLink:", addressIsLink);
+    console.log("🔍 embedUrl:", embedUrl);
 
     // Format tanggal
     const formatEventDate = () => {
@@ -166,13 +213,42 @@ export default function PastEvents() {
                                 <MapPinIcon className="w-6 h-6 text-secondary-bg flex-shrink-0 mt-0.5" />
                                 <div className="flex flex-col flex-1">
                                     <span className="text-sm font-semibold">{event.location || "Lokasi"}</span>
-                                    {event.address && (
+                                    {event.address && !addressIsLink && (
                                         <span className="text-xs text-neutral-dark line-clamp-2">
                                             {event.address}
                                         </span>
                                     )}
                                 </div>
                             </div>
+
+                            {/* 🔥 Iframe Maps */}
+                            {addressIsLink && embedUrl && (
+                                <div className="mt-3 rounded-lg overflow-hidden border border-neutral-normal/50 w-full">
+                                    <iframe
+                                        src={embedUrl}
+                                        width="100%"
+                                        height="256"
+                                        style={{ border: 0 }}
+                                        allowFullScreen
+                                        loading="lazy"
+                                        referrerPolicy="no-referrer-when-downgrade"
+                                        title="Google Maps"
+                                        className="w-full"
+                                    />
+                                </div>
+                            )}
+
+                            {/* 🔥 Fallback: jika address link tapi embedUrl null, tampilkan tombol */}
+                            {addressIsLink && !embedUrl && (
+                                <a
+                                    href={event.address}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-3 inline-flex items-center text-blue-600 hover:underline text-sm"
+                                >
+                                    Buka Lokasi di Google Maps →
+                                </a>
+                            )}
                         </div>
 
                         {/* Date & Time */}
@@ -260,11 +336,11 @@ export default function PastEvents() {
                         </RevealSection>
                     )}
 
-                    {/* 🔥 Google Drive Album Link */}
+                    {/* Google Drive Album Link */}
                     {albums.length > 0 && (
                         <RevealSection direction="up" delay="100">
                             <div className="my-6 bg-white rounded-lg shadow-md p-6">
-                                <h2 className="text-2xl font-bold font-young mb-4">📁 Album Lengkap</h2>
+                                <h2 className="text-2xl font-bold font-young mb-4">Album Lengkap</h2>
                                 <div className="flex flex-wrap gap-4">
                                     {albums.map((album) => (
                                         <div key={album.id} className="flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-2">

@@ -3,40 +3,47 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/src/contexts/AuthContext";
 import Container from "@/src/components/Container";
 import BatikOverlay from "@/src/components/BatikOverlay";
 import { guestSponsorService } from "@/src/services/guestSponsorService";
+import QRCode from "qrcode";
 
 export default function GuestSponsorDashboard() {
     const router = useRouter();
-    const [user, setUser] = useState(null);
+    const { user, isLoggedIn, logout } = useAuth();
     const [attendance, setAttendance] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [qrImage, setQrImage] = useState(null);
 
     useEffect(() => {
-        // Cek token
-        const token = localStorage.getItem("token");
-        const role = localStorage.getItem("role");
-        
-        if (!token || role !== "guest_sponsor") {
+        if (!isLoggedIn || user?.role !== "guest_sponsor") {
             router.push("/guest-sponsor/login");
             return;
         }
 
         const fetchData = async () => {
             try {
-                const [profileRes, attendanceRes] = await Promise.all([
-                    guestSponsorService.getProfile(),
-                    guestSponsorService.getMyAttendance(),
-                ]);
-                setUser(profileRes.data?.data);
-                setAttendance(attendanceRes.data?.data || []);
+                // Fetch attendance
+                const response = await guestSponsorService.getMyAttendance();
+                setAttendance(response.data?.data || []);
+
+                // Generate QR Code dari user data
+                if (user?.qr_code) {
+                    const qr = await QRCode.toDataURL(user.qr_code, {
+                        width: 300,
+                        margin: 2,
+                        color: {
+                            dark: '#000000',
+                            light: '#ffffff',
+                        }
+                    });
+                    setQrImage(qr);
+                }
             } catch (err) {
                 console.error("Error fetching data:", err);
                 if (err.response?.status === 401) {
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("user");
-                    localStorage.removeItem("role");
+                    logout();
                     router.push("/guest-sponsor/login");
                 }
             } finally {
@@ -45,13 +52,21 @@ export default function GuestSponsorDashboard() {
         };
 
         fetchData();
-    }, [router]);
+    }, [isLoggedIn, user, router, logout]);
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("role");
+        logout();
         router.push("/guest-sponsor/login");
+    };
+
+    console.log(user)
+
+    const handleDownloadQR = () => {
+        if (!qrImage) return;
+        const link = document.createElement("a");
+        link.href = qrImage;
+        link.download = `qr-${user?.username || 'guest'}.png`;
+        link.click();
     };
 
     if (loading) {
@@ -85,11 +100,45 @@ export default function GuestSponsorDashboard() {
                         </button>
                     </div>
 
+                    {/* 🔥 QR CODE - Download & ID */}
+                    {qrImage && (
+                        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h2 className="text-xl font-bold mb-2">QR Code Saya</h2>
+                            <p className="text-sm text-gray-500 mb-4">
+                                Download QR Code ini untuk check-in di event
+                            </p>
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="bg-white p-4 rounded-lg border border-gray-200">
+                                    <img
+                                        src={qrImage}
+                                        alt="QR Code Guest Sponsor"
+                                        className="w-48 h-48"
+                                    />
+                                </div>
+                                
+                                {/* 🔥 ID Guest Sponsor */}
+                                <div className="bg-gray-50 px-6 py-3 rounded-lg border border-gray-200 text-center">
+                                    <p className="text-xs text-gray-500">ID Guest Sponsor</p>
+                                    <p className="text-lg font-mono font-bold text-gray-800">
+                                        {user?.qr_code || user?.username || "-"}
+                                    </p>
+                                </div>
+
+                                <button
+                                    onClick={handleDownloadQR}
+                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                                >
+                                    Download QR
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Profile */}
                     {user && (
                         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                             <h2 className="text-xl font-bold mb-4">Profil</h2>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <p className="text-sm text-gray-500">Nama</p>
                                     <p className="font-medium">{user.name}</p>
@@ -100,11 +149,11 @@ export default function GuestSponsorDashboard() {
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-500">Sponsor</p>
-                                    <p className="font-medium">{user.sponsor?.name || "-"}</p>
+                                    <p className="font-medium">{user.sponsor_name || "-"}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-500">Event</p>
-                                    <p className="font-medium">{user.event?.title || "-"}</p>
+                                    <p className="font-medium">{user.event_title || "-"}</p>
                                 </div>
                             </div>
                         </div>

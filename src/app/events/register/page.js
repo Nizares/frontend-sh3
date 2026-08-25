@@ -169,7 +169,6 @@ export default function RegisterEvent() {
             if (timeoutId) clearTimeout(timeoutId);
         };
     }, [orderStatus, event]);
-
     // ========== SUBMIT REGISTER ==========
     async function submitPembayaran(e) {
         e.preventDefault();
@@ -441,10 +440,11 @@ export default function RegisterEvent() {
 
                     <RevealSection direction="up">
                         <Image
-                            src={event.image_url}
+                            src={event.banner_url}
                             alt={event.title}
                             width={600}
                             height={450}
+                            unoptimized={true}
                             className="h-128 w-full flex object-cover rounded-lg"
                         />
                     </RevealSection>

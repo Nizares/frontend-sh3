@@ -68,7 +68,7 @@ export default function AlbumDetail({ params }) {
         <Container className="flex flex-col w-full">
             <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light min-h-screen">
                 <BatikOverlay />
-                <div className="max-w-306 mx-auto px-4 md:px-0 py-8">
+                <div className="max-w-306 mx-auto px-4 md:px-0 py-8 mt-16">
                     {/* Back button */}
                     <Link 
                         href="/gallery" 

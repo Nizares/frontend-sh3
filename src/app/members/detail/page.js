@@ -10,6 +10,7 @@ import { RevealSection } from "@/src/components/RevealSection";
 import { useState, useEffect } from "react";
 import { profileService } from "@/src/services/profileService";
 import { eventService } from "@/src/services/eventService";
+import { pointService } from "@/src/services/pointService";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import { dateConverted } from "@/src/lib/utils";
@@ -62,13 +63,17 @@ export default function DetailMember() {
   const [avatar, setAvatar] = useState(null);
   const [isMember, setIsMember] = useState(false);
   const [myEvents, setMyEvents] = useState([]);
-  
+
   // 🔥 State untuk QR Code Member
   const [memberQRCode, setMemberQRCode] = useState(null);
   const [qrLoading, setQrLoading] = useState(false);
 
-  // 🔥 State untuk Poin (placeholder)
-  const [points, setPoints] = useState(0);
+  // 🔥 State untuk Poin
+  const [pointBalance, setPointBalance] = useState(0);
+  const [ledgerBalance, setLedgerBalance] = useState(0);
+  const [pointHistory, setPointHistory] = useState([]);
+  const [pointLoading, setPointLoading] = useState(false);
+  const [showPointHistory, setShowPointHistory] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -92,14 +97,14 @@ export default function DetailMember() {
   useEffect(() => {
     const generateMemberQR = async () => {
       if (!userData) return;
-      
+
       const hashId = userData.hash_id || userData.id || "";
       const name = userData.name || "";
-      
+
       if (!hashId || !name) return;
-      
+
       const qrContent = `${hashId}|${name}`;
-      
+
       setQrLoading(true);
       try {
         const qrDataUrl = await QRCode.toDataURL(qrContent, {
@@ -124,12 +129,36 @@ export default function DetailMember() {
   // 🔥 Download QR Member
   const handleDownloadMemberQR = () => {
     if (!memberQRCode) return;
-    
+
     const hashId = userData?.hash_id || userData?.id || "member";
     const link = document.createElement("a");
     link.href = memberQRCode;
     link.download = `qr-${hashId}.png`;
     link.click();
+  };
+
+  // 🔥 Fetch Point Data
+  const fetchPointData = async () => {
+    if (!isLoggedIn || !user) return;
+
+    setPointLoading(true);
+    try {
+      const [balanceRes, historyRes] = await Promise.all([
+        pointService.getBalance(),
+        pointService.getHistory({ per_page: 10 }),
+      ]);
+
+      const balanceData = balanceRes.data?.data || {};
+      setPointBalance(balanceData.balance || 0);
+      setLedgerBalance(balanceData.ledger_balance || 0);
+
+      const historyData = historyRes.data?.data || [];
+      setPointHistory(historyData);
+    } catch (err) {
+      console.error("Error fetching points:", err);
+    } finally {
+      setPointLoading(false);
+    }
   };
 
   // 🔥 AUTO UPDATE DATA DARI AUTHCONTEXT
@@ -208,6 +237,9 @@ export default function DetailMember() {
 
         const status = fullUser?.membership_type || "";
         setIsMember(status !== "none");
+
+        // 🔥 Fetch poin setelah data user siap
+        await fetchPointData();
       } catch (err) {
         console.error("❌ [Profile] Error fetching profile:", err);
       }
@@ -299,6 +331,9 @@ export default function DetailMember() {
         }),
       );
 
+      // 🔥 Refresh poin setelah update
+      await fetchPointData();
+
       Swal.fire({
         icon: "success",
         title: "Profil Berhasil Diupdate!",
@@ -353,6 +388,9 @@ export default function DetailMember() {
         identity_number: "",
       });
       setMyEvents([]);
+      setPointBalance(0);
+      setLedgerBalance(0);
+      setPointHistory([]);
 
       Swal.fire({
         icon: "success",
@@ -370,6 +408,27 @@ export default function DetailMember() {
   const name = userData?.name || user?.name || "";
   const username = userData?.username || user?.username || "";
   const hashId = userData?.hash_id || "";
+
+  // 🔥 Helper untuk label tipe transaksi poin
+  const getPointTypeLabel = (type) => {
+    const labels = {
+      EARN: "🎯 Poin Diberikan",
+      REDEEM: "🛒 Penukaran Poin",
+      REVERSAL: "↩️ Pengembalian Poin",
+      ADJUSTMENT: "⚙️ Penyesuaian Admin",
+    };
+    return labels[type] || type;
+  };
+
+  const getPointTypeColor = (type) => {
+    const colors = {
+      EARN: "text-green-600 bg-green-50",
+      REDEEM: "text-red-600 bg-red-50",
+      REVERSAL: "text-blue-600 bg-blue-50",
+      ADJUSTMENT: "text-yellow-600 bg-yellow-50",
+    };
+    return colors[type] || "text-gray-600 bg-gray-50";
+  };
 
   return (
     <Container className="flex flex-col w-full">
@@ -549,37 +608,107 @@ export default function DetailMember() {
             </RevealSection>
           )}
 
-          {/* ====== 🔥 SECTION POIN (Placeholder) ====== */}
+          {/* ====== 🔥 SECTION POIN ====== */}
           {isMounted && isUserLoggedIn && (
             <RevealSection direction="up">
               <div className="bg-primary-light border-2 border-neutral-normal rounded-lg p-6 my-4 shadow-sm">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-primary-bg rounded-full flex items-center justify-center">
+                    <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center">
                       <StarIcon className="w-7 h-7 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-secondary-bg">Poin SH3</h3>
-                      <p className="text-sm text-neutral-text">Kumpulkan poin dari setiap event yang diikuti!</p>
+                      <h3 className="text-lg font-bold text-neutral-dark">Poin SH3</h3>
+                      <p className="text-sm text-neutral-text">
+                        {pointLoading ? "Memuat..." : `${pointBalance} Poin`}
+                      </p>
                     </div>
                   </div>
-                  <div className="flex flex-col items-center md:items-end">
-                    <div className="text-4xl font-bold font-young text-primary-bg tracking-wider">
-                      {String(points).padStart(3, '0')}
+                  <div className="flex items-center gap-6">
+                    <div className="flex flex-col items-center">
+                      <div className="text-4xl font-bold font-young text-amber-600 tracking-wider">
+                        {pointLoading ? "..." : String(pointBalance).padStart(3, '0')}
+                      </div>
+                      <div className="text-xs text-neutral-dark font-medium">Saldo Poin</div>
                     </div>
-                    <div className="text-xs text-primary-dark font-medium">Total Poin</div>
+                    {ledgerBalance !== pointBalance && (
+                      <div className="flex flex-col items-center">
+                        <div className="text-sm font-mono text-yellow-600">
+                          {ledgerBalance}
+                        </div>
+                        <div className="text-xs text-yellow-500 font-medium">Ledger</div>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => setShowPointHistory(!showPointHistory)}
+                      className="text-sm text-blue-600 hover:underline font-medium"
+                    >
+                      {showPointHistory ? "Sembunyikan" : "Lihat Riwayat"}
+                    </button>
                   </div>
                 </div>
-                {/* Progress bar placeholder */}
+
+                {/* Progress bar poin (target 100 poin) */}
                 <div className="mt-4 w-full bg-amber-200 rounded-full h-2">
                   <div 
                     className="bg-amber-500 h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min(points / 100 * 100, 100)}%` }}
+                    style={{ width: `${Math.min((pointBalance / 100) * 100, 100)}%` }}
                   />
                 </div>
-                <p className="text-xs text-neutral-normal-active mt-2 text-center">
-                  *Sistem poin sedang dalam pengembangan
-                </p>
+                <div className="flex justify-between text-xs text-neutral-dark mt-1">
+                  <span>0</span>
+                  <span>Target 100 poin</span>
+                </div>
+
+                {/* 🔥 Riwayat Poin */}
+                {showPointHistory && (
+                  <div className="mt-4 pt-4 border-t border-neutral-normal">
+                    <h4 className="font-bold text-sm mb-3">Riwayat Transaksi Poin</h4>
+                    {pointLoading ? (
+                      <p className="text-sm text-neutral-dark">Memuat riwayat...</p>
+                    ) : pointHistory.length === 0 ? (
+                      <p className="text-sm text-neutral-dark">Belum ada riwayat poin.</p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="text-left text-neutral-dark border-b border-neutral-normal">
+                              <th className="px-3 py-2 font-semibold">Tipe</th>
+                              <th className="px-3 py-2 font-semibold text-right">Jumlah</th>
+                              <th className="px-3 py-2 font-semibold text-right hidden md:table-cell">Sumber</th>
+                              <th className="px-3 py-2 font-semibold text-right hidden md:table-cell">Tanggal</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {pointHistory.map((tx) => (
+                              <tr key={tx.id} className="border-b border-neutral-normal/50 hover:bg-primary-light/30">
+                                <td className="px-3 py-2">
+                                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getPointTypeColor(tx.type)}`}>
+                                    {getPointTypeLabel(tx.type)}
+                                  </span>
+                                </td>
+                                <td className={`px-3 py-2 text-right font-bold ${tx.amount > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                                  {tx.amount > 0 ? '+' : ''}{tx.amount}
+                                </td>
+                                <td className="px-3 py-2 text-right text-neutral-dark hidden md:table-cell">
+                                  {tx.source_type || '-'}
+                                </td>
+                                <td className="px-3 py-2 text-right text-neutral-dark hidden md:table-cell">
+                                  {tx.created_at ? new Date(tx.created_at).toLocaleDateString('id-ID') : '-'}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        {pointHistory.length >= 10 && (
+                          <p className="text-xs text-neutral-dark text-center mt-2">
+                            *Menampilkan 10 transaksi terakhir
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </RevealSection>
           )}

@@ -1,121 +1,168 @@
-import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/renderer"
+// src/components/InvoiceMerchPDF.jsx
+"use client";
+
+import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 
 const styles = StyleSheet.create({
     page: {
         padding: 40,
-        backgroundColor: "#ffffff",
         fontFamily: "Helvetica",
     },
-    logoContainer: {
-        alignItems: "center",
-        marginBottom: 16,
+    header: {
+        flexDirection: "row",
+        justifyContent: "center",
+        marginBottom: 20,
     },
     logo: {
         width: 80,
         height: 80,
+        objectFit: "cover",
     },
     title: {
-        fontSize: 36,
+        fontSize: 28,
         fontWeight: "bold",
         textAlign: "center",
-        marginBottom: 40,
+        marginBottom: 20,
     },
-    infoRow: {
+    row: {
         flexDirection: "row",
-        marginBottom: 32,
+        justifyContent: "space-between",
+        marginBottom: 10,
     },
     infoLeft: {
-        flex: 1,
-        paddingHorizontal: 16,
-        gap: 4,
+        flexDirection: "column",
+        width: "50%",
     },
     infoRight: {
-        flex: 1,
+        flexDirection: "column",
         alignItems: "center",
-        paddingHorizontal: 16,
+        width: "50%",
     },
-    infoText: {
-        fontSize: 12,
-        marginBottom: 4,
-    },
-    invoiceText: {
+    label: {
         fontSize: 14,
         fontWeight: "bold",
     },
-    table: {
-        borderWidth: 1,
-        borderColor: "#000000",
-        marginVertical: 32,
+    value: {
+        fontSize: 14,
+        marginBottom: 4,
     },
-    tableHeader: {
-        flexDirection: "row",
-        backgroundColor: "#f59e0b",
+    table: {
+        marginVertical: 20,
+        borderWidth: 1,
+        borderColor: "#000",
     },
     tableRow: {
         flexDirection: "row",
-        borderTopWidth: 1,
-        borderColor: "#000000",
+        borderBottomWidth: 1,
+        borderBottomColor: "#000",
     },
-    tableFooter: {
+    tableRowHeader: {
         flexDirection: "row",
-        borderTopWidth: 1,
-        borderColor: "#000000",
-        backgroundColor: "#f59e0b",
+        backgroundColor: "#1a4d8f",
+        borderBottomWidth: 1,
+        borderBottomColor: "#000",
     },
-    colQty: {
-        width: "10%",
-        padding: 8,
-        borderRightWidth: 1,
-        borderColor: "#000000",
+    tableCellQty: {
+        padding: 10,
+        width: "15%",
         textAlign: "center",
-    },
-    colDesc: {
-        width: "50%",
-        padding: 8,
         borderRightWidth: 1,
-        borderColor: "#000000",
+        borderRightColor: "#000",
+        fontSize: 12,
     },
-    colPrice: {
+    tableCellDesc: {
+        padding: 10,
+        width: "40%",
+        textAlign: "left",
+        borderRightWidth: 1,
+        borderRightColor: "#000",
+        fontSize: 12,
+    },
+    tableCellPrice: {
+        padding: 10,
         width: "20%",
-        padding: 8,
-        borderRightWidth: 1,
-        borderColor: "#000000",
         textAlign: "right",
+        borderRightWidth: 1,
+        borderRightColor: "#000",
+        fontSize: 12,
     },
-    colTotal: {
-        width: "20%",
-        padding: 8,
+    tableCellTotal: {
+        padding: 10,
+        width: "25%",
         textAlign: "right",
+        fontSize: 12,
     },
-    colEmpty: {
-        width: "10%",
-        borderRightWidth: 1,
-        borderColor: "#000000",
+    tableCellHeader: {
+        padding: 10,
+        color: "#fff",
+        fontWeight: "bold",
+        fontSize: 12,
     },
-    colEmpty2: {
-        width: "50%",
-        borderRightWidth: 1,
-        borderColor: "#000000",
+    // 🔥 Diskon Poin
+    discountRow: {
+        flexDirection: "row",
+        backgroundColor: "#f0fdf4",
+        borderBottomWidth: 1,
+        borderBottomColor: "#000",
     },
-    cellText: {
-        fontSize: 11,
+    discountCell: {
+        padding: 10,
+        width: "55%",
+        textAlign: "left",
+        fontSize: 12,
+        color: "#16a34a",
+        fontWeight: "medium",
     },
-    headerText: {
-        fontSize: 11,
+    discountCellPrice: {
+        padding: 10,
+        width: "45%",
+        textAlign: "right",
+        fontSize: 12,
+        color: "#16a34a",
         fontWeight: "bold",
     },
-    subText: {
-        fontSize: 9,
-        color: "#6b7280",
-        marginTop: 2,
+    totalRow: {
+        flexDirection: "row",
+        backgroundColor: "#1a4d8f",
+    },
+    totalCell: {
+        padding: 10,
+        width: "75%",
+        textAlign: "right",
+        color: "#fff",
+        fontWeight: "bold",
+        fontSize: 14,
+    },
+    totalCellPrice: {
+        padding: 10,
+        width: "25%",
+        textAlign: "right",
+        color: "#fff",
+        fontWeight: "bold",
+        fontSize: 14,
+    },
+    // 🔥 Poin Used
+    pointsRow: {
+        flexDirection: "row",
+        backgroundColor: "#fffbeb",
+        borderBottomWidth: 1,
+        borderBottomColor: "#000",
+    },
+    pointsCell: {
+        padding: 10,
+        width: "100%",
+        textAlign: "center",
+        fontSize: 12,
+        color: "#d97706",
+        fontWeight: "medium",
     },
     footer: {
-        fontSize: 11,
-        color: "#ef4444",
+        marginTop: 20,
         textAlign: "center",
-        marginTop: 8,
+        color: "#ef4444",
+        fontSize: 12,
     },
-})
+});
 
 export default function InvoiceMerchPDF({
     name,
@@ -128,70 +175,81 @@ export default function InvoiceMerchPDF({
     merch_size,
     merch_color,
     total_price,
+    points_used = 0,
+    discount_amount = 0,
 }) {
-    const descriptionLines = [merch_name]
-    if (merch_size) descriptionLines.push(`Size: ${merch_size}`)
-    if (merch_color) descriptionLines.push(`Color: ${merch_color}`)
+    const formattedPrice = new Intl.NumberFormat("id-ID").format(discount_amount || 0);
 
     return (
         <Document>
             <Page size="A4" style={styles.page}>
-                {/* Logo */}
-                <View style={styles.logoContainer}>
-                    <Image style={styles.logo} src="/assets/images/sh3logo.png" />
+                {/* Header */}
+                <View style={styles.header}>
+                    <Image src="/assets/images/sh3logo.png" style={styles.logo} />
                 </View>
-
-                {/* Title */}
                 <Text style={styles.title}>INVOICE</Text>
 
-                {/* Info Row */}
-                <View style={styles.infoRow}>
+                {/* Customer Info */}
+                <View style={styles.row}>
                     <View style={styles.infoLeft}>
-                        <Text style={styles.infoText}>To : {name}</Text>
-                        <Text style={styles.infoText}>Email : {email}</Text>
-                        <Text style={styles.infoText}>Hash ID : {hash_id}</Text>
+                        <Text style={styles.value}>To : {name}</Text>
+                        <Text style={styles.value}>Email : {email}</Text>
+                        <Text style={styles.value}>Hash ID : {hash_id}</Text>
                     </View>
                     <View style={styles.infoRight}>
-                        <Text style={styles.invoiceText}>Invoice : {invoice_id}</Text>
+                        <Text style={styles.label}>Invoice : {invoice_id}</Text>
                     </View>
                 </View>
 
                 {/* Table */}
                 <View style={styles.table}>
                     {/* Header */}
-                    <View style={styles.tableHeader}>
-                        <Text style={[styles.colQty, styles.headerText]}>Qty</Text>
-                        <Text style={[styles.colDesc, styles.headerText]}>Description</Text>
-                        <Text style={[styles.colPrice, styles.headerText]}>Price</Text>
-                        <Text style={[styles.colTotal, styles.headerText]}>Total</Text>
+                    <View style={styles.tableRowHeader}>
+                        <View style={[styles.tableCellQty, styles.tableCellHeader]}>Qty</View>
+                        <View style={[styles.tableCellDesc, styles.tableCellHeader]}>Description</View>
+                        <View style={[styles.tableCellPrice, styles.tableCellHeader]}>Price</View>
+                        <View style={[styles.tableCellTotal, styles.tableCellHeader]}>Total</View>
                     </View>
 
-                    {/* Row */}
+                    {/* Item Row */}
                     <View style={styles.tableRow}>
-                        <Text style={[styles.colQty, styles.cellText]}>{merch_qty}</Text>
-                        <View style={styles.colDesc}>
-                            <Text style={styles.cellText}>{merch_name}</Text>
-                            {merch_size && <Text style={styles.subText}>Size: {merch_size}</Text>}
-                            {merch_color && <Text style={styles.subText}>Color: {merch_color}</Text>}
+                        <View style={styles.tableCellQty}>{merch_qty}</View>
+                        <View style={styles.tableCellDesc}>
+                            {merch_name}
+                            {merch_size && ` — Size: ${merch_size}`}
+                            {merch_color && ` — Color: ${merch_color}`}
                         </View>
-                        <Text style={[styles.colPrice, styles.cellText]}>Rp. {merch_price}</Text>
-                        <Text style={[styles.colTotal, styles.cellText]}>Rp. {total_price}</Text>
+                        <View style={styles.tableCellPrice}>Rp. {merch_price}</View>
+                        <View style={styles.tableCellTotal}>Rp. {total_price}</View>
                     </View>
 
-                    {/* Footer */}
-                    <View style={styles.tableFooter}>
-                        <View style={styles.colEmpty} />
-                        <View style={styles.colEmpty2} />
-                        <Text style={[styles.colPrice, styles.headerText]}>Total</Text>
-                        <Text style={[styles.colTotal, styles.headerText]}>Rp. {total_price}</Text>
+                    {/* 🔥 Diskon Poin */}
+                    {discount_amount > 0 && (
+                        <View style={styles.discountRow}>
+                            <View style={styles.discountCell}>Diskon Poin</View>
+                            <View style={styles.discountCellPrice}>- Rp. {formattedPrice}</View>
+                        </View>
+                    )}
+
+                    {/* Total Row */}
+                    <View style={styles.totalRow}>
+                        <View style={styles.totalCell}>Total</View>
+                        <View style={styles.totalCellPrice}>Rp. {total_price}</View>
                     </View>
+
+                    {/* 🔥 Poin Used */}
+                    {points_used > 0 && (
+                        <View style={styles.pointsRow}>
+                            <View style={styles.pointsCell}>{points_used} poin digunakan</View>
+                        </View>
+                    )}
                 </View>
 
-                {/* Footer Note */}
+                {/* Footer */}
                 <Text style={styles.footer}>
                     Tolong hubungin Admin jika ada pertanyaan terkait pembayaran atau hal yang lain!
                 </Text>
             </Page>
         </Document>
-    )
+    );
 }

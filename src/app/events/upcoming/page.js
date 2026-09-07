@@ -15,8 +15,10 @@ import QRCode from 'qrcode';
 import Swal from "sweetalert2";
 import EventGallery from "@/src/components/EventGallery";
 import Pagination from "@/src/components/Pagination";
+import { useAuth } from "@/src/contexts/AuthContext";
 
 export default function UpcomingEvents() {
+    const { user, isLoggedIn } = useAuth();
     const [event, setEvent] = useState(null);
     const [myOrder, setMyOrder] = useState(null);
     const [qrCode, setQrCode] = useState(null);
@@ -278,6 +280,8 @@ export default function UpcomingEvents() {
     const startIndex = (galleryPage - 1) * itemsPerPage;
     const paginatedGalleries = galleries.slice(startIndex, startIndex + itemsPerPage);
 
+    const isMember = user?.membership_type && user.membership_type !== "none";
+
     return (
         <Container className="flex flex-col gap-y-4 w-full">
             <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
@@ -509,6 +513,15 @@ export default function UpcomingEvents() {
                                 <div className="text-xl font-bold mt-2">Event Organizer</div>
                                 <div className="text-lg font-semibold">{event.creator?.name}</div>
                             </div>
+                            {isLoggedIn && isMember && (
+                                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mt-4 flex items-center gap-3">
+                                    <span className="text-xl">⭐</span>
+                                    <p className="text-sm text-amber-700">
+                                        Check-in event ini dapatkan <span className="font-bold">poin</span> 
+                                        untuk ditukar dengan merchandise!
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
 

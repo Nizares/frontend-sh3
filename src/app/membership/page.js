@@ -12,6 +12,7 @@ import { formatRupiah, dateConverted } from "@/src/lib/utils";
 import ImageUpload from "@/src/components/ImageUpload";
 import SelectInput from "@/src/components/SelectInput";
 import Link from "next/link";
+import { StarIcon } from "@heroicons/react/24/solid"; // 🔥 Import icon
 
 export default function MembershipPage() {
     const { user, isLoggedIn } = useAuth();
@@ -41,16 +42,14 @@ export default function MembershipPage() {
                     membershipService.getPlans(),
                 ]);
 
-                // ✅ AMAN: pastikan plans adalah array
                 const plansData = plansRes.data?.data || [];
                 setPlans(Array.isArray(plansData) ? plansData : []);
-                console.log(plansRes.data)
                 
                 setStatus(statusRes.data?.data || null);
                 setHistory(historyRes.data?.data || []);
             } catch (err) {
                 console.error("Error fetching membership data:", err);
-                setPlans([]); // ✅ Reset ke array kosong jika error
+                setPlans([]);
                 Swal.fire({
                     icon: "error",
                     title: "Gagal Memuat Data",
@@ -68,7 +67,6 @@ export default function MembershipPage() {
     const handleSubscribe = async (e) => {
         e.preventDefault();
 
-        // Validasi
         if (!selectedPlan) {
             Swal.fire({ icon: "warning", title: "Pilih paket membership!" });
             return;
@@ -79,7 +77,6 @@ export default function MembershipPage() {
             return;
         }
 
-        // Cari plan yang dipilih
         const selectedPlanData = plans.find(p => {
             return p.key === selectedPlan || 
                    p.id === selectedPlan || 
@@ -96,7 +93,6 @@ export default function MembershipPage() {
             return;
         }
 
-        // Cek apakah paket berbayar
         const isPaidPlan = selectedPlanData.price > 0;
 
         if (isPaidPlan && !paymentProof) {
@@ -111,21 +107,15 @@ export default function MembershipPage() {
         setSubmitting(true);
 
         try {
-            // ✅ PERBAIKAN: Gunakan FormData dengan benar
             const formData = new FormData();
-            
-            // Kirim key dari plan
             const membershipType = selectedPlanData.key || selectedPlanData.type || String(selectedPlanData.id);
             formData.append("membership_type", membershipType);
             formData.append("payment_method", paymentMethod);
             
-            // ✅ PERBAIKAN: Append file dengan benar
             if (paymentProof) {
-                // Pastikan file adalah File object
                 if (paymentProof instanceof File) {
                     formData.append("payment_proof", paymentProof);
                 } else if (typeof paymentProof === 'string') {
-                    // Jika string (misal base64 atau URL), konversi ke blob
                     try {
                         const response = await fetch(paymentProof);
                         const blob = await response.blob();
@@ -133,16 +123,13 @@ export default function MembershipPage() {
                         formData.append("payment_proof", file);
                     } catch (err) {
                         console.warn("Failed to convert payment proof:", err);
-                        // Jika gagal konversi, kirim string biasa
                         formData.append("payment_proof", paymentProof);
                     }
                 } else {
-                    // Jika bukan File atau string, log warning
                     console.warn("⚠️ Unexpected paymentProof type:", typeof paymentProof);
                 }
             }
 
-            // ✅ PERBAIKAN: Kirim dengan header yang benar (multipart/form-data)
             const response = await membershipService.subscribe(formData);
             
             Swal.fire({
@@ -224,7 +211,6 @@ export default function MembershipPage() {
         if (file && file instanceof File) {
             setPaymentProof(file);
         } else if (file && typeof file === 'string') {
-            // Jika ImageUpload mengembalikan string (base64/URL)
             setPaymentProof(file);
         } else {
             console.warn("⚠️ Invalid file:", file);
@@ -266,6 +252,28 @@ export default function MembershipPage() {
                             <p className="text-neutral-dark mt-2 text-center">
                                 Kelola membership kamu di SH3 Running Club
                             </p>
+                        </div>
+                    </RevealSection>
+
+                    {/* 🔥 BENEFIT POIN - Pemberitahuan */}
+                    <RevealSection direction="up">
+                        <div className="max-w-3xl mx-auto bg-amber-50 border-2 border-amber-200 rounded-lg p-4 md:p-6 mb-6 flex items-start md:items-center gap-4">
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <StarIcon className="w-5 h-5 md:w-7 md:h-7 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-base md:text-lg font-bold text-amber-700"> Dapatkan Poin dari Event!</h3>
+                                <p className="text-sm text-amber-600">
+                                    Setiap kali kamu check-in event, kamu akan mendapatkan <span className="font-bold"> poin </span> 
+                                    yang bisa ditukar dengan <span className="font-bold">merchandise eksklusif</span> SH3!
+                                </p>
+                                <Link 
+                                    href="/merchandise" 
+                                    className="inline-block mt-1 text-sm text-amber-700 font-medium hover:underline"
+                                >
+                                    Lihat Koleksi Merchandise →
+                                </Link>
+                            </div>
                         </div>
                     </RevealSection>
 
@@ -317,14 +325,12 @@ export default function MembershipPage() {
                         <div className="max-w-3xl mx-auto bg-primary-light border-2 border-neutral-normal rounded-lg p-6 md:p-8 shadow-lg mb-6">
                             <h2 className="text-2xl font-bold font-young mb-4">Paket Membership</h2>
                             
-                            {/* ✅ PERBAIKAN: Pastikan plans adalah array sebelum map */}
                             {!plans || plans.length === 0 ? (
                                 <p className="text-neutral-dark">Belum ada paket membership tersedia.</p>
                             ) : (
                                 <form onSubmit={handleSubscribe} className="flex flex-col gap-4">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         {plans.map((plan, index) => {
-                                            // ✅ PERBAIKAN: Gunakan key yang aman
                                             const planKey = plan.key || plan.type || String(plan.id || index);
                                             const isSelected = selectedPlan === planKey || selectedPlan === plan.id;
                                             
@@ -378,7 +384,6 @@ export default function MembershipPage() {
                                         </div>
                                     )}
 
-                                    {/* Metode Pembayaran */}
                                     <SelectInput
                                         id="payment_method"
                                         name="payment_method"
@@ -393,7 +398,6 @@ export default function MembershipPage() {
                                         required
                                     />
 
-                                    {/* Upload Bukti */}
                                     <ImageUpload
                                         id="payment_proof"
                                         label="Upload Bukti Pembayaran"

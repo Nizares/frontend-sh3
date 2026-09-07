@@ -64,7 +64,7 @@ export default function DetailMember() {
   const [isMember, setIsMember] = useState(false);
   const [myEvents, setMyEvents] = useState([]);
 
-  // 🔥 State untuk QR Code Member
+  // State untuk QR Code Member
   const [memberQRCode, setMemberQRCode] = useState(null);
   const [qrLoading, setQrLoading] = useState(false);
 
@@ -93,7 +93,7 @@ export default function DetailMember() {
     setIsMounted(true);
   }, []);
 
-  // 🔥 Generate QR Code Member (HashID|Nama)
+  // Generate QR Code Member (HashID|Nama)
   useEffect(() => {
     const generateMemberQR = async () => {
       if (!userData) return;
@@ -126,7 +126,7 @@ export default function DetailMember() {
     generateMemberQR();
   }, [userData]);
 
-  // 🔥 Download QR Member
+  // Download QR Member
   const handleDownloadMemberQR = () => {
     if (!memberQRCode) return;
 
@@ -156,12 +156,15 @@ export default function DetailMember() {
       setPointHistory(historyData);
     } catch (err) {
       console.error("Error fetching points:", err);
+      setPointBalance(0);
+      setLedgerBalance(0);
+      setPointHistory([]);
     } finally {
       setPointLoading(false);
     }
   };
 
-  // 🔥 AUTO UPDATE DATA DARI AUTHCONTEXT
+  // AUTO UPDATE DATA DARI AUTHCONTEXT
   useEffect(() => {
     if (user) {
       setUserData(user);
@@ -185,7 +188,7 @@ export default function DetailMember() {
     }
   }, [user, setUserData]);
 
-  // 🔥 AMBIL DATA LENGKAP DARI PROFILE API (untuk refresh)
+  // AMBIL DATA LENGKAP DARI PROFILE API (untuk refresh)
   useEffect(() => {
     const fetchProfile = async () => {
       if (!isLoggedIn || !user) return;
@@ -248,7 +251,7 @@ export default function DetailMember() {
     fetchProfile();
   }, [isLoggedIn, user]);
 
-  // 🔥 Ambil Riwayat Event
+  // Ambil Riwayat Event
   useEffect(() => {
     if (userData) {
       eventService
@@ -297,7 +300,7 @@ export default function DetailMember() {
         await profileService.uploadPhoto(avatarForm);
       }
 
-      // 🔥 Refresh data setelah update
+      // Refresh data setelah update
       const profileRes = await profileService.getProfile();
       const profileData = profileRes.data.data;
       const participant = profileData.participant || {};
@@ -331,7 +334,7 @@ export default function DetailMember() {
         }),
       );
 
-      // 🔥 Refresh poin setelah update
+      // Refresh poin setelah update
       await fetchPointData();
 
       Swal.fire({
@@ -409,7 +412,7 @@ export default function DetailMember() {
   const username = userData?.username || user?.username || "";
   const hashId = userData?.hash_id || "";
 
-  // 🔥 Helper untuk label tipe transaksi poin
+  // Helper untuk label tipe transaksi poin
   const getPointTypeLabel = (type) => {
     const labels = {
       EARN: "🎯 Poin Diberikan",
@@ -440,7 +443,7 @@ export default function DetailMember() {
             <RevealSection direction="up">
               <div className="flex flex-col items-center justify-center mt-24 mb-8">
                 <div className="bg-primary-light p-8 rounded-lg shadow-lg text-center w-full border-2 border-neutral-normal">
-                  {/* 🔥 2 KOLOM: Kiri (Avatar & Info) | Kanan (QR Code) */}
+                  {/* 2 KOLOM: Kiri (Avatar & Info) | Kanan (QR Code) */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                     {/* Kolom Kiri - Avatar & Info */}
                     <div className="flex flex-col items-center">
@@ -494,7 +497,7 @@ export default function DetailMember() {
                       </div>
                     </div>
 
-                    {/* 🔥 Kolom Kanan - QR Code Member */}
+                    {/* Kolom Kanan - QR Code Member */}
                     <div className="flex flex-col items-center justify-center border-l-0 md:border-l-2 border-neutral-normal/30 pl-0 md:pl-6">
                       <div className="text-center">
                         <h3 className="text-lg font-bold text-neutral-dark mb-2">
@@ -639,26 +642,32 @@ export default function DetailMember() {
                         <div className="text-xs text-yellow-500 font-medium">Ledger</div>
                       </div>
                     )}
-                    <button
-                      onClick={() => setShowPointHistory(!showPointHistory)}
-                      className="text-sm text-blue-600 hover:underline font-medium"
-                    >
-                      {showPointHistory ? "Sembunyikan" : "Lihat Riwayat"}
-                    </button>
+                    {pointHistory.length > 0 && (
+                      <button
+                        onClick={() => setShowPointHistory(!showPointHistory)}
+                        className="text-sm text-blue-600 hover:underline font-medium"
+                      >
+                        {showPointHistory ? "Sembunyikan" : "Lihat Riwayat"}
+                      </button>
+                    )}
                   </div>
                 </div>
 
                 {/* Progress bar poin (target 100 poin) */}
-                <div className="mt-4 w-full bg-amber-200 rounded-full h-2">
-                  <div 
-                    className="bg-amber-500 h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((pointBalance / 100) * 100, 100)}%` }}
-                  />
-                </div>
-                <div className="flex justify-between text-xs text-neutral-dark mt-1">
-                  <span>0</span>
-                  <span>Target 100 poin</span>
-                </div>
+                {pointBalance > 0 && (
+                  <>
+                    <div className="mt-4 w-full bg-amber-200 rounded-full h-2">
+                      <div 
+                        className="bg-amber-500 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min((pointBalance / 100) * 100, 100)}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-xs text-neutral-dark mt-1">
+                      <span>0</span>
+                      <span>Target 100 poin</span>
+                    </div>
+                  </>
+                )}
 
                 {/* 🔥 Riwayat Poin */}
                 {showPointHistory && (
@@ -899,7 +908,7 @@ export default function DetailMember() {
                 </div>
                 <hr className="border-t-2 border-neutral-normal" />
 
-                {/* 🔥 Tampilkan avatar saat ini */}
+                {/* Tampilkan avatar saat ini */}
                 {userData.avatar && (
                   <div className="flex flex-col items-center gap-2">
                     <label className="text-lg font-medium">
@@ -1087,7 +1096,7 @@ export default function DetailMember() {
                   </div>
                 </form>
 
-                {/* ====== 🔥 SECTION KEAMANAN ====== */}
+                {/* ====== SECTION KEAMANAN ====== */}
                 <div className="mt-6 pt-4 border-t-2 border-neutral-normal">
                   <div className="flex justify-between items-center">
                     <h3 className="text-xl font-bold font-young text-neutral-normal">

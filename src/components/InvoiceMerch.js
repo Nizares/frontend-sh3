@@ -1,11 +1,12 @@
-"use client"
-import dynamic from "next/dynamic"
+"use client";
+
+import dynamic from "next/dynamic";
 
 const PDFDownloadLink = dynamic(
     () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
     { ssr: false }
-)
-import InvoiceMerchPDF from "./InvoiceMerchPDF"
+);
+import InvoiceMerchPDF from "./InvoiceMerchPDF";
 
 export default function InvoiceMerch({
     name,
@@ -18,6 +19,8 @@ export default function InvoiceMerch({
     merch_size,
     merch_color,
     total_price,
+    points_used = 0,        // 🔥 Tambahan
+    discount_amount = 0,    // 🔥 Tambahan
 }) {
     return (
         <div className="flex flex-col gap-4">
@@ -35,12 +38,14 @@ export default function InvoiceMerch({
                             merch_size={merch_size}
                             merch_color={merch_color}
                             total_price={total_price}
+                            points_used={points_used}
+                            discount_amount={discount_amount}
                         />
                     }
                     fileName={`Invoice-${invoice_id}.pdf`}
                 >
                     {({ loading }) => (
-                        <button className=" rounded-md  bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold py-2 px-6 transition-colors">
+                        <button className="rounded-md bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active text-white font-bold py-2 px-6 transition-colors">
                             {loading ? "Menyiapkan PDF..." : "Download PDF"}
                         </button>
                     )}
@@ -92,12 +97,37 @@ export default function InvoiceMerch({
                                 <td className="p-4">Rp. {merch_price}</td>
                                 <td className="p-4">Rp. {total_price}</td>
                             </tr>
+
+                            {/* 🔥 Diskon Poin */}
+                            {discount_amount > 0 && (
+                                <tr className="text-right divide-neutral-dark divide-x bg-green-50">
+                                    <td className="text-center p-4" colSpan="2">
+                                        <span className="text-green-600 font-medium">Diskon Poin</span>
+                                    </td>
+                                    <td className="p-4 text-green-600">-</td>
+                                    <td className="p-4 text-green-600 font-bold">
+                                        - Rp. {new Intl.NumberFormat('id-ID').format(discount_amount)}
+                                    </td>
+                                </tr>
+                            )}
+
                             <tr className="divide-neutral-dark divide-x bg-secondary-bg text-white">
                                 <th></th>
                                 <th></th>
                                 <th className="p-4">Total</th>
                                 <th className="p-4">Rp. {total_price}</th>
                             </tr>
+
+                            {/* 🔥 Poin yang digunakan */}
+                            {points_used > 0 && (
+                                <tr className="text-right divide-neutral-dark divide-x bg-amber-50">
+                                    <td className="text-center p-4" colSpan="4">
+                                        <span className="text-amber-600 font-medium">
+                                            {points_used} poin digunakan
+                                        </span>
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -107,5 +137,5 @@ export default function InvoiceMerch({
                 </div>
             </div>
         </div>
-    )
+    );
 }

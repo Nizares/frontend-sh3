@@ -196,12 +196,12 @@ export default function EventMembers() {
                                             <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">Status</th>
                                             <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">Member</th>
                                             <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">Jersey Size</th>
-                                            {isLargeEvent && (
+                                            {/* {isLargeEvent && (
                                                 <th className="px-4 py-3 text-left font-bold text-sm uppercase tracking-wider">
                                                     Hash Club
                                                     <span className="ml-1 text-xs font-normal text-gray-400">(placeholder)</span>
                                                 </th>
-                                            )}
+                                            )} */}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -257,14 +257,14 @@ export default function EventMembers() {
                                                     <td className="px-4 py-3 text-sm font-mono">
                                                         {participant.jersey_size || "-"}
                                                     </td>
-                                                    {isLargeEvent && (
+                                                    {/* {isLargeEvent && (
                                                         <td className="px-4 py-3 text-sm font-mono">
                                                             <span className="bg-gray-100 px-2 py-1 rounded-md text-neutral-dark border border-gray-200">
                                                                 {hashClub}
                                                             </span>
                                                             <span className="ml-1 text-[10px] text-gray-400">*</span>
                                                         </td>
-                                                    )}
+                                                    )} */}
                                                 </tr>
                                             );
                                         })}
@@ -273,11 +273,11 @@ export default function EventMembers() {
                             </div>
 
                             {/* 🔥 Info placeholder */}
-                            {isLargeEvent && (
+                            {/* {isLargeEvent && (
                                 <div className="text-xs text-gray-400 text-center mt-1">
                                     * Hash Club bersifat placeholder sementara, menunggu data dari backend
                                 </div>
-                            )}
+                            )} */}
 
                             {/* 🔥 PAGINATION - PAKAI KOMPONEN */}
                             <Pagination 

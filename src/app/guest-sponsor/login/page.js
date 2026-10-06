@@ -39,7 +39,6 @@ export default function GuestSponsorLogin() {
                 router.push("/guest-sponsor/dashboard");
             });
         } catch (err) {
-            console.error("Login error:", err);
             setError(err.response?.data?.message || "Username atau password salah");
             Swal.fire({
                 icon: "error",

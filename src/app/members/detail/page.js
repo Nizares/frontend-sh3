@@ -155,7 +155,6 @@ export default function DetailMember() {
       const historyData = historyRes.data?.data || [];
       setPointHistory(historyData);
     } catch (err) {
-      console.error("Error fetching points:", err);
       setPointBalance(0);
       setLedgerBalance(0);
       setPointHistory([]);
@@ -347,7 +346,6 @@ export default function DetailMember() {
       setShowEditForm(false);
       setAvatar(null);
     } catch (err) {
-      console.error("Update error:", err.response?.data);
       const message =
         err.response?.data?.message || "Terjadi kesalahan, coba lagi.";
       const errors = err.response?.data?.errors;

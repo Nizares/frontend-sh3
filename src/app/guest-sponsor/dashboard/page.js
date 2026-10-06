@@ -41,7 +41,6 @@ export default function GuestSponsorDashboard() {
                     setQrImage(qr);
                 }
             } catch (err) {
-                console.error("Error fetching data:", err);
                 if (err.response?.status === 401) {
                     logout();
                     router.push("/guest-sponsor/login");
@@ -59,7 +58,6 @@ export default function GuestSponsorDashboard() {
         router.push("/guest-sponsor/login");
     };
 
-    console.log(user)
 
     const handleDownloadQR = () => {
         if (!qrImage) return;

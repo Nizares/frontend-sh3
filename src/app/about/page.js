@@ -60,7 +60,6 @@ export default function About() {
         setError(null);
       })
       .catch((err) => {
-        console.error("Error fetching organization:", err);
         setError(err.response?.data?.message || "Gagal memuat data organisasi");
         setOrganizationData([]);
       })

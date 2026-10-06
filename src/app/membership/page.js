@@ -48,7 +48,6 @@ export default function MembershipPage() {
                 setStatus(statusRes.data?.data || null);
                 setHistory(historyRes.data?.data || []);
             } catch (err) {
-                console.error("Error fetching membership data:", err);
                 setPlans([]);
                 Swal.fire({
                     icon: "error",
@@ -122,7 +121,6 @@ export default function MembershipPage() {
                         const file = new File([blob], "payment-proof.jpg", { type: blob.type || "image/jpeg" });
                         formData.append("payment_proof", file);
                     } catch (err) {
-                        console.warn("Failed to convert payment proof:", err);
                         formData.append("payment_proof", paymentProof);
                     }
                 } else {
@@ -141,8 +139,6 @@ export default function MembershipPage() {
                 window.location.reload();
             });
         } catch (err) {
-            console.error("❌ Subscribe error:", err);
-            console.error("❌ Response:", err.response?.data);
             
             const errorData = err.response?.data;
             let errorMessage = "Terjadi kesalahan";
@@ -196,7 +192,6 @@ export default function MembershipPage() {
                 window.location.reload();
             });
         } catch (err) {
-            console.error("Cancel error:", err.response?.data);
             Swal.fire({
                 icon: "error",
                 title: "Gagal!",
@@ -207,13 +202,11 @@ export default function MembershipPage() {
 
     // Handle file change
     const handleFileChange = (file) => {
-        console.log("📎 File received:", file);
         if (file && file instanceof File) {
             setPaymentProof(file);
         } else if (file && typeof file === 'string') {
             setPaymentProof(file);
         } else {
-            console.warn("⚠️ Invalid file:", file);
             setPaymentProof(null);
         }
     };

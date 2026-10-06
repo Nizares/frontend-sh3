@@ -67,7 +67,6 @@ export const AuthProvider = ({ children }) => {
             return fullUser;
             
         } catch (error) {
-            console.error('Login error:', error.response?.data);
             const message = error.response?.data?.message || 'Username atau password salah.';
             throw new Error(message);
         } finally {
@@ -104,7 +103,6 @@ export const AuthProvider = ({ children }) => {
             return fullUser;
             
         } catch (error) {
-            console.error('Guest Sponsor Login error:', error.response?.data);
             const message = error.response?.data?.message || 'Username atau password salah.';
             throw new Error(message);
         } finally {

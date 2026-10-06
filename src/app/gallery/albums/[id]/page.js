@@ -24,7 +24,6 @@ export default function AlbumDetail({ params }) {
                 setError(null);
             })
             .catch((err) => {
-                console.error("Error fetching album:", err);
                 setError(err.response?.data?.message || "Gagal memuat album");
             })
             .finally(() => setLoading(false));

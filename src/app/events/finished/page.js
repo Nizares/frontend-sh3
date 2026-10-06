@@ -42,7 +42,6 @@ export default function PastEvents() {
                 setError(null);
             })
             .catch((err) => {
-                console.error("Error fetching event:", err);
                 setError(err.response?.data?.message || "Gagal memuat event");
             })
             .finally(() => setLoading(false));
@@ -76,28 +75,24 @@ export default function PastEvents() {
             address.includes('embed');
     };
 
-    // 🔥 Extract embed URL dari address - LEBIH ROBUST
+    // 🔥 Extract embed URL dari address
     const extractEmbedUrl = (address) => {
         if (!address) return null;
 
-        // Jika address adalah URL langsung
         if (address.startsWith('http')) {
             return address;
         }
 
-        // Pattern 1: src="URL"
         let match = address.match(/src=["']([^"']+)["']/);
         if (match) {
             return match[1];
         }
 
-        // Pattern 2: src=URL (tanpa quotes)
         match = address.match(/src=([^\s"']+)/);
         if (match) {
             return match[1];
         }
 
-        // Pattern 3: Ambil URL dari dalam teks (fallback)
         match = address.match(/(https?:\/\/[^\s"']+)/);
         if (match) {
             return match[1];
@@ -144,11 +139,6 @@ export default function PastEvents() {
 
     const addressIsLink = isAddressLink(event.address);
     const embedUrl = extractEmbedUrl(event.address);
-
-    // 🔥 Debug - cek di console browser
-    console.log("🔍 address:", event.address);
-    console.log("🔍 addressIsLink:", addressIsLink);
-    console.log("🔍 embedUrl:", embedUrl);
 
     // Format tanggal
     const formatEventDate = () => {
@@ -205,9 +195,9 @@ export default function PastEvents() {
                         </div>
                     </div>
 
-                    {/* Location & Date */}
+                    {/* 🔥 Location & Date - 2 Kolom SAMA UKURAN (seperti upcoming) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                        {/* Location */}
+                        {/* Kolom Kiri - Lokasi */}
                         <div className="flex flex-col p-3 bg-primary-light/50 rounded-lg border border-neutral-normal/50">
                             <div className="flex flex-row items-start gap-x-3">
                                 <MapPinIcon className="w-6 h-6 text-secondary-bg flex-shrink-0 mt-0.5" />
@@ -221,7 +211,7 @@ export default function PastEvents() {
                                 </div>
                             </div>
 
-                            {/* 🔥 Iframe Maps */}
+                            {/* Iframe Maps */}
                             {addressIsLink && embedUrl && (
                                 <div className="mt-3 rounded-lg overflow-hidden border border-neutral-normal/50 w-full">
                                     <iframe
@@ -238,7 +228,7 @@ export default function PastEvents() {
                                 </div>
                             )}
 
-                            {/* 🔥 Fallback: jika address link tapi embedUrl null, tampilkan tombol */}
+                            {/* Fallback: tombol buka maps */}
                             {addressIsLink && !embedUrl && (
                                 <a
                                     href={event.address}
@@ -251,7 +241,7 @@ export default function PastEvents() {
                             )}
                         </div>
 
-                        {/* Date & Time */}
+                        {/* Kolom Kanan - Tanggal & Waktu + Detail Image (Meeting Point) */}
                         <div className="flex flex-col p-3 bg-primary-light/50 rounded-lg border border-neutral-normal/50">
                             <div className="flex flex-row items-start gap-x-3">
                                 <CalendarDaysIcon className="w-6 h-6 text-secondary-bg flex-shrink-0 mt-0.5" />
@@ -260,8 +250,32 @@ export default function PastEvents() {
                                     <span className="text-sm text-neutral-dark">
                                         {formatEventDate()}
                                     </span>
+                                    {event.start_date && event.end_date && (
+                                        <span className="text-xs text-neutral-dark/60 mt-0.5">
+                                            {new Date(event.start_date).toLocaleDateString('id-ID', { weekday: 'long' })}
+                                            {new Date(event.start_date).toLocaleDateString('id-ID', { weekday: 'long' }) !==
+                                                new Date(event.end_date).toLocaleDateString('id-ID', { weekday: 'long' }) &&
+                                                ` - ${new Date(event.end_date).toLocaleDateString('id-ID', { weekday: 'long' })}`}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
+
+                            {/* 🔥 Detail Image - Meeting Point / Titik Kumpul */}
+                            {hasDetailImage && (
+                                <div className="mt-3 rounded-lg overflow-hidden border border-neutral-normal/50 w-full">
+                                    <div className="relative w-full h-64">
+                                        <img
+                                            src={detailImage}
+                                            alt="Titik Kumpul"
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                e.target.src = "/assets/images/placeholder-event.jpg";
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 

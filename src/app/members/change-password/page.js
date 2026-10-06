@@ -74,7 +74,6 @@ export default function ChangePasswordPage() {
             });
             
         } catch (err) {
-            console.error("Change password error:", err.response?.data);
             
             const errorData = err.response?.data;
             

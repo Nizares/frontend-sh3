@@ -15,6 +15,29 @@ export default function MerchandiseCard({
 }) {
     const isRedeemable = isPointRedeemable && points_required > 0;
 
+    // 🔥 Helper: normalisasi sizes ke array
+    const normalizeSizes = (sizes) => {
+        if (!sizes) return [];
+        
+        // Jika sudah array
+        if (Array.isArray(sizes)) return sizes;
+        
+        // Jika string, coba parse JSON atau split koma
+        if (typeof sizes === "string") {
+            try {
+                const parsed = JSON.parse(sizes);
+                if (Array.isArray(parsed)) return parsed;
+            } catch {
+                // Bukan JSON, split by comma
+                return sizes.split(",").map(s => s.trim()).filter(Boolean);
+            }
+        }
+        
+        return [];
+    };
+
+    const sizeList = normalizeSizes(sizes);
+
     return (
         <div className="flex flex-col h-full bg-white border-2 border-neutral-normal hover:border-secondary-bg transition-colors rounded-md shadow-sm hover:shadow-md">
             {/* Gambar */}
@@ -50,7 +73,7 @@ export default function MerchandiseCard({
                     </div>
                 )}
 
-                {/* 🔥 Badge "Tukar Poin" */}
+                {/* Badge "Tukar Poin" */}
                 {isRedeemable && stock > 0 && (
                     <div className="absolute top-2 left-2 bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1 shadow-md">
                         {points_required} Poin
@@ -65,7 +88,7 @@ export default function MerchandiseCard({
                         {name}
                     </div>
 
-                    {/* 🔥 Harga */}
+                    {/* Harga */}
                     {isRedeemable && price_after_points !== null && price_after_points < price ? (
                         <div className="flex flex-col">
                             <div className="text-xs text-neutral-dark line-through">
@@ -84,14 +107,14 @@ export default function MerchandiseCard({
                         </div>
                     )}
 
-                    {/* Size */}
-                    {sizes?.length > 0 && (
+                    {/* 🔥 Size - Pakai sizeList yang sudah dinormalisasi */}
+                    {sizeList.length > 0 && (
                         <div className="text-xs text-neutral-dark">
-                            Size: {sizes.join(", ")}
+                            Size: {sizeList.join(", ")}
                         </div>
                     )}
 
-                    {/* 🔥 Info Poin */}
+                    {/* Info Poin */}
                     {isRedeemable && stock > 0 && (
                         <div className="mt-1 text-xs text-amber-600 font-medium">
                             🎯 Tukar dengan {points_required} poin

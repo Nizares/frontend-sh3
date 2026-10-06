@@ -79,7 +79,6 @@ export default function Gallery() {
                 setError(null);
             })
             .catch((err) => {
-                console.error("Error fetching galleries:", err);
                 setError(err.response?.data?.message || "Gagal memuat galeri");
                 setAllImages([]);
                 setFilteredImages([]);

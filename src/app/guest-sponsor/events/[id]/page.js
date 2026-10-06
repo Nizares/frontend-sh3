@@ -41,7 +41,6 @@ export default function GuestSponsorEventDetail({ params }) {
                 setEvent(response.data?.data);
                 setError(null);
             } catch (err) {
-                console.error("Error fetching event detail:", err);
                 if (err.response?.status === 404) {
                     setError("Event tidak ditemukan atau tidak terdaftar untuk sponsor Anda");
                 } else if (err.response?.status === 403) {
@@ -80,7 +79,6 @@ export default function GuestSponsorEventDetail({ params }) {
             const response = await guestSponsorService.getEventDetail(id);
             setEvent(response.data?.data);
         } catch (err) {
-            console.error("Check-in error:", err);
             Swal.fire({
                 icon: "error",
                 title: "Check-in Gagal",
@@ -109,7 +107,6 @@ export default function GuestSponsorEventDetail({ params }) {
             const response = await guestSponsorService.getEventDetail(id);
             setEvent(response.data?.data);
         } catch (err) {
-            console.error("Check-out error:", err);
             Swal.fire({
                 icon: "error",
                 title: "Check-out Gagal",

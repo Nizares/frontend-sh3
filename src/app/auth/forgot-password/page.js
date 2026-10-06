@@ -65,7 +65,6 @@ export default function ForgotPasswordPage() {
                 });
             }
         } catch (err) {
-            console.error("Verify error:", err.response?.data);
             
             const errorData = err.response?.data;
             if (errorData?.errors) {
@@ -133,7 +132,6 @@ export default function ForgotPasswordPage() {
                 });
             }
         } catch (err) {
-            console.error("Reset password error:", err.response?.data);
 
             const errorData = err.response?.data;
             if (errorData?.errors) {

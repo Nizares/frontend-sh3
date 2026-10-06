@@ -29,7 +29,6 @@ export default function GuestSponsorEvents() {
                 setEvents(response.data?.data || []);
                 setError(null);
             } catch (err) {
-                console.error("Error fetching guest sponsor events:", err);
                 setError(err.response?.data?.message || "Gagal memuat event");
                 if (err.response?.status === 401) {
                     router.push("/guest-sponsor/login");

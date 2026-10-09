@@ -384,12 +384,12 @@ export default function Navbar() {
                             >
                                 Login Member
                             </Link>
-                            <Link
+                            {/* <Link
                                 href="/guest-sponsor/login"
                                 className="bg-blue-600 text-white rounded-sm px-6 py-2.5 font-medium hover:bg-blue-500 active:bg-blue-400"
                             >
                                 Login Sponsor
-                            </Link>
+                            </Link> */}
                         </>
                     )}
                 </div>
@@ -556,12 +556,12 @@ export default function Navbar() {
                                 >
                                     Login Member
                                 </Link>
-                                <Link
+                                {/* <Link
                                     href="/guest-sponsor/login"
                                     className="bg-blue-600 text-white px-6 py-2.5 font-medium rounded-md hover:bg-blue-500 active:bg-blue-400 text-center transition-colors"
                                 >
                                     Login Sponsor
-                                </Link>
+                                </Link> */}
                             </>
                         )}
                     </li>

@@ -944,7 +944,6 @@ export default function DetailMember() {
                     className="flex flex-col gap-2"
                     value={formData.email}
                     onChange={handleFormChange}
-                    readOnly
                   />
                   <InputType
                     label="Nomor Telepon/WA"

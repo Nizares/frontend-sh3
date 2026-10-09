@@ -413,10 +413,10 @@ export default function DetailMember() {
   // Helper untuk label tipe transaksi poin
   const getPointTypeLabel = (type) => {
     const labels = {
-      EARN: "🎯 Poin Diberikan",
-      REDEEM: "🛒 Penukaran Poin",
-      REVERSAL: "↩️ Pengembalian Poin",
-      ADJUSTMENT: "⚙️ Penyesuaian Admin",
+      EARN: "Poin Diberikan",
+      REDEEM: "Penukaran Poin",
+      REVERSAL: "Pengembalian Poin",
+      ADJUSTMENT: "Penyesuaian Admin",
     };
     return labels[type] || type;
   };
@@ -605,117 +605,6 @@ export default function DetailMember() {
                 >
                   {loading ? "Mencari..." : "Login"}
                 </button>
-              </div>
-            </RevealSection>
-          )}
-
-          {/* ====== 🔥 SECTION POIN ====== */}
-          {isMounted && isUserLoggedIn && (
-            <RevealSection direction="up">
-              <div className="bg-primary-light border-2 border-neutral-normal rounded-lg p-6 my-4 shadow-sm">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center">
-                      <StarIcon className="w-7 h-7 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-neutral-dark">Poin SH3</h3>
-                      <p className="text-sm text-neutral-text">
-                        {pointLoading ? "Memuat..." : `${pointBalance} Poin`}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-6">
-                    <div className="flex flex-col items-center">
-                      <div className="text-4xl font-bold font-young text-amber-600 tracking-wider">
-                        {pointLoading ? "..." : String(pointBalance).padStart(3, '0')}
-                      </div>
-                      <div className="text-xs text-neutral-dark font-medium">Saldo Poin</div>
-                    </div>
-                    {ledgerBalance !== pointBalance && (
-                      <div className="flex flex-col items-center">
-                        <div className="text-sm font-mono text-yellow-600">
-                          {ledgerBalance}
-                        </div>
-                        <div className="text-xs text-yellow-500 font-medium">Ledger</div>
-                      </div>
-                    )}
-                    {pointHistory.length > 0 && (
-                      <button
-                        onClick={() => setShowPointHistory(!showPointHistory)}
-                        className="text-sm text-blue-600 hover:underline font-medium"
-                      >
-                        {showPointHistory ? "Sembunyikan" : "Lihat Riwayat"}
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Progress bar poin (target 100 poin) */}
-                {pointBalance > 0 && (
-                  <>
-                    <div className="mt-4 w-full bg-amber-200 rounded-full h-2">
-                      <div 
-                        className="bg-amber-500 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${Math.min((pointBalance / 100) * 100, 100)}%` }}
-                      />
-                    </div>
-                    <div className="flex justify-between text-xs text-neutral-dark mt-1">
-                      <span>0</span>
-                      <span>Target 100 poin</span>
-                    </div>
-                  </>
-                )}
-
-                {/* 🔥 Riwayat Poin */}
-                {showPointHistory && (
-                  <div className="mt-4 pt-4 border-t border-neutral-normal">
-                    <h4 className="font-bold text-sm mb-3">Riwayat Transaksi Poin</h4>
-                    {pointLoading ? (
-                      <p className="text-sm text-neutral-dark">Memuat riwayat...</p>
-                    ) : pointHistory.length === 0 ? (
-                      <p className="text-sm text-neutral-dark">Belum ada riwayat poin.</p>
-                    ) : (
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead>
-                            <tr className="text-left text-neutral-dark border-b border-neutral-normal">
-                              <th className="px-3 py-2 font-semibold">Tipe</th>
-                              <th className="px-3 py-2 font-semibold text-right">Jumlah</th>
-                              <th className="px-3 py-2 font-semibold text-right hidden md:table-cell">Sumber</th>
-                              <th className="px-3 py-2 font-semibold text-right hidden md:table-cell">Tanggal</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {pointHistory.map((tx) => (
-                              <tr key={tx.id} className="border-b border-neutral-normal/50 hover:bg-primary-light/30">
-                                <td className="px-3 py-2">
-                                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getPointTypeColor(tx.type)}`}>
-                                    {getPointTypeLabel(tx.type)}
-                                  </span>
-                                </td>
-                                <td className={`px-3 py-2 text-right font-bold ${tx.amount > 0 ? 'text-green-600' : 'text-red-500'}`}>
-                                  {tx.amount > 0 ? '+' : ''}{tx.amount}
-                                </td>
-                                <td className="px-3 py-2 text-right text-neutral-dark hidden md:table-cell">
-                                  {tx.source_type || '-'}
-                                </td>
-                                <td className="px-3 py-2 text-right text-neutral-dark hidden md:table-cell">
-                                  {tx.created_at ? new Date(tx.created_at).toLocaleDateString('id-ID') : '-'}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                        {pointHistory.length >= 10 && (
-                          <p className="text-xs text-neutral-dark text-center mt-2">
-                            *Menampilkan 10 transaksi terakhir
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             </RevealSection>
           )}

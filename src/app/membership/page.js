@@ -381,6 +381,7 @@ export default function MembershipPage() {
                                         id="payment_method"
                                         name="payment_method"
                                         label="Metode Pembayaran"
+                                        placehold="Pilih metode pembayaran..."
                                         options={[
                                             { value: "transfer", label: "Transfer Bank" },
                                             { value: "qris", label: "QRIS" },

@@ -248,28 +248,6 @@ export default function MembershipPage() {
                         </div>
                     </RevealSection>
 
-                    {/* 🔥 BENEFIT POIN - Pemberitahuan */}
-                    <RevealSection direction="up">
-                        <div className="max-w-3xl mx-auto bg-amber-50 border-2 border-amber-200 rounded-lg p-4 md:p-6 mb-6 flex items-start md:items-center gap-4">
-                            <div className="w-10 h-10 md:w-12 md:h-12 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <StarIcon className="w-5 h-5 md:w-7 md:h-7 text-white" />
-                            </div>
-                            <div>
-                                <h3 className="text-base md:text-lg font-bold text-amber-700"> Dapatkan Poin dari Event!</h3>
-                                <p className="text-sm text-amber-600">
-                                    Setiap kali kamu check-in event, kamu akan mendapatkan <span className="font-bold"> poin </span> 
-                                    yang bisa ditukar dengan <span className="font-bold">merchandise eksklusif</span> SH3!
-                                </p>
-                                <Link 
-                                    href="/merchandise" 
-                                    className="inline-block mt-1 text-sm text-amber-700 font-medium hover:underline"
-                                >
-                                    Lihat Koleksi Merchandise →
-                                </Link>
-                            </div>
-                        </div>
-                    </RevealSection>
-
                     {/* Status Membership */}
                     <RevealSection direction="up">
                         <div className="max-w-3xl mx-auto bg-primary-light border-2 border-neutral-normal rounded-lg p-6 md:p-8 shadow-lg mb-6">

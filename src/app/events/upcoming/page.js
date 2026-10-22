@@ -16,6 +16,7 @@ import Swal from "sweetalert2";
 import EventGallery from "@/src/components/EventGallery";
 import Pagination from "@/src/components/Pagination";
 import { useAuth } from "@/src/contexts/AuthContext";
+const MAJOR_EVENT_WEBSITE = "https://samarindahash.com/#daftar";
 
 export default function UpcomingEvents() {
     const { user, isLoggedIn } = useAuth();
@@ -282,6 +283,9 @@ export default function UpcomingEvents() {
 
     const isMember = user?.membership_type && user.membership_type !== "none";
 
+    // 🔥 CEK MAJOR EVENT
+    const isMajorEvent = event.category?.name === "Major Events";
+
     return (
         <Container className="flex flex-col gap-y-4 w-full">
             <div className="relative bg-linear-to-br from-primary-light via-primary-light-active to-primary-light">
@@ -389,7 +393,7 @@ export default function UpcomingEvents() {
                             <h2 className="text-xl font-bold mt-2">Tentang Event</h2>
                             <div className="text-sm text-justify">{event.description}</div>
 
-                            {!myOrder && !isRegistrationAvailable && (
+                            {!myOrder && !isRegistrationAvailable && !isMajorEvent && (
                                 <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md text-center">
                                     <p className="text-yellow-700 font-medium">
                                         {regStatus.text}
@@ -415,30 +419,44 @@ export default function UpcomingEvents() {
                                 </div>
                             )}
 
+                            {/* 🔥 Tombol Daftar - KONDISIONAL Major Event vs Biasa */}
                             {!myOrder && (
-                                <Link
-                                    href={isRegistrationAvailable ? `/events/register?id=${event.id}` : "#"}
-                                    onClick={(e) => {
-                                        if (!isRegistrationAvailable) {
-                                            e.preventDefault();
-                                            Swal.fire({
-                                                icon: "info",
-                                                title: "Pendaftaran Belum Dibuka",
-                                                text: regStatus.text,
-                                                confirmButtonText: "OK",
-                                            });
-                                        }
-                                    }}
-                                >
-                                    <div
-                                        className={`flex justify-center items-center rounded-md h-32 font-bold text-2xl m-6 md:m-10 md:text-5xl transition-colors text-center ${isRegistrationAvailable
-                                                ? "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active cursor-pointer text-white"
-                                                : "bg-neutral-normal cursor-not-allowed text-white/70"
-                                            }`}
+                                isMajorEvent ? (
+                                    // 🔥 Major Event → redirect ke website eksternal
+                                    <a
+                                        href={MAJOR_EVENT_WEBSITE}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex justify-center items-center rounded-md h-32 font-bold text-2xl m-6 md:m-10 md:text-5xl transition-colors text-center bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active cursor-pointer text-white"
                                     >
-                                        {regStatus.text}
-                                    </div>
-                                </Link>
+                                        Daftar Sekarang
+                                    </a>
+                                ) : (
+                                    // Event biasa → daftar normal
+                                    <Link
+                                        href={isRegistrationAvailable ? `/events/register?id=${event.id}` : "#"}
+                                        onClick={(e) => {
+                                            if (!isRegistrationAvailable) {
+                                                e.preventDefault();
+                                                Swal.fire({
+                                                    icon: "info",
+                                                    title: "Pendaftaran Belum Dibuka",
+                                                    text: regStatus.text,
+                                                    confirmButtonText: "OK",
+                                                });
+                                            }
+                                        }}
+                                    >
+                                        <div
+                                            className={`flex justify-center items-center rounded-md h-32 font-bold text-2xl m-6 md:m-10 md:text-5xl transition-colors text-center ${isRegistrationAvailable
+                                                    ? "bg-secondary-bg hover:bg-secondary-bg-hover active:bg-secondary-bg-active cursor-pointer text-white"
+                                                    : "bg-neutral-normal cursor-not-allowed text-white/70"
+                                                }`}
+                                        >
+                                            {regStatus.text}
+                                        </div>
+                                    </Link>
+                                )
                             )}
 
                             {isPending && (
@@ -462,11 +480,23 @@ export default function UpcomingEvents() {
                                             Ordermu telah dibatalkan oleh Admin, silahkan menghubungi admin untuk informasi lebih lanjut
                                         </p>
                                     </div>
-                                    <Link href={`/events/register?id=${event.id}`}>
-                                        <div className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-6 md:m-10 md:text-5xl active:bg-secondary-bg-active">
+                                    {/* 🔥 Tombol Daftar Ulang - KONDISIONAL */}
+                                    {isMajorEvent ? (
+                                        <a
+                                            href={MAJOR_EVENT_WEBSITE}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-6 md:m-10 md:text-5xl active:bg-secondary-bg-active"
+                                        >
                                             Daftar Sekarang
-                                        </div>
-                                    </Link>
+                                        </a>
+                                    ) : (
+                                        <Link href={`/events/register?id=${event.id}`}>
+                                            <div className="cursor-pointer flex justify-center items-center rounded-md bg-secondary-bg h-32 font-bold text-2xl text-white hover:bg-secondary-bg-hover m-6 md:m-10 md:text-5xl active:bg-secondary-bg-active">
+                                                Daftar Sekarang
+                                            </div>
+                                        </Link>
+                                    )}
                                 </>
                             )}
 
@@ -564,7 +594,7 @@ export default function UpcomingEvents() {
                         </div>
                     )}
 
-                    {/* 🔥 GALLERY SECTION - Featured Photos */}
+                    {/* GALLERY SECTION - Featured Photos */}
                     {galleries.length > 0 && (
                         <div className="mt-8 mb-10">
                             <div className="flex justify-between items-center mb-4">
@@ -588,7 +618,7 @@ export default function UpcomingEvents() {
                         </div>
                     )}
 
-                    {/* 🔥 ALBUM DRIVE SECTION - Link ke Google Drive */}
+                    {/* ALBUM DRIVE SECTION - Link ke Google Drive */}
                     {albums.length > 0 && (
                         <div className="mt-8 mb-10 bg-white rounded-lg shadow-md p-6">
                             <h2 className="text-2xl font-bold font-young mb-4">Album Lengkap</h2>
